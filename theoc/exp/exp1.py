@@ -19,6 +19,26 @@ from theoc.oc import run
 
 def exp(Istim, g, N, pn):
     # -- Init
+    # Drives and iteration counter
+    Iosc = 2
+    Ipri = 0
+    # Iback = 2
+    # Ipub = 1
+
+    Sstim = .01 * Istim
+    n = int(pn * N)
+    n_b = int((1 - pn) * N)
+    if n_b < 2:
+        n_b = 2
+
+    # Create basename for the data
+    basename = "Istim-{0}_g-{1}_N-{2}_pn-{3}_".format(Istim, g, N, pn)
+    print("Running: {0}".format(basename))
+
+    # path the name
+    basepath = os.path.join(path, basename)
+
+    # Output structures
     d_H = defaultdict(list)
     d_MI = defaultdict(list)
     d_PAC = defaultdict(list)
@@ -35,7 +55,7 @@ def exp(Istim, g, N, pn):
                   f,
                   g,
                   g_max,
-                  q
+                  q,
                   Istim,
                   Sstim,
                   Ipri,
@@ -100,7 +120,7 @@ if __name__ == "__main__":
 
     # --- Fixed params ----------------------------------------------------
     n_trials = 20
-    n_jobs = 12 
+    n_jobs = 8
     t = 5
     dt = 0.001
     f = 6
@@ -109,26 +129,6 @@ if __name__ == "__main__":
     # back_type = 'constant'
     back_type = 'stim'
 
-    # Drives and iteration counter
-    Iosc = 2
-    Ipri = 0
-    # Iback = 2
-    # Ipub = 1
-
-    Sstim = .01 * Istim
-    n = int(pn * N)
-    n_b = int((1 - pn) * N)
-    if n_b < 2:
-        n_b = 2
-
-    # Create basename for the data
-    basename = "Istim-{0}_g-{1}_N-{2}_pn-{3}_".format(
-        Istim, g, N, pn)
-    print("Running: {0}".format(basename))
-    
-    # path the name
-    basepath = os.path.join(path, basename)
-
     # -- Run -------------------------------------------------------------
     Parallel(n_jobs=n_jobs)(delayed(exp)(Istim, g, N, pn)
-                        for Istim, g, N, pn in params)
+                            for Istim, g, N, pn in params)
