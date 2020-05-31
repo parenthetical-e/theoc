@@ -1,0 +1,622 @@
+---
+title: "Figures"
+author: "Erik J Peterson"
+date: "5-31-2020"
+output:
+  html_document:
+    number_sections: yes
+    theme: spacelab
+    toc: yes
+---
+
+```{r helper_fns, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(reshape)
+library(png)
+library(psd)
+library(tidyr)
+library(doParallel)
+library(bspec)
+registerDoParallel(cores=10)
+
+path <- "~/Code/theoc/data/"
+
+load.data <- function(path, type, rates, gs, Ns, pns){
+  df <- NULL
+  for(r_s in rates){
+    for(g in gs){
+      for(N in Ns){
+        for(pn in pns){
+          try({
+            name <- paste("Istim-", as.character(r_s), 
+                          "_g-", as.character(g),
+                          "_N-", as.character(N),
+                          "_pn-", as.character(pn),
+                          "__", as.character(type), 
+                          "_summary.csv", sep="")
+            di <- read.csv(paste(path, name, sep=""))
+            di["Istim"] <- rep(r_s, nrow(di))
+            di["g"] <- rep(g, nrow(di))
+            di["N"] <- rep(N, nrow(di))
+            di["pn"] <- rep(pn, nrow(di))
+            
+            df <- rbind(df, di)  
+          })  
+        }
+      }
+    }
+  }
+  df
+}
+
+load.all.data <- function(path, type, rates, gs, Ns, pns){
+  df <- NULL
+  for(r_s in rates){
+    for(g in gs){
+      for(N in Ns){
+        for(pn in pns){
+          try({
+            name <- paste("Istim-", as.character(r_s), 
+                          "_g-", as.character(g),
+                          "_N-", as.character(N),
+                          "_pn-", as.character(pn),
+                          "__", as.character(type), 
+                          ".csv", sep="")
+            di <- read.csv(paste(path, name, sep=""))
+            di["Istim"] <- rep(r_s, nrow(di))
+            di["g"] <- rep(g, nrow(di))
+            di["N"] <- rep(N, nrow(di))
+            di["pn"] <- rep(pn, nrow(di))
+            
+            df <- rbind(df, di)  
+          })  
+        }
+      }
+    }
+  }
+  df
+}
+
+load.demo <- function(path, type, rates, ks){
+  dexp <- NULL
+  for(r_o in rates){
+    for(r_s in rates){
+      for(k in ks){
+        try({
+          name <- paste("Iosc-", as.character(r_o), 
+                      "_Istim-", as.character(r_s), 
+                      "_k", as.character(k), 
+                      "_", as.character(type), 
+                      ".csv", sep="")
+          di <- read.csv(paste(path, name, sep=""))
+          di["Iosc"] <- rep(r_o, nrow(di))
+          di["Istim"] <- rep(r_s, nrow(di))
+          di["k"] <- rep(k, nrow(di))
+          
+          dexp <- rbind(dexp, di)  
+       })
+      }
+    }
+  }
+dexp
+}
+
+
+load.demo2 <- function(path, type, rates, gs, Ns, pns){
+  df <- NULL
+  for(r_s in rates){
+    for(g in gs){
+      for(N in Ns){
+        for(pn in pns){
+          try({
+            name <- paste("Istim-", as.character(r_s), 
+                          "_g-", as.character(g),
+                          "_N-", as.character(N),
+                          "_pn-", as.character(pn),
+                          "_", as.character(type), 
+                          ".csv", sep="")
+            di <- read.csv(paste(path, name, sep=""))
+            di["Istim"] <- rep(r_s, nrow(di))
+            di["g"] <- rep(g, nrow(di))
+            di["N"] <- rep(N, nrow(di))
+            di["pn"] <- rep(pn, nrow(di))
+            
+            df <- rbind(df, di)  
+          })  
+        }
+      }
+    }
+  }
+  df
+}
+
+load.demo3 <- function(path, type, rates, gs, Ns, pns){
+  df <- NULL
+  for(r_s in rates){
+    for(g in gs){
+      for(N in Ns){
+        for(pn in pns){
+          try({
+            name <- paste("Istim-", as.character(r_s), 
+                          "_g-", as.character(g),
+                          "_N-", as.character(N),
+                          "_pn-", as.character(pn),
+                          "__", as.character(type), 
+                          ".csv", sep="")
+            di <- read.csv(paste(path, name, sep=""))
+            di["Istim"] <- rep(r_s, nrow(di))
+            di["g"] <- rep(g, nrow(di))
+            di["N"] <- rep(N, nrow(di))
+            di["pn"] <- rep(pn, nrow(di))
+            
+            df <- rbind(df, di)  
+          })  
+        }
+      }
+    }
+  }
+  df
+}
+
+pprime <- function(r1, r2, v1, v2){
+  (r2 - r1) / sqrt((v1 + v2) / 2)
+}
+```
+
+
+```{r fig1_load, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
+rates <- c(2, 6, 10, 14, 18, 22, 26, 30)
+gs <- c(1,2,3,4,5,6,7,8)
+Ns <- c(100, 200, 300, 400, 500)
+pns <- c(0.25, 0.5, 0.75, 1)
+
+exp1path <- paste(path, "/exp1/", sep="")
+mi_exp1 <- load.data(exp1path, "MI", rates, gs, Ns, pns)
+h_exp1 <- load.data(exp1path, "H", rates, gs, Ns, pns)
+pac_exp1 <- load.data(exp1path, "PAC", rates, gs, Ns, pns)
+```
+
+# Fig 1 - Model introduction
+
+![Figure 1](figures/fig1.pdf)
+
+
+```{r fig1, fig.width=8, fig.height=5, echo=FALSE, warning=FALSE, message=FALSE}
+# --
+# A ,B, C is PNG art
+
+# --
+# Preprocess D
+# Sel N and p
+mi_fig1 <- filter(mi_exp1, N == 100, pn == 1.00)
+
+# Get Avg MI for stim
+Mstim <- mean((filter(mi_fig1, X == "stim_p"))$mean)
+mi_fig1$mean <- mi_fig1$mean - Mstim
+
+# Select, rename, and order 'em
+mi_fig1 <- filter(mi_fig1, X %in% c("gain_p", "silenced_p", "summed_p"))
+mi_fig1$X <- revalue(mi_fig1$X, c("gain_p"="EI", "summed_p"="E", "silenced_p"="I"))
+mi_fig1$X <- factor(mi_fig1$X, levels=c("EI", "E", "I")) 
+
+# Make summary stats
+mi_stats <- group_by(mi_fig1, X)
+mi_stats <- summarise(mi_stats, M=mean(mean), SD=sd(mean))
+limits <- aes(ymax = M + SD, ymin=M - SD)
+
+# --
+# Plot D
+f1a <- qplot(data=mi_stats, x=X, y=M, geom="bar", stat="identity", width=.75) + 
+  geom_errorbar(limits, width=0.2, color="grey") + 
+  ylab(expression(paste(Delta, "MI (bits)"))) + 
+  theme_classic() + 
+  geom_hline(yintercept=0, color="grey") + xlab("")
+
+
+# --
+# Preprocess E
+mi_exp1 %>% 
+  filter(N == 100, pn == 1.00, X %in% c("gain_p", "silenced_p", "summed_p", "stim_p")) %>%
+  droplevels() -> 
+  mi_fig1b
+
+mi_fig1b$X <- revalue(mi_fig1b$X, c("gain_p"="EI", "summed_p"="E", "silenced_p"="I", "stim_p"="S"))
+
+# Get subtract mean I_stim
+mi_fig1b %>% select(mean, Istim, g, X) %>% 
+  group_by(Istim, g, X) %>%
+  cast(Istim + g ~ X, value = "mean") %>%
+  mutate(E=E - S, I = I - S, EI = EI - S) %>%
+  select(-S) %>% 
+  melt(id=c('Istim', 'g'), variable_name = 'model') -> mi_stats
+
+mi_stats$model <- revalue(mi_stats$model, c("EI"="EI"))
+mi_stats$model <- factor(mi_stats$model, levels=c("EI", "E", "I"))
+
+# --
+# Plot E
+f1b <- qplot(data=mi_stats, x=Istim, y=value, facets=.~model, color=g, geom="line", group=g) + 
+  theme_classic() + 
+  xlim(0,30) + 
+  ylab(expression(paste(Delta, "MI (bits)"))) +
+  geom_hline(yintercept=0, color="grey") + 
+  xlab(expression(r[s])) +
+  theme(strip.background = element_blank(), axis.title.x = element_text(colour = "red")) 
+# print(f2b)
+
+# --
+# Load A, B, C art
+img1 <- readPNG("/home/ejp/src/pacological/analysis/figures/neural_add.png")
+g1 <- rasterGrob(img1, interpolate=TRUE)
+
+img2 <- readPNG("/home/ejp/src/pacological/analysis/figures/pac_circuits.png")
+g2 <- rasterGrob(img2, interpolate=TRUE)
+
+# --
+# Assemble Fig 1
+pdf("/home//ejp/src/pacological/analysis/figures/fig1.pdf", width = 9.5, height = 4.5)
+layout <- rbind(
+    c(4, 4, 2, 2, 2, 2, 2, 2),
+    c(4, 4, 1, 1, 3, 3, 3, 3)
+  )
+grid.arrange(f1a, g2, f1b, g1, layout_matrix=layout)
+dev.off()
+
+png("/home//ejp/src/pacological/analysis/figures/fig1.png", width = 684, height = 324)
+layout <- rbind(
+    c(4, 4, 2, 2, 2, 2, 2, 2),
+    c(4, 4, 1, 1, 3, 3, 3, 3)
+  )
+grid.arrange(f1a, g2, f1b, g1, layout_matrix=layout)
+dev.off()
+```
+
+
+# Fig 2 - PAC, and PAC/MI, and spectral/temporal properties
+
+```{r fig2a, fig.width=2.5, fig.height=2, echo=FALSE, warning=FALSE, message=FALSE}
+# --
+# Preprocess A
+pac_fig2 <- filter(pac_exp1, N == 100, pn == 1.00)
+
+# Select, rename, and order 'em
+pac_fig2 <- filter(pac_fig2, X %in% c("gain_p", "silenced_p", "summed_p", "stim_p"))
+pac_fig2$X <- revalue(pac_fig2$X, c("gain_p"="EI", "summed_p"="E", "silenced_p"="I", "stim_p"="S"))
+pac_fig2$X <- factor(pac_fig2$X, levels=c("S", "EI", "E", "I")) 
+
+# Sum and plot
+pac_fig2 %>% group_by(X) %>% summarise(M=mean(mean), SD=sd(mean)) -> pac_stats
+limits <- aes(ymax = M + SD, ymin=M - SD)
+
+f2a <- qplot(data=pac_stats, x=X, y=M, geom="bar", stat="identity", width=.75) + 
+  geom_errorbar(limits, width=0.2, color="grey") + 
+  ylab("SC") + theme_classic() + 
+  geom_hline(yintercept=0, color="grey") + 
+  xlab("")
+```
+
+```{r load_fig2b, echo=FALSE, warning=FALSE, message=FALSE}
+# --
+# Load B
+rates <- c(2, 6, 10, 14, 18, 22, 26, 30)
+gs <- c(1,2,3,4,5,6,7,8)
+Ns <- c(100, 200, 300, 400, 500)
+pns <- c(0.25, 0.5, 0.75, 1)
+
+exp1path  <- paste(path, "/exp1/", sep="")
+mi_exp1a  <- load.all.data(exp1path, "MI", rates, gs, Ns, pns)
+pac_exp1a <- load.all.data(exp1path, "PAC", rates, gs, Ns, pns)
+h_exp1a   <- load.all.data(exp1path, "H", rates, gs, Ns, pns)
+
+mi_exp1a <- filter(mi_exp1a, N == 100, pn == 1.00)
+pac_exp1a <- filter(pac_exp1a, N == 100, pn == 1.00)
+h_exp1a <- filter(h_exp1a, N == 100, pn == 1.00)
+
+mi_exp1a <- droplevels(mi_exp1a)
+pac_exp1a <- droplevels(pac_exp1a)
+h_exp1a <- droplevels(h_exp1a)
+```
+
+```{r fig2b, fig.width=7.5, fig.height=4.5, echo=FALSE, warning=FALSE, message=FALSE}
+# --
+# Preprocess B
+tmpdf <- data.frame(mi=(mi_exp1a$gain_p - mi_exp1a$stim_p), 
+                    pac=(pac_exp1a$gain_p - pac_exp1a$stim_p))
+
+# --
+# Plot B1
+f2b1 <- ggplot(data=tmpdf, aes(x=pac, y=mi)) + 
+  geom_point(size=1.5, alpha=0.2) + 
+  ggtitle("EI") + theme_classic() +
+  ylab(expression(paste(Delta, "MI (bits)"))) +
+  xlab("") + 
+  ylim(-.25,.25) +
+#   stat_smooth(method = "lm", formula = y ~ x) +
+  xlim(-.3,.3) +
+  geom_hline(yintercept=0, color="grey") +
+  geom_vline(yintercept=0, color="grey") 
+
+# --
+# Preprocess B2
+tmpdf <- data.frame(mi=(mi_exp1a$summed_p - mi_exp1a$stim_p), 
+                    pac=(pac_exp1a$summed_p - pac_exp1a$stim_p))
+
+# --
+# Plot B2
+f2b2 <- ggplot(data=tmpdf, aes(x=pac, y=mi)) + 
+  geom_point(size=1.5, alpha=0.2) + 
+  ggtitle("E") + 
+  theme_classic() + ylab("") +
+  xlab(expression(paste(Delta, "SC"))) +
+#   stat_smooth(method = "lm", formula = y ~ x) +
+  xlim(-.3,.3) +
+  ylim(-.25,.25) +
+  geom_hline(yintercept=0, color="grey") +
+  geom_vline(yintercept=0, color="grey") 
+
+# --
+# Preprocess B3
+tmpdf <- data.frame(mi=(mi_exp1a$silenced_p - mi_exp1a$stim_p), 
+                    pac=(pac_exp1a$silenced_p - pac_exp1a$stim_p))
+
+# --
+# Plot B3
+f2b3 <- ggplot(data=tmpdf, aes(x=pac, y=mi)) + 
+  geom_point(size=1.5, alpha=0.2) + 
+  ggtitle("I") + 
+  theme_classic() + 
+  xlab("") + 
+  ylab("") +
+  xlim(-.3,.3) +
+  ylim(-.25,.25) +
+  geom_hline(yintercept=0, color="grey") +
+  geom_vline(yintercept=0, color="grey") 
+```
+
+``` {r load_nfig2c, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+rates <- c(6, 14, 30)
+gs <- c(1,4,8)
+Ns <- c(100)
+pns <- c(1)
+
+path <- "/home/ejp/src/pacological/data"
+demopath <- paste(path, "/demo2/", sep="")
+lfps <- load.demo2(demopath, "lfps", rates, gs, Ns, pns)
+lfps %>% select(X, Istim, g, stim_p, gain_p, silenced_p, summed_p)  %>% 
+  rename(c(X="times", stim_p = "S", gain_p = "EI", silenced_p="I", summed_p="E")) -> 
+  lfps
+```
+
+```{r fig2c, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+# Preprocess D
+# Select LFPs for plotting
+r_s <- 14
+g <- 4
+lfps %>% 
+  filter(g == g, Istim == r_s) %>%
+  select(-S) %>%
+  gather('pop', x, EI, E, I) -> 
+  lfp_sel
+
+# --
+# Plot D
+f2d <- ggplot(data=filter(lfp_sel, times < 1000), aes(x=times, y=x)) + 
+  geom_line() +
+  theme_classic() + 
+  facet_grid(.~pop) +
+  theme(strip.background = element_blank()) +
+  ylab("Normalized LFP") +
+  xlab("Time (ms)")
+
+# --
+# Calc PSDS for C
+psds <- NULL
+models <- c("EI", "E", "I")
+for(model in models){
+  spec <- pspectrum((filter(lfp_sel, pop == model))$x, x.frqsamp=1000)
+  psds <- rbind(
+    psds,
+    cbind(
+      #           spec$frequency,
+      #           spec$power,
+      spec$freq, 
+      spec$spec, 
+      rep(model, length(spec$freq)), 
+      rep(r_s, length(spec$freq)), 
+      rep(g, length(spec$freq))
+      )
+    )
+}
+
+# Process for C
+psds <- as.data.frame(psds, stringsAsFactors = FALSE)
+colnames(psds) <- c("freq", "spec", "model", "r_s", "g")
+
+psds$freq <- as.numeric(psds$freq)
+psds$spec <- as.numeric(psds$spec)
+psds$r_s <- as.numeric(psds$r_s)
+psds$g <- as.numeric(psds$g)
+psds$model <- factor(psds$model, levels = models)
+
+# --
+# Plot C
+f2c <- ggplot(data=filter(psds, freq > 1), aes(x=freq, y=spec, color=model)) + 
+  geom_line() + 
+  scale_color_discrete("") +
+  scale_y_log10() + 
+  scale_x_log10() + 
+  theme_classic() +
+  annotation_logticks() +             
+  xlab("Frequency (Hz)") + 
+  ylab("Spectral power") +
+  theme(legend.position="right")
+
+# --
+# Plot fig 2
+pdf("/home//ejp/src/pacological/analysis/figures/fig2.pdf", width = 10, height = 4.5)
+laym <- rbind(
+  c(1, NA, 2, 3, 4),
+  c(5, 5, 6, 6, 6)
+)
+grid.arrange(f2a, f2b1, f2b2, f2b3, f2c, f2d, layout_matrix=laym)
+dev.off()
+
+png("/home//ejp/src/pacological/analysis/figures/fig2.png", width = 720, height = 324)
+laym <- rbind(
+  c(1, NA, 2, 3, 4),
+  c(5, 5, 6, 6, 6)
+)
+grid.arrange(f2a, f2b1, f2b2, f2b3, f2c, f2d, layout_matrix=laym)
+dev.off()
+```
+
+# Fig 3
+
+```{r load_fig3, echo=FALSE, warning=FALSE, message=FALSE}
+path <- "/home/ejp/src/pacological/data"
+rates <- c(2, 6, 10, 14, 18, 22, 26, 30)
+gs <- c(1,2,3,4,5,6,7,8)
+Ns <- c(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000)
+pns <- c(1)
+exp71path <- paste(path, "/exp71/", sep="")
+
+poprates_exp71 <- load.demo3(exp71path, "poprates", rates, gs, Ns, pns)
+poprates_exp71 %>% 
+  select(times=X, Istim, g, N, S=stim_p, Ssp=stim_sp, EI=gain_p, I=silenced_p, E=summed_p) -> 
+  poprates_exp71
+
+vars_exp71 <- load.demo3(exp71path, "vars", rates, gs, Ns, pns)
+vars_exp71 %>% 
+  select(times=X, Istim, g, N, S=stim_p, Ssp=stim_sp, EI=gain_p, I=silenced_p, E=summed_p) -> 
+  vars_exp71
+
+# Converto mean
+poprates_exp71 %>%
+  group_by(N) %>%
+  mutate(S = as.numeric(S) / N[1], 
+         Ssp = as.numeric(Ssp) / N[1], 
+         EI=as.numeric(EI) / N[1], 
+         E=as.numeric(E) / N[1], 
+         I=as.numeric(I) / N[1]) -> 
+  popmeans_exp71
+
+# Join M and SD
+popmeans_exp71$stat <- rep("M", nrow(popmeans_exp71))
+vars_exp71$stat <- rep("SD", nrow(vars_exp71))
+exp71 <- rbind(popmeans_exp71,vars_exp71)
+
+exp71 %>%
+  filter(times < 500) %>%
+  ddply(c("times", "Istim", "g", "N"), .parallel=TRUE, .fun=function(df){
+    m <- filter(df, stat == "M")
+    s_d <- filter(df, stat == "SD")
+    EI <- pprime(m[['S']], m[['EI']], s_d[['S']], s_d[['EI']])
+    E <- pprime(m[['S']], m[['E']], s_d[['S']], s_d[['E']])
+    I <- pprime(m[['S']], m[['I']], s_d[['S']], s_d[['I']])
+    ddf <- cbind(EI, E, I)
+    ddf[is.nan(ddf)] <- 0
+    data.frame(ddf)
+  }) -> 
+  prime_exp71
+
+# --
+# Create Poisson distributions
+r_s <- 10
+r_o <- 2
+g <- 4
+
+d_s <- data.frame(S=rpois(100, r_s))
+d_e <- cbind(d_s, data.frame(E=rpois(100, r_s + g * r_o)))
+d_i <- cbind(d_s, data.frame(I=rpois(100, r_s - g * r_o)))
+d_ei <- cbind(d_s, data.frame(EI=rpois(100, r_s * g * r_o)))
+```
+
+```{r fig3, fig.width=8, fig.height=5, echo=FALSE, warning=FALSE, message=FALSE}
+# -- 
+# Plot B
+f3b1 <- ggplot(data=gather(d_ei, 'pop', x, S, EI), aes(x=x, fill=pop, color=pop)) + 
+  geom_density(alpha=0.5, adjust=2) +
+  scale_colour_manual("", values = c("grey", "black")) + 
+  scale_fill_manual("", values = c("grey", "black")) + 
+  theme_classic() + 
+  xlim(0,120) +
+  ylim(0,0.25) +
+  xlab("") +
+  ylab("") +
+#   ggtitle("EI") +
+  theme(legend.position="right")
+
+f3b2 <- ggplot(data=gather(d_e, 'pop', x, S, E), aes(x=x, fill=pop, color=pop)) + 
+  geom_density(alpha=0.5, adjust=2) +
+  scale_colour_manual("", values = c("grey", "black")) + 
+  scale_fill_manual("", values = c("grey", "black")) + 
+  theme_classic() + 
+  xlab("") +
+  xlim(0,120) +
+  ylim(0,0.25) +
+  ylab("Density (AU)") +
+  theme(legend.position="right")
+
+f3b3 <- ggplot(data=gather(d_i, 'pop', x, S, I), aes(x=x, fill=pop, color=pop)) + 
+  geom_density(alpha=0.5, adjust=2) +
+  scale_colour_manual("", values = c("grey", "black")) + 
+  scale_fill_manual("", values = c("grey", "black")) + 
+  theme_classic() + 
+  xlab("Number of spikes") +
+  xlim(0,120) +
+  ylim(0,0.25) +
+  ylab("") +
+  theme(legend.position="right")
+
+# --
+# Plot C
+f3c1 <- prime_exp71 %>%
+  gather(pop, dprime, EI, E, I) %>%
+  filter(N == 100) %>%
+  ggplot(aes(x=Istim, y=dprime, color=g, group=g)) +
+  stat_summary(fun.data = "mean_cl_boot") +
+  facet_grid(.~pop) + 
+  ylab("d'") +
+  geom_hline(yintercept=0, color="grey") +
+  theme_classic() + 
+  ylab(expression(paste(Delta, "d'"))) +
+  xlab(expression(r[s])) +
+  xlim(0,30) +
+  theme(strip.background = element_blank(), axis.title.x = element_text(colour = "red"))
+  
+# --
+# Load artwork
+img3 <- readPNG("/home/ejp/src/pacological/analysis/figures/signal_noise.png")
+g3 <- rasterGrob(img3, interpolate=TRUE)
+
+# --
+# Assemble Fig 3
+pdf("/home//ejp/src/pacological/analysis/figures/fig3.pdf", width = 9, height = 5)
+layout <- rbind(
+    c(1, 1, 3),
+    c(1, 1, 3),
+    c(1, 1, 4),
+    c(2, 2, 4),
+    c(2, 2, 5),
+    c(2, 2, 5)
+  )
+grid.arrange(g3, f3c1, f3b1, f3b2, f3b3, layout_matrix=layout)
+dev.off()
+
+png("/home//ejp/src/pacological/analysis/figures/fig3.png", width = 648, height = 360)
+layout <- rbind(
+    c(1, 1, 3),
+    c(1, 1, 3),
+    c(1, 1, 4),
+    c(2, 2, 4),
+    c(2, 2, 5),
+    c(2, 2, 5)
+  )
+grid.arrange(g3, f3c1, f3b1, f3b2, f3b3, layout_matrix=layout)
+dev.off()
+```
+
