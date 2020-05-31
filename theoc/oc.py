@@ -36,7 +36,7 @@ def run(n,
 
     # -----------------------------------------------------------------------
     # Safety
-    if g >= g_max:
+    if g > g_max:
         raise ValueError("g must be < g_max")
 
     # -- Init ---------------------------------------------------------------
@@ -61,7 +61,7 @@ def run(n,
     # Drives proper
     d_bias['osc'] = rates.osc(times, Iosc, f)
     d_bias['stim'] = rates.stim(times, Istim, Sstim, seed=stim_seed)
-    d_bias['mult'] = d_bias['stim'] * ((g_max - g) * d_bias['osc'])
+    d_bias['mult'] = d_bias['stim'] * ((g_max - g + 1) * d_bias['osc'])
     d_bias['add'] = d_bias['stim'] + (g * d_bias['osc'])
     d_bias['sub'] = d_bias['stim'] - (g * d_bias['osc'])
     div = q * (g * d_bias['osc'])
