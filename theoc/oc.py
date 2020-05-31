@@ -83,7 +83,7 @@ def run(n,
     # -- LFP ----------------------------------------------------------------
     d_lfps = {}
     for k in d_spikes.keys():
-        d_lfps[k] = lfp.create_synaptic_lfps(d_spikes[k])
+        d_lfps[k] = create_lfps(d_spikes[k], tau=0.002, dt=.001)
 
     # -- I ------------------------------------------------------------------
     to_calc = ('HX', 'HY', 'HXY')
@@ -106,7 +106,7 @@ def run(n,
         d_hs[k] = mi.H
 
     # -- Measure OC using PAC -----------------------------------------------
-    low_f = (f - 2, f + 2)
+    low_f = (int(f - 2), int(f + 2))
     high_f = (80, 250)
 
     d_pacs = {}
