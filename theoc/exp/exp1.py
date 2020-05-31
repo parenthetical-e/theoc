@@ -33,7 +33,7 @@ def exp(Istim, g, N, pn):
 
     # Create basename for the data
     basename = "Istim-{0}_g-{1}_N-{2}_pn-{3}_".format(Istim, g, N, pn)
-    print("Running: {0}".format(basename))
+    print(">>> Running: {0}".format(basename))
 
     # path the name
     basepath = os.path.join(path, basename)
@@ -47,7 +47,6 @@ def exp(Istim, g, N, pn):
     # -- Run
     iterations = range(n_trials)
     for i in iterations:
-        print(i)
         res = run(n,
                   n_b,
                   t,
