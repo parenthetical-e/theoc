@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Oscillatory coding, as LNP."""
 import sys
+import cloudpickle
 import pandas as pd
 import os
 import numpy as np
@@ -16,6 +17,17 @@ from pacpy.pac import ozkurt as pacfn
 from joblib import Parallel, delayed
 from itertools import product
 from collections import defaultdict
+
+
+def save_run(name, result):
+    with open(name, "w") as f:
+        cloudpickle.dump(result, name)
+
+
+def load_run(name):
+    with open(name, "w") as f:
+        result = cloudpickle.load(name)
+    return result
 
 
 def run(n,
@@ -113,10 +125,14 @@ def run(n,
     for k in d_lfps.keys():
         d_pacs[k] = pacfn(d_lfps['osc_p'], d_lfps[k], low_f, high_f)
 
-    return {
+    result = {
         'MI': d_mis,
         'H': d_hs,
         'PAC': d_pacs,
+        'bias': d_bias,
         'spikes': d_spikes,
+        'lfp': d_lfps,
         'times': times
     }
+
+    return result
