@@ -29,7 +29,7 @@ def discrete_entropy(x, m, logfn=np.log10):
     conds = np.unique(x)
     counts = np.zeros(m)
     for c in conds:
-        counts[c] = np.sum(x == c)
+        counts[c - 1] = np.sum(x == c)
 
     # Est p
     dist = counts / counts.sum()
@@ -43,7 +43,7 @@ def discrete_entropy(x, m, logfn=np.log10):
 
 
 def discrete_mutual_information(x, y, m, logfn=np.log10, normalize=False):
-     '''Returns the entropy of the X.
+    '''Returns the entropy of the X.
 
     Parameters
     ===========
@@ -59,7 +59,7 @@ def discrete_mutual_information(x, y, m, logfn=np.log10, normalize=False):
     
     logfn: function
         A numpy log function
-        
+
     normalize: bool, optional
         Should we normalize the MI?
     '''
@@ -70,9 +70,9 @@ def discrete_mutual_information(x, y, m, logfn=np.log10, normalize=False):
     h_xy = discrete_entropy(np.concatenate([x, y]), m, logfn=logfn)
 
     # Mutual Information
-    mi_xy = h_hx + h_y - h_xy
+    mi_xy = h_xy + h_y - h_xy
 
-    if normalized:
+    if normalize:
         return mi_xy / np.sqrt(h_x * h_y)
     else:
         return mi_xy
