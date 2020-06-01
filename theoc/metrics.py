@@ -15,13 +15,6 @@ def normalize(x):
     return x
 
 
-def quantize(x, m):
-    x = normalize(x)
-    x = (x * (m - 1)) + 1
-    x = np.round(x)
-    return x.astype(np.int)
-
-
 def discrete_entropy(x, m, logfn=np.log10):
     '''Returns the entropy of the X.
 
@@ -38,13 +31,12 @@ def discrete_entropy(x, m, logfn=np.log10):
         A numpy log function
     '''
 
-    conds = np.unique(x)
-    counts = np.zeros(m)
-    for c in conds:
-        counts[c - 1] = np.sum(x == c)
+    # Est counts
+    counts = np.histogram(x, bins=m)[0]
 
     # Est p
     dist = counts / counts.sum()
+
     # Drop zeros
     dist = dist[np.nonzero(dist)[0]]
 

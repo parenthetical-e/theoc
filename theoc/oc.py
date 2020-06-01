@@ -19,7 +19,6 @@ from theoc.lfp import create_lfps
 from theoc.metrics import discrete_entropy
 from theoc.metrics import discrete_mutual_information
 from theoc.metrics import normalize
-from theoc.metrics import quantize
 
 
 def save_run(name, result):
@@ -115,7 +114,7 @@ def run(num_pop=50,
 
     # -- I ------------------------------------------------------------------
     # Scale stim
-    x_ref = quantize(stim_sp.sum(1), m)
+    x_ref = normalize(stim_sp.sum(1))
     d_rescaled = {}
     d_rescaled["stim_p"] = x_ref
 
@@ -123,8 +122,9 @@ def run(num_pop=50,
     d_mis = {}
     d_hs = {}
     for k in d_spikes.keys():
-        x = quantize(d_spikes[k].sum(1), m)
+        x = normalize(d_spikes[k].sum(1))
         d_rescaled[k] = x
+
         d_mis[k] = discrete_mutual_information(x_ref, x, m)
         d_hs[k] = discrete_entropy(x, m)
 
