@@ -49,7 +49,6 @@ def run(num_pop=50,
         m=10,
         priv_std=0,
         dt=0.001,
-        back_type='constant',
         stim_seed=None,
         seed=None):
     """Run an OC experiment."""
@@ -77,13 +76,8 @@ def run(num_pop=50,
     # Create biases/drives
     d_bias = {}
 
-    # Background
-    if back_type == 'constant':
-        d_bias['back'] = rates.constant(times, 2)
-    elif back_type == 'stim':
-        d_bias['back'] = rates.stim(times, stim_rate, stim_std, seed=stim_seed)
-    else:
-        raise ValueError("back_type not understood")
+    # Background is 2 Hz
+    d_bias['back'] = rates.constant(times, 2)
 
     # Drives proper
     d_bias['osc'] = rates.osc(times, osc_rate, f)
