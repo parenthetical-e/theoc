@@ -20,6 +20,8 @@ from theoc.metrics import discrete_entropy
 from theoc.metrics import discrete_mutual_information
 from theoc.metrics import normalize
 
+EPS = np.finfo(float).eps
+
 
 def save_run(name, result):
     if not name.endswith(".cloudpickle"):
@@ -56,6 +58,9 @@ def run(num_pop=50,
     # -- Safety -------------------------------------------------------------
     if g > g_max:
         raise ValueError("g must be < g_max")
+
+    # q can't be exactly 0
+    q += EPS  
 
     # -- Init ---------------------------------------------------------------
     # Poisson neurons
