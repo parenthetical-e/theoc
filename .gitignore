@@ -1,6 +1,7 @@
 # data
 data/*
 *.Rproj
+*.DS_store
 
 # vscode
 settings.json
