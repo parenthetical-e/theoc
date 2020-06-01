@@ -20,12 +20,16 @@ from collections import defaultdict
 
 
 def save_run(name, result):
+    if not name.endswith(".cloudpickle"):
+        name += ".cloudpickle"
     with open(name, "w") as f:
         cloudpickle.dump(result, name)
 
 
 def load_run(name):
-    with open(name, "w") as f:
+    if not name.endswith(".cloudpickle"):
+        name += ".cloudpickle"
+    with open(name, "r") as f:
         result = cloudpickle.load(name)
     return result
 
@@ -46,8 +50,7 @@ def run(n,
         stim_seed=None):
     """Run an OC experiment."""
 
-    # -----------------------------------------------------------------------
-    # Safety
+    # -- Safety -------------------------------------------------------------
     if g > g_max:
         raise ValueError("g must be < g_max")
 
