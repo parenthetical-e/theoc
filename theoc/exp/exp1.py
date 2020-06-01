@@ -5,11 +5,7 @@ import sys
 import pandas as pd
 import os
 import numpy as np
-import pyentropy as en
-from fakespikes import neurons, rates
 
-# from pacpy.pac import plv as pacfn
-from pacpy.pac import ozkurt as pacfn
 from joblib import Parallel, delayed
 from itertools import product
 from collections import defaultdict
@@ -17,23 +13,13 @@ from collections import defaultdict
 from theoc.oc import run
 
 
-def exp(stim_rate, g, num_pop, pn):
+def exp(stim_rate, g, num_pop, q):
     # -- Init
     # Drives and iteration counter
-    Iosc = 2
-    Ipri = 0
-    # Iback = 2
-    # Ipub = 1
-
     stim_std = .01 * stim_rate
-    n = int(pn * num_pop)
-    n_b = int((1 - pn) * num_pop)
-    if n_b < 2:
-        n_b = 2
 
     # Create basename for the data
-    basename = "stim_rate-{0}_g-{1}_num_pop-{2}_pn-{3}_".format(
-        stim_rate, g, num_pop, pn)
+    basename = f"stim_rate-{stim_rate}_g-{q}_num_pop-{num_pop}_q-{q}"
     print(">>> Running: {0}".format(basename))
 
     # path the name
@@ -48,20 +34,20 @@ def exp(stim_rate, g, num_pop, pn):
     # -- Run
     iterations = range(n_trials)
     for i in iterations:
-        res = run(n,
-                  n_b,
-                  t,
-                  Iosc,
-                  f,
-                  g,
-                  g_max,
-                  q,
-                  stim_rate,
-                  stim_std,
-                  Ipri,
-                  dt,
-                  back_type,
-                  stim_seed=i)
+        res = run(num_pop=num_pop,
+                  num_background=num_background,
+                  t=t,
+                  osc_rate=osc_rate,
+                  f=f,
+                  g=g,
+                  g_max=g_max,
+                  q=q,
+                  stim_rate=stim_rate,
+                  stim_std=stim_std,
+                  priv_std=-0,
+                  dt=dt,
+                  stim_seed=i,
+                  seed=None)
 
         # Process the result
         hys = {}
@@ -83,29 +69,17 @@ def exp(stim_rate, g, num_pop, pn):
     df_H = pd.DataFrame(d_H)
     df_H.to_csv(basepath + "_H.csv", index=False)
 
-    sum_H = df_H.describe(percentiles=[.05, .25, .75, .95]).T
-    sum_H.to_csv(basepath + "_H_summary.csv")
-
     # MI
     df_MI = pd.DataFrame(d_MI)
     df_MI.to_csv(basepath + "_MI.csv", index=False)
-
-    sum_MI = df_MI.describe(percentiles=[.05, .25, .75, .95]).T
-    sum_MI.to_csv(basepath + "_MI_summary.csv")
 
     # PAC
     df_PAC = pd.DataFrame(d_PAC)
     df_PAC.to_csv(basepath + "_PAC.csv", index=False)
 
-    sum_PAC = df_PAC.describe(percentiles=[.05, .25, .75, .95]).T
-    sum_PAC.to_csv(basepath + "_PAC_summary.csv")
-
     # rate
     df_rate = pd.DataFrame(d_rate)
     df_rate.to_csv(basepath + "_rate.csv", index=False)
-
-    sum_rate = df_rate.describe(percentiles=[.05, .25, .75, .95]).T
-    sum_rate.to_csv(basepath + "_rate_summary.csv")
 
 
 if __name__ == "__main__":
@@ -114,21 +88,23 @@ if __name__ == "__main__":
     # --- Experimental params ---------------------------------------------
     stim_rates = range(2, 32, 4)
     gs = range(1, 9)
-    num_pops = range(100, 600, 100)
-    pns = [0.25, 0.5, 0.75, 1]
-    params = product(stim_rates, gs, num_pops, pns)
+    qs = [0.0, 0.5, 1.0]
+    num_pops = np.linspace(10, 200, 20).astype(int).tolist()
+    params = product(stim_rates, gs, num_pops, qs)
 
     # --- Fixed params ----------------------------------------------------
     n_trials = 20
-    n_jobs = 8
-    t = 5
-    dt = 0.001
-    f = 6
-    g_max = max(gs)
-    q = 0.5
-    back_type = 'constant'
-    # back_type = 'stim'
+    n_jobs = 1  # Num jobs in parallel
+    osc_rate = 2  # Osc. firing rate
+
+    m = 6  # Quantization levels
+    t = 5  # Run time
+    dt = 0.001  # Sample rate
+    f = 6  # Osc frequncy
+    g_max = max(gs)  # Max gain
+    q = 0.5  # Fraction divisive I
+    num_background = 5  # Fix background
 
     # -- Run -------------------------------------------------------------
-    Parallel(n_jobs=n_jobs)(delayed(exp)(stim_rate, g, num_pop, pn)
-                            for stim_rate, g, num_pop, pn in params)
+    Parallel(n_jobs=n_jobs)(delayed(exp)(stim_rate, g, num_pop, q)
+                            for stim_rate, g, num_pop, q in params)
