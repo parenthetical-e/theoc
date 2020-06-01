@@ -49,37 +49,28 @@ def exp(stim_rate, g, num_pop, q):
                   stim_seed=i,
                   seed=None)
 
-        # Process the result
-        hys = {}
+        # Save parts of the result
         for b in res['H'].keys():
-            hys[b] = res['H'][b]['HY']
-        for b in hys.keys():
-            d_H[b].append(hys[b])
+            d_H[b].append(res["H"][b])
         for b in res['MI'].keys():
             d_MI[b].append(res['MI'][b])
         for b in res['PAC'].keys():
             d_PAC[b].append(res['PAC'][b])
-
         for b in res['spikes'].keys():
             mrate = np.mean(res['spikes'][b].sum(0) / float(t))
             d_rate[b].append(mrate)
 
-    # -- Save
-    # H
+    # -- To disk!
     df_H = pd.DataFrame(d_H)
     df_H.to_csv(basepath + "_H.csv", index=False)
-
-    # MI
     df_MI = pd.DataFrame(d_MI)
     df_MI.to_csv(basepath + "_MI.csv", index=False)
-
-    # PAC
     df_PAC = pd.DataFrame(d_PAC)
     df_PAC.to_csv(basepath + "_PAC.csv", index=False)
-
-    # rate
     df_rate = pd.DataFrame(d_rate)
     df_rate.to_csv(basepath + "_rate.csv", index=False)
+
+    return None
 
 
 if __name__ == "__main__":
