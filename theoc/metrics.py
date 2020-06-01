@@ -10,6 +10,18 @@ from sklearn.neighbors import NearestNeighbors
 EPS = np.finfo(float).eps
 
 
+def normalize(x):
+    x = (x.astype(np.float) - np.min(x)) / (np.max(x) - np.min(x))
+    return x
+
+
+def quantize(x, m):
+    x = normalize(x)
+    x = (x * (m - 1)) + 1
+    x = np.round(x)
+    return x.astype(np.int)
+
+
 def discrete_entropy(x, m, logfn=np.log10):
     '''Returns the entropy of the X.
 
