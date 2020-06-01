@@ -6,17 +6,20 @@ import cloudpickle
 import pandas as pd
 import os
 import numpy as np
-import pyentropy as en
+# import pyentropy as en
 
 from fakespikes import neurons, rates
-from theoc.lfp import create_lfps
-
-# from pacpy.pac import plv as pacfn
 from pacpy.pac import ozkurt as pacfn
 
 from joblib import Parallel, delayed
 from itertools import product
 from collections import defaultdict
+
+from theoc.lfp import create_lfps
+from theoc.metrics import discrete_entropy
+from theoc.metrics import discrete_mutual_information
+from theoc.metrics import normalize
+from theoc.metrics import quantize
 
 
 def save_run(name, result):
@@ -34,20 +37,22 @@ def load_run(name):
     return result
 
 
-def run(n,
-        n_b,
-        t,
-        Iosc,
-        f,
-        g,
-        g_max,
-        q,
-        Istim,
-        Sstim,
-        Ipri,
-        dt,
-        back_type,
-        stim_seed=None):
+def run(num_pop=50,
+        num_background=2,
+        t=5,
+        osc_rate=6,
+        f=6,
+        g=1,
+        g_max=1,
+        q=0.5,
+        stim_rate=12,
+        stim_std=.12,
+        m=10,
+        priv_std=0,
+        dt=0.001,
+        back_type='constant',
+        stim_seed=None,
+        seed=None):
     """Run an OC experiment."""
 
     # -- Safety -------------------------------------------------------------
@@ -56,9 +61,17 @@ def run(n,
 
     # -- Init ---------------------------------------------------------------
     # Poisson neurons
-    backspikes = neurons.Spikes(n_b, t, dt=dt)
-    ocspikes = neurons.Spikes(n, t, dt=dt, private_stdev=Ipri)
-    drivespikes = neurons.Spikes(n, t, dt=dt, private_stdev=Ipri)
+    backspikes = neurons.Spikes(num_background, t, dt=dt, seed=seed)
+    ocspikes = neurons.Spikes(num_pop,
+                              t,
+                              dt=dt,
+                              private_stdev=priv_std,
+                              seed=seed)
+    drivespikes = neurons.Spikes(num_pop,
+                                 t,
+                                 dt=dt,
+                                 private_stdev=priv_std,
+                                 seed=seed)
     times = ocspikes.times  # brevity
 
     # -- Drives -------------------------------------------------------------
@@ -69,13 +82,13 @@ def run(n,
     if back_type == 'constant':
         d_bias['back'] = rates.constant(times, 2)
     elif back_type == 'stim':
-        d_bias['back'] = rates.stim(times, Istim, Sstim, seed=stim_seed)
+        d_bias['back'] = rates.stim(times, stim_rate, stim_std, seed=stim_seed)
     else:
         raise ValueError("back_type not understood")
 
     # Drives proper
-    d_bias['osc'] = rates.osc(times, Iosc, f)
-    d_bias['stim'] = rates.stim(times, Istim, Sstim, seed=stim_seed)
+    d_bias['osc'] = rates.osc(times, osc_rate, f)
+    d_bias['stim'] = rates.stim(times, stim_rate, stim_std, seed=stim_seed)
     d_bias['mult'] = d_bias['stim'] * ((g_max - g + 1) * d_bias['osc'])
     d_bias['add'] = d_bias['stim'] + (g * d_bias['osc'])
     d_bias['sub'] = d_bias['stim'] - (g * d_bias['osc'])
@@ -101,24 +114,19 @@ def run(n,
         d_lfps[k] = create_lfps(d_spikes[k], tau=0.002, dt=.001)
 
     # -- I ------------------------------------------------------------------
-    to_calc = ('HX', 'HY', 'HXY')
-    m = 8  # Per Ince's advice
-    d_infos = {}
-    for k in d_spikes.keys():
-        d_infos[k] = en.DiscreteSystem(
-            en.quantise_discrete(stim_sp.sum(1), m), (1, m),
-            en.quantise_discrete(d_spikes[k].sum(1), m), (1, m))
-        d_infos[k].calculate_entropies(method='pt', calc=to_calc)
+    # Scale stim
+    x_ref = quantize(stim_sp.sum(1), m)
+    d_rescaled = {}
+    d_rescaled["stim_p"] = x_ref
 
-    # MI
+    # Calc MI and H
     d_mis = {}
-    for k, mi in d_infos.items():
-        d_mis[k] = mi.I()
-
-    # H
     d_hs = {}
-    for k, mi in d_infos.items():
-        d_hs[k] = mi.H
+    for k in d_spikes.keys():
+        x = quantize(d_spikes[k].sum(1), m)
+        d_rescaled[k] = x
+        d_mis[k] = discrete_mutual_information(x_ref, x, m)
+        d_hs[k] = discrete_entropy(x, m)
 
     # -- Measure OC using PAC -----------------------------------------------
     low_f = (int(f - 2), int(f + 2))
@@ -134,6 +142,7 @@ def run(n,
         'PAC': d_pacs,
         'bias': d_bias,
         'spikes': d_spikes,
+        'rescaled': d_rescaled,
         'lfp': d_lfps,
         'times': times
     }
