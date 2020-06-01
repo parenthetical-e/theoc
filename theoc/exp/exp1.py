@@ -17,7 +17,7 @@ from collections import defaultdict
 from theoc.oc import run
 
 
-def exp(Istim, g, N, pn):
+def exp(stim_rate, g, num_pop, pn):
     # -- Init
     # Drives and iteration counter
     Iosc = 2
@@ -25,14 +25,15 @@ def exp(Istim, g, N, pn):
     # Iback = 2
     # Ipub = 1
 
-    Sstim = .01 * Istim
-    n = int(pn * N)
-    n_b = int((1 - pn) * N)
+    stim_std = .01 * stim_rate
+    n = int(pn * num_pop)
+    n_b = int((1 - pn) * num_pop)
     if n_b < 2:
         n_b = 2
 
     # Create basename for the data
-    basename = "Istim-{0}_g-{1}_N-{2}_pn-{3}_".format(Istim, g, N, pn)
+    basename = "stim_rate-{0}_g-{1}_num_pop-{2}_pn-{3}_".format(
+        stim_rate, g, num_pop, pn)
     print(">>> Running: {0}".format(basename))
 
     # path the name
@@ -55,8 +56,8 @@ def exp(Istim, g, N, pn):
                   g,
                   g_max,
                   q,
-                  Istim,
-                  Sstim,
+                  stim_rate,
+                  stim_std,
                   Ipri,
                   dt,
                   back_type,
@@ -111,11 +112,11 @@ if __name__ == "__main__":
     path = sys.argv[1]
 
     # --- Experimental params ---------------------------------------------
-    Istims = range(2, 32, 4)
+    stim_rates = range(2, 32, 4)
     gs = range(1, 9)
-    Ns = range(100, 600, 100)
+    num_pops = range(100, 600, 100)
     pns = [0.25, 0.5, 0.75, 1]
-    params = product(Istims, gs, Ns, pns)
+    params = product(stim_rates, gs, num_pops, pns)
 
     # --- Fixed params ----------------------------------------------------
     n_trials = 20
@@ -125,9 +126,9 @@ if __name__ == "__main__":
     f = 6
     g_max = max(gs)
     q = 0.5
-    # back_type = 'constant'
-    back_type = 'stim'
+    back_type = 'constant'
+    # back_type = 'stim'
 
     # -- Run -------------------------------------------------------------
-    Parallel(n_jobs=n_jobs)(delayed(exp)(Istim, g, N, pn)
-                            for Istim, g, N, pn in params)
+    Parallel(n_jobs=n_jobs)(delayed(exp)(stim_rate, g, num_pop, pn)
+                            for stim_rate, g, num_pop, pn in params)
