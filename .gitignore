@@ -1,6 +1,7 @@
 # data
 data/*
 *.Rproj
+*.Rhistory
 *.DS_store
 
 # vscode
