@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     # --- Fixed params ----------------------------------------------------
     n_trials = 20
-    n_jobs = 1  # Num jobs in parallel
+    n_jobs = 4  # Num jobs in parallel
     osc_rate = 2  # Osc. firing rate
 
     m = 6  # Quantization levels
