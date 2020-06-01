@@ -14,8 +14,9 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(plyr)
-library(dplyr)
+library(readr)
 library(reshape)
+library(dplyr)
 library(png)
 library(psd)
 library(tidyr)
@@ -38,7 +39,7 @@ load.data <- function(path, type, rates, gs, Ns, pns){
                           "_pn-", as.character(pn),
                           "__", as.character(type), 
                           "_summary.csv", sep="")
-            di <- read.csv(paste(path, name, sep=""))
+            di <- read_csv(paste(path, name, sep=""))
             di["Istim"] <- rep(r_s, nrow(di))
             di["g"] <- rep(g, nrow(di))
             di["N"] <- rep(N, nrow(di))
@@ -71,7 +72,7 @@ load.all.data <- function(path, type, rates, gs, Ns, pns){
             di["g"] <- rep(g, nrow(di))
             di["N"] <- rep(N, nrow(di))
             di["pn"] <- rep(pn, nrow(di))
-            
+            di["trial"] <- 1:length(di$N)
             df <- rbind(df, di)  
           })  
         }
@@ -171,13 +172,84 @@ pprime <- function(r1, r2, v1, v2){
 ```{r fig1_load, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 rates <- c(2, 6, 10, 14, 18, 22, 26, 30)
 gs <- c(1,2,3,4,5,6,7,8)
-Ns <- c(100, 200, 300, 400, 500)
-pns <- c(0.25, 0.5, 0.75, 1)
+Ns <- c(100)#, 200, 300, 400, 500)
+pns <- c(1)
 
 exp1path <- paste(path, "/exp1/", sep="")
-mi_exp1 <- load.data(exp1path, "MI", rates, gs, Ns, pns)
-h_exp1 <- load.data(exp1path, "H", rates, gs, Ns, pns)
-pac_exp1 <- load.data(exp1path, "PAC", rates, gs, Ns, pns)
+mi_exp1 <- load.all.data(exp1path, "MI", rates, gs, Ns, pns)
+# mi_exp1 <- rename(mi_exp1, model=X1)
+
+# h_exp1 <- load.data(exp1path, "H", rates, gs, Ns, pns)
+# h_exp1 <- rename(h_exp1, c(X1="model"))
+# 
+# pac_exp1 <- load.data(exp1path, "PAC", rates, gs, Ns, pns)
+# pac_exp1 <- rename(pac_exp1, c(X1="model"))
+```
+
+# Fig 1 - Redraft
+```{r fig1, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+print(unique(mi_exp1$Istim))
+print(unique(mi_exp1$g))
+
+mi_exp1 %>% 
+  group_by(Istim, g, N, pn, trial) %>% 
+  mutate(add_p=add_p - stim_p) %>% 
+  mutate(back_p=back_p - stim_p) %>% 
+  mutate(div_sub_p=div_sub_p - stim_p) %>% 
+  mutate(mult_p=mult_p - stim_p) %>% 
+  mutate(osc_p=osc_p - stim_p) %>% 
+  mutate(stim_p=stim_p - stim_p) %>% 
+  mutate(sub_p=sub_p - stim_p) %>% 
+  ungroup() %>% 
+  group_by(Istim, g, N, pn) %>% 
+  summarise(add_p=median(add_p), 
+            back_p=median(back_p),
+            div_sub_p=median(div_sub_p),
+            mult_p=median(mult_p),
+            osc_p=median(osc_p),
+            stim_p=median(stim_p),
+            sub_p=median(sub_p)) %>% 
+  ungroup() %>% 
+  gather(model, mi, add_p:sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "div_sub_p", "mult_p", "sub_p")) %>% 
+  ggplot(aes(x=model, y=mi, color=Istim)) +
+  geom_jitter(size=.5, alpha=0.9) +
+  # geom_boxplot() +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```{r fig1, fig.width=1, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+tmp %>% 
+  filter(model %in% c("add_p", "div_sub_p", "mult_p", "sub_p")) %>% 
+  group_by(model) %>% 
+  summarise(m=median(mi), sd=mad(mi)) -> tmp2
+
+limits <- aes(ymax = m + sd, ymin=m - sd)
+
+tmp2 %>% 
+  ggplot(aes(x=model, y=m)) +
+  geom_bar(stat="identity", width=.75, fill="black") +
+  geom_errorbar(limits, width=0.2, color="grey") + 
+  ylab(expression(paste(Delta, "MI (bits)"))) + 
+  theme_classic() +  
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  geom_hline(yintercept=0, color="grey") + xlab("")
+```
+
+```{r fig1, fig.width=2.4, fig.height=0.9, echo=FALSE, warning=FALSE, message=FALSE}
+tmp %>% 
+  filter(model %in% c("add_p", "div_sub_p", "mult_p", "sub_p")) %>% 
+  ggplot(aes(x=Istim, y=mi, color=g, group=g)) +
+  geom_line(alpha=0.9) +
+  facet_grid(.~model) +
+  labs(y=expression(paste(Delta, "MI (bits)")), x=expression(r[s])) +
+  lims(x=c(0,30)) +
+  theme_classic() +
+  theme(strip.background = element_blank(), axis.title.x = element_text(colour = "red")) 
 ```
 
 # Fig 1 - Model introduction
@@ -195,16 +267,16 @@ pac_exp1 <- load.data(exp1path, "PAC", rates, gs, Ns, pns)
 mi_fig1 <- filter(mi_exp1, N == 100, pn == 1.00)
 
 # Get Avg MI for stim
-Mstim <- mean((filter(mi_fig1, X == "stim_p"))$mean)
+Mstim <- mean((filter(mi_fig1, model == "stim_p"))$mean)
 mi_fig1$mean <- mi_fig1$mean - Mstim
 
 # Select, rename, and order 'em
-mi_fig1 <- filter(mi_fig1, X %in% c("gain_p", "silenced_p", "summed_p"))
-mi_fig1$X <- revalue(mi_fig1$X, c("gain_p"="EI", "summed_p"="E", "silenced_p"="I"))
-mi_fig1$X <- factor(mi_fig1$X, levels=c("EI", "E", "I")) 
+mi_fig1 <- filter(mi_fig1, model %in% c("mult_p", "sub_p", "add_p", "div_sub_p"))
+# mi_fig1$model <- revalue(mi_fig1$model, c("gain_p"="EI", "summed_p"="E", "silenced_p"="I"))
+# mi_fig1$model <- factor(mi_fig1$model, levels=c("EI", "E", "I")) 
 
 # Make summary stats
-mi_stats <- group_by(mi_fig1, X)
+mi_stats <- group_by(mi_fig1, model)
 mi_stats <- summarise(mi_stats, M=mean(mean), SD=sd(mean))
 limits <- aes(ymax = M + SD, ymin=M - SD)
 
@@ -220,16 +292,16 @@ f1a <- qplot(data=mi_stats, x=X, y=M, geom="bar", stat="identity", width=.75) +
 # --
 # Preprocess E
 mi_exp1 %>% 
-  filter(N == 100, pn == 1.00, X %in% c("gain_p", "silenced_p", "summed_p", "stim_p")) %>%
+  filter(N == 100, pn == 1.00, model %in% c("gain_p", "silenced_p", "summed_p", "stim_p")) %>%
   droplevels() -> 
   mi_fig1b
 
 mi_fig1b$X <- revalue(mi_fig1b$X, c("gain_p"="EI", "summed_p"="E", "silenced_p"="I", "stim_p"="S"))
 
 # Get subtract mean I_stim
-mi_fig1b %>% select(mean, Istim, g, X) %>% 
-  group_by(Istim, g, X) %>%
-  cast(Istim + g ~ X, value = "mean") %>%
+mi_fig1b %>% select(mean, Istim, g, model) %>% 
+  group_by(Istim, g, model) %>%
+  cast(Istim + g ~ model, value = "mean") %>%
   mutate(E=E - S, I = I - S, EI = EI - S) %>%
   select(-S) %>% 
   melt(id=c('Istim', 'g'), variable_name = 'model') -> mi_stats
