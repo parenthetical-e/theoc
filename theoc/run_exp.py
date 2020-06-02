@@ -17,8 +17,6 @@ from theoc.oc import oscillatory_coupling
 def main(name, num_trials=20, verbose=False, **oc_kwargs):
     """Run several OC experiments, saving select results to disk"""
 
-    # -- Init
-    # Create basename for the data
     if verbose: print(f">>> Running: {name}")
 
     # Output structures
