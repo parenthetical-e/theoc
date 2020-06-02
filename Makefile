@@ -1,8 +1,8 @@
 SHELL=/bin/bash -O expand_aliases
 # DATA_PATH=/Users/qualia/Code/infomercial/data
 
-# Variation of exp57, but the low part of PAC
-# (OZ) is done with osc not the pac pop firing
+# Try out pop, q, and stim rates.
+# f = 6, osc_rate = 2 
 exp1:
 	-mkdir data/exp1
 	-rm data/exp1/*
