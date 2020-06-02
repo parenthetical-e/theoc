@@ -16,6 +16,7 @@ from itertools import product
 from collections import defaultdict
 
 from theoc.lfp import create_lfps
+from theoc.metrics import discrete_dist
 from theoc.metrics import discrete_entropy
 from theoc.metrics import discrete_mutual_information
 from theoc.metrics import normalize
@@ -60,7 +61,7 @@ def run(num_pop=50,
         raise ValueError("g must be < g_max")
 
     # q can't be exactly 0
-    q += EPS  
+    q += EPS
 
     # -- Init ---------------------------------------------------------------
     # Poisson neurons
@@ -118,12 +119,14 @@ def run(num_pop=50,
     d_rescaled["stim_p"] = x_ref
 
     # Calc MI and H
+    d_dists = {}
     d_mis = {}
     d_hs = {}
     for k in d_spikes.keys():
         x = normalize(d_spikes[k].sum(1))
         d_rescaled[k] = x
 
+        d_dists[k] = discrete_dist(x, m)
         d_mis[k] = discrete_mutual_information(x_ref, x, m)
         d_hs[k] = discrete_entropy(x, m)
 
@@ -139,6 +142,7 @@ def run(num_pop=50,
         'MI': d_mis,
         'H': d_hs,
         'PAC': d_pacs,
+        'dist': d_dists,
         'bias': d_bias,
         'spikes': d_spikes,
         'rescaled': d_rescaled,
