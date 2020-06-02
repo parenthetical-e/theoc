@@ -28,7 +28,8 @@ def main(name, num_trials=20, verbose=False, **oc_kwargs):
 
     # -- Run
     iterations = range(num_trials)
-    for _ in iterations:
+    for i in iterations:
+        oc_kwargs["stim_seed"] = i
         res = oscillatory_coupling(**oc_kwargs)
 
         # Save parts of the result
