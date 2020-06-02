@@ -22,11 +22,11 @@ load.all.data <- function(path, type, stim_rates, qs, num_pops, pns){
       for(n in num_pops){
         for(q in qs){
           try({
-            # stim_rate-2_g-0.0_num_pop-10_q-0.0_MI.csv
-            name <- paste("stim_rate-", as.character(r_s), 
-                          "_g-", as.character(g),
-                          "_num_pop-", as.character(n),
-                          "_q-", as.character(q),
+            # stim_rate-_2_g-11_num_pop-10_q-0.0_rate
+            name <- paste("stim_rate", as.character(r_s), 
+                          "_g", as.character(g),
+                          "_num_pop", as.character(n),
+                          "_q", as.character(q),
                           "_", as.character(type), 
                           ".csv", sep="")
             di <- read.csv(paste(path, name, sep=""))
