@@ -54,7 +54,7 @@ def oscillatory_coupling(num_pop=50,
                          dt=0.001,
                          stim_seed=None,
                          seed=None):
-    """Run an OC experiment."""
+    """Run a single OC simulation."""
 
     # -- Safety -------------------------------------------------------------
     if g > g_max:
