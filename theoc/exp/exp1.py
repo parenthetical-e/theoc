@@ -13,14 +13,14 @@ from collections import defaultdict
 from theoc.oc import run
 
 
-def exp(stim_rate, g, num_pop, q):
+def exp(num_exp, stim_rate, g, num_pop, q):
     # -- Init
     # Drives and iteration counter
     stim_std = .01 * stim_rate
 
     # Create basename for the data
     basename = f"stim_rate-{stim_rate}_g-{q}_num_pop-{num_pop}_q-{q}"
-    print(">>> Running: {0}".format(basename))
+    print(f">>> Running {num_exp}: {basename}")
 
     # path the name
     basepath = os.path.join(path, basename)
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     stim_rates = range(2, 32, 4)
     gs = range(1, 9)
     qs = [0.0, 0.5, 1.0]
-    num_pops = np.linspace(10, 200, 20).astype(int).tolist()
+    num_pops = [10, 25, 50, 75, 100, 500]
     params = product(stim_rates, gs, num_pops, qs)
 
     # --- Fixed params ----------------------------------------------------
@@ -97,5 +97,6 @@ if __name__ == "__main__":
     num_background = 5  # Fix background
 
     # -- Run -------------------------------------------------------------
-    Parallel(n_jobs=n_jobs)(delayed(exp)(stim_rate, g, num_pop, q)
-                            for stim_rate, g, num_pop, q in params)
+    Parallel(n_jobs=n_jobs)(delayed(exp)(n, stim_rate, g, num_pop, q)
+                            for n, (stim_rate, g, num_pop,
+                                    q) in enumerate(params))
