@@ -83,7 +83,7 @@ def discrete_mutual_information(x, y, m, logfn=np.log10, normalize=False):
     h_xy = discrete_entropy(np.concatenate([x, y]), m, logfn=logfn)
 
     # Mutual Information
-    mi_xy = h_xy + h_y - h_xy
+    mi_xy = h_x + h_y - h_xy
 
     if normalize:
         return mi_xy / np.sqrt(h_x * h_y)
