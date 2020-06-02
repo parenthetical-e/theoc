@@ -5,34 +5,11 @@ SHELL=/bin/bash -O expand_aliases
 # 6-1-2020
 # c5697a29145eb0ffd544fbda0c7fcc855ee6f5c2
 #
-
-# stim_rates = [2, 6, 10, 14, 18, 22, 26, 30]
-# gs = [1, 2, 3, 4, 5, 7, 8]
-# qs = [0.0, 0.5, 1.0]
-# num_pops = [10, 25, 50, 75, 100, 500]
-
-# num_trials = len(stim_rates) * len(gs) * len(qs) * len(num_pops)
-# print(f">>> Starting exp1 - {num_trials} trials")
-
-# # --- Fixed params ----------------------------------------------------
-# n_trials = 20
-# n_jobs = 4  # Num jobs in parallel
-# osc_rate = 2  # Osc. firing rate
-
-# m = 6  # Quantization levels
-# t = 5  # Run time
-# dt = 0.001  # Sample rate
-# f = 6  # Osc frequncy
-# g_max = max(gs)  # Max gain
-# q = 0.5  # Fraction divisive I
-# num_background = 5  # Fix background
-
-# exp1:
-# 	-mkdir data/exp1
-# 	-rm data/exp1/*
-# 	nice -19 python theoc/exp/run_exp.py data/exp1/
-
-# stim_rate-2_g-1_num_pop-25_q-0.0_H
+# Sweep num_pop, stim_rate, q, for 20 different stim/trials.
+#
+# Let's get the lay of this new land. Should be the same as 
+# in pacological. I hope. Changing the way I do MI should 
+# not have mattered but of course we shall see...
 exp1:
 	-mkdir data/exp1
 	-rm data/exp1/*
