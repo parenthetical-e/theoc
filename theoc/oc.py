@@ -104,7 +104,7 @@ def run(num_pop=50,
     b_spks = backspikes.poisson(d_bias['back'])
 
     # Create a stimulus
-    stim_sp = np.hstack([drivespikes.poisson(d_bias['stim']), b_spks])
+    stim_ref = np.hstack([drivespikes.poisson(d_bias['stim']), b_spks])
 
     # and then create it's OC.
     d_spikes = {}
@@ -118,7 +118,7 @@ def run(num_pop=50,
 
     # -- I ------------------------------------------------------------------
     # Scale stim
-    x_ref = normalize(stim_sp.sum(1))
+    x_ref = normalize(stim_ref.sum(1))
     d_rescaled = {}
     d_rescaled["stim_p"] = x_ref
 
