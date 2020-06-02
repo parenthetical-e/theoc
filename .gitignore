@@ -3,6 +3,7 @@ data/*
 *.Rproj
 *.Rhistory
 *.DS_store
+*.html 
 
 # vscode
 settings.json
