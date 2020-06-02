@@ -64,34 +64,3 @@ def main(name, num_trials=20, verbose=False, **oc_kwargs):
 
 if __name__ == "__main__":
     fire.Fire(main)
-
-    # path = sys.argv[1]
-
-    # # --- Experimental params ---------------------------------------------
-    # stim_rates = [2, 6, 10, 14, 18, 22, 26, 30]
-    # gs = [1, 2, 3, 4, 5, 7, 8]
-    # qs = [0.0, 0.5, 1.0]
-    # num_pops = [10, 25, 50, 75, 100, 500]
-
-    # num_trials = len(stim_rates) * len(gs) * len(qs) * len(num_pops)
-    # print(f">>> Starting exp1 - {num_trials} trials")
-
-    # # --- Fixed params ----------------------------------------------------
-    # num_trials = 20
-    # n_jobs = 4  # Num jobs in parallel
-    # osc_rate = 2  # Osc. firing rate
-
-    # m = 6  # Quantization levels
-    # t = 5  # Run time
-    # dt = 0.001  # Sample rate
-    # f = 6  # Osc frequncy
-    # g_max = max(gs)  # Max gain
-    # q = 0.5  # Fraction divisive I
-    # num_background = 5  # Fix background
-
-    # # -- Run -------------------------------------------------------------
-    # params = product(stim_rates, gs, num_pops, qs)
-
-    # Parallel(n_jobs=n_jobs)(delayed(exp)(n, stim_rate, g, num_pop, q)
-    #                         for n, (stim_rate, g, num_pop,
-    #                                 q) in enumerate(params))
