@@ -63,4 +63,5 @@ def main(name, num_trials=20, verbose=False, **oc_kwargs):
 
 
 if __name__ == "__main__":
+    # Create a command line interface automatically...
     fire.Fire(main)
