@@ -77,10 +77,14 @@ if __name__ == "__main__":
     path = sys.argv[1]
 
     # --- Experimental params ---------------------------------------------
-    stim_rates = range(2, 32, 4)
-    gs = range(1, 9)
+    stim_rates = [2, 6, 10, 14, 18, 22, 26, 30]
+    gs = [1, 2, 3, 4, 5, 7, 8]
     qs = [0.0, 0.5, 1.0]
     num_pops = [10, 25, 50, 75, 100, 500]
+
+    num_trials = len(stim_rates) * len(gs) * len(qs) * len(num_pops)
+    print(f">>> Starting exp1 - {num_trials} trials")
+
     params = product(stim_rates, gs, num_pops, qs)
 
     # --- Fixed params ----------------------------------------------------
