@@ -103,10 +103,10 @@ def run(num_pop=50,
     # Create the background pool.
     b_spks = backspikes.poisson(d_bias['back'])
 
-    # Create a stimulus
+    # Create a ref stimulus
     stim_ref = np.hstack([drivespikes.poisson(d_bias['stim']), b_spks])
 
-    # and then create it's OC.
+    # Create OC outputs. This includes a null op stimulus, our baseline.
     d_spikes = {}
     for k in d_bias.keys():
         d_spikes[k + "_p"] = np.hstack([ocspikes.poisson(d_bias[k]), b_spks])
@@ -120,7 +120,7 @@ def run(num_pop=50,
     # Scale stim
     x_ref = normalize(stim_ref.sum(1))
     d_rescaled = {}
-    d_rescaled["stim_p"] = x_ref
+    d_rescaled["stim_ref"] = x_ref
 
     # Calc MI and H
     d_dists = {}
