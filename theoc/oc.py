@@ -48,8 +48,8 @@ def run(num_pop=50,
         g_max=1,
         q=0.5,
         stim_rate=12,
-        stim_std=.12,
-        m=10,
+        frac_std=.01,
+        m=8,
         priv_std=0,
         dt=0.001,
         stim_seed=None,
@@ -78,6 +78,9 @@ def run(num_pop=50,
                                  seed=seed)
     times = ocspikes.times  # brevity
 
+    # Set stim std. It must be relative to stim_rate
+    stim_std = frac_std * stim_rate
+
     # -- Drives -------------------------------------------------------------
     # Create biases/drives
     d_bias = {}
@@ -86,6 +89,7 @@ def run(num_pop=50,
     d_bias['back'] = rates.constant(times, 2)
 
     # Drives proper
+
     d_bias['osc'] = rates.osc(times, osc_rate, f)
     d_bias['stim'] = rates.stim(times, stim_rate, stim_std, seed=stim_seed)
     d_bias['mult'] = d_bias['stim'] * ((g_max - g + 1) * d_bias['osc'])
