@@ -19,7 +19,7 @@ def exp(num_exp, stim_rate, g, num_pop, q):
     stim_std = .01 * stim_rate
 
     # Create basename for the data
-    basename = f"stim_rate-{stim_rate}_g-{q}_num_pop-{num_pop}_q-{q}"
+    basename = f"stim_rate-{stim_rate}_g-{g}_num_pop-{num_pop}_q-{q}"
     print(f">>> Running {num_exp}: {basename}")
 
     # path the name
