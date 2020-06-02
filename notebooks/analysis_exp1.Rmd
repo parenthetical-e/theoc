@@ -1,0 +1,175 @@
+---
+title: "exp1 - analysis"
+output: html_notebook
+---
+
+```{r helper_fns, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(plyr)
+library(readr)
+library(dplyr)
+library(png)
+library(psd)
+library(tidyr)
+# library(bspec)
+
+load.all.data <- function(path, type, stim_rates, qs, num_pops, pns){
+  df <- NULL
+  for(r_s in stim_rates){
+    for(g in gs){
+      for(n in num_pops){
+        for(q in qs){
+          try({
+            # stim_rate-2_g-0.0_num_pop-10_q-0.0_MI.csv
+            name <- paste("stim_rate-", as.character(r_s), 
+                          "_g-", as.character(g),
+                          "_num_pop-", as.character(n),
+                          "_q-", as.character(q),
+                          "_", as.character(type), 
+                          ".csv", sep="")
+            di <- read.csv(paste(path, name, sep=""))
+            di["stim_rate"] <- rep(r_s, nrow(di))
+            di["g"] <- rep(g, nrow(di))
+            di["num_pop"] <- rep(n, nrow(di))
+            di["q"] <- rep(q, nrow(di))
+            di["trial"] <- 1:length(di$N)
+            df <- rbind(df, di)  
+          })  
+        }
+      }
+    }
+  }
+  df
+}
+```
+
+# Load data
+```{r load, message=FALSE, warning=FALSE}
+path <- "~/Code/theoc/data/"
+
+stim_rates <- c(2, 6, 10, 14, 18, 22, 26, 30)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(10, 25, 50, 75, 100, 500)
+qs <- c("0.0", "0.5", "1.0")
+
+exp1path <- paste(path, "/exp1/", sep="")
+mi_exp1 <- load.all.data(exp1path, "MI", stim_rates, qs, num_pops, qs)
+```
+
+# Fig - Change in MI, overall
+```{r, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+print(unique(mi_exp1$stim_rate))
+print(unique(mi_exp1$g))
+
+# Process all the exps, but div_sub which needs its own thing
+# and will be handled below
+mi_exp1 %>% 
+  filter(q == "0.0") %>% 
+  group_by(stim_rate, g, num_pop, trial) %>% 
+  mutate(add_p=add_p - stim_p) %>% 
+  mutate(back_p=back_p - stim_p) %>% 
+  mutate(div_sub_p=div_sub_p - stim_p) %>% 
+  mutate(mult_p=mult_p - stim_p) %>% 
+  mutate(osc_p=osc_p - stim_p) %>% 
+  mutate(stim_p=stim_p - stim_p) %>% 
+  mutate(sub_p=sub_p - stim_p) %>% 
+  ungroup() %>%
+  # group_by(stim_rate, g, num_pop) %>%
+  # summarise(add_p=median(add_p),
+  #           back_p=median(back_p),
+  #           div_sub_p=median(div_sub_p),
+  #           mult_p=median(mult_p),
+  #           osc_p=median(osc_p),
+  #           stim_p=median(stim_p),
+  #           sub_p=median(sub_p)) %>%
+  ungroup() %>%
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(num_pop < 100) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=model, y=mi, color=g)) +
+  geom_jitter(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+# Fig - Overall, factored by `num_pop`
+```{r, fig.width=4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp1 %>% 
+  filter(q == "0.0") %>% 
+  group_by(stim_rate, g, num_pop, trial) %>% 
+  mutate(add_p=add_p - stim_p) %>% 
+  mutate(back_p=back_p - stim_p) %>% 
+  mutate(div_sub_p=div_sub_p - stim_p) %>% 
+  mutate(mult_p=mult_p - stim_p) %>% 
+  mutate(osc_p=osc_p - stim_p) %>% 
+  mutate(stim_p=stim_p - stim_p) %>% 
+  mutate(sub_p=sub_p - stim_p) %>% 
+  ungroup() %>%
+  group_by(stim_rate, g, num_pop) %>%
+  summarise(add_p=median(add_p),
+            back_p=median(back_p),
+            div_sub_p=median(div_sub_p),
+            mult_p=median(mult_p),
+            osc_p=median(osc_p),
+            stim_p=median(stim_p),
+            sub_p=median(sub_p)) %>%
+  ungroup() %>%
+  gather(model, mi, add_p:sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p")) %>% 
+  # filter(num_pop < 500) %>% 
+  ggplot(aes(x=num_pop, y=mi, color=g)) +
+  # geom_jitter(size=.5, alpha=0.9) +
+  # geom_boxplot() +
+  geom_point(size=1, alpha=0.8) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="num_pop") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_grid(.~model)
+```
+
+# Fig - By `stim_rate` for basic arithmatic
+```{r, fig.width=2.4, fig.height=0.9, echo=FALSE, warning=FALSE, message=FALSE}
+tmp %>% 
+  filter(num_pop < 100) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) %>% 
+  ggplot(aes(x=stim_rate, y=mi, color=g, group=g)) +
+  geom_point(size=1, alpha=0.8) +
+  facet_grid(.~model) +
+  labs(y=expression(paste(Delta, "MI (bits)")), x=expression(r[s])) +
+  lims(x=c(0,30)) +
+  theme_classic() +
+  theme(strip.background = element_blank(), axis.title.x = element_text(colour = "red")) 
+```
+
+# Fig - By `stim_rate`, for `div_sub` and `q`
+```{r, fig.width=2.4, fig.height=0.9, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp1 %>% 
+  filter(num_pop < 100) %>% 
+  select(stim_rate, q, g, num_pop, trial, div_sub_p, stim_p) %>% 
+  group_by(stim_rate, g, num_pop, trial, q) %>% 
+  mutate(div_sub_p=div_sub_p - stim_p) %>% 
+  ungroup() %>% 
+  group_by(stim_rate, g, num_pop, q) %>% 
+  summarise(div_sub_p=median(div_sub_p)) %>% 
+  ungroup() %>% 
+  gather(model, mi, div_sub_p) -> tmp
+
+tmp %>% 
+  ggplot(aes(x=stim_rate, y=mi, color=g, group=g)) +
+  geom_point(alpha=0.9) +
+  geom_hline(yintercept=0, color="grey") + 
+  facet_grid(.~q) +
+  labs(y=expression(paste(Delta, "MI (bits)")), x=expression(r[s])) +
+  lims(x=c(0,30)) +
+  theme_classic() +
+  theme(strip.background = element_blank(), axis.title.x = element_text(colour = "red")) 
+```
