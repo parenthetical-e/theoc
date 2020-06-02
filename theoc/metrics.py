@@ -15,6 +15,24 @@ def normalize(x):
     return x
 
 
+def discrete_dist(x, m):
+    '''Returns a discrete distribution on x, of size m.
+
+    Parameters
+    ===========
+
+    x : array-like, shape (n_samples)
+        The data the entropy of which is computed
+
+    m : int, optional
+        Number of symbols possible
+    '''
+    counts = np.histogram(x, bins=m)[0]
+    dist = counts / counts.sum()
+
+    return dist
+
+
 def discrete_entropy(x, m, logfn=np.log10):
     '''Returns the entropy of the X.
 
@@ -30,17 +48,8 @@ def discrete_entropy(x, m, logfn=np.log10):
     logfn: function
         A numpy log function
     '''
-
-    # Est counts
-    counts = np.histogram(x, bins=m)[0]
-
-    # Est p
-    dist = counts / counts.sum()
-
-    # Drop zeros
-    dist = dist[np.nonzero(dist)[0]]
-
-    # H
+    dist = discrete_dist(x, m)
+    dist = dist[np.nonzero(dist)[0]]  # drop zeros
     h = -np.sum(dist * logfn(dist))
 
     return h
