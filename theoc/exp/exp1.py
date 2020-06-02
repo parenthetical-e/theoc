@@ -85,8 +85,6 @@ if __name__ == "__main__":
     num_trials = len(stim_rates) * len(gs) * len(qs) * len(num_pops)
     print(f">>> Starting exp1 - {num_trials} trials")
 
-    params = product(stim_rates, gs, num_pops, qs)
-
     # --- Fixed params ----------------------------------------------------
     n_trials = 20
     n_jobs = 4  # Num jobs in parallel
@@ -101,6 +99,8 @@ if __name__ == "__main__":
     num_background = 5  # Fix background
 
     # -- Run -------------------------------------------------------------
+    params = product(stim_rates, gs, num_pops, qs)
+
     Parallel(n_jobs=n_jobs)(delayed(exp)(n, stim_rate, g, num_pop, q)
                             for n, (stim_rate, g, num_pop,
                                     q) in enumerate(params))
