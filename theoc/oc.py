@@ -24,14 +24,14 @@ from theoc.metrics import normalize
 EPS = np.finfo(float).eps
 
 
-def save_run(name, result):
+def save_result(name, result):
     if not name.endswith(".cloudpickle"):
         name += ".cloudpickle"
     with open(name, "w") as f:
         cloudpickle.dump(result, name)
 
 
-def load_run(name):
+def load_result(name):
     if not name.endswith(".cloudpickle"):
         name += ".cloudpickle"
     with open(name, "r") as f:
@@ -39,21 +39,21 @@ def load_run(name):
     return result
 
 
-def run(num_pop=50,
-        num_background=2,
-        t=5,
-        osc_rate=6,
-        f=6,
-        g=1,
-        g_max=1,
-        q=0.5,
-        stim_rate=12,
-        frac_std=.01,
-        m=8,
-        priv_std=0,
-        dt=0.001,
-        stim_seed=None,
-        seed=None):
+def oscillatory_coupling(num_pop=50,
+                         num_background=5,
+                         t=5,
+                         osc_rate=6,
+                         f=6,
+                         g=1,
+                         g_max=1,
+                         q=0.5,
+                         stim_rate=12,
+                         frac_std=.01,
+                         m=8,
+                         priv_std=0,
+                         dt=0.001,
+                         stim_seed=None,
+                         seed=None):
     """Run an OC experiment."""
 
     # -- Safety -------------------------------------------------------------
@@ -120,7 +120,7 @@ def run(num_pop=50,
     # Scale stim
     x_ref = normalize(stim_ref.sum(1))
     d_rescaled = {}
-    d_rescaled["stim_ref"] = x_ref
+    d_rescaled["stim_"] = x_ref
 
     # Calc MI and H
     d_dists = {}

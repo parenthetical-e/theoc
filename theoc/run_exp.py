@@ -11,10 +11,10 @@ from joblib import Parallel, delayed
 from itertools import product
 from collections import defaultdict
 
-from theoc.oc import run
+from theoc.oc import oscillatory_coupling
 
 
-def exp(name, num_trials=20, verbose=True, **run_kwargs):
+def main(name, num_trials=20, verbose=False, **oc_kwargs):
     # -- Init
 
     # Create basename for the data
@@ -30,7 +30,7 @@ def exp(name, num_trials=20, verbose=True, **run_kwargs):
     # -- Run
     iterations = range(num_trials)
     for _ in iterations:
-        res = run(**run_kwargs)
+        res = oscillatory_coupling(**oc_kwargs)
 
         # Save parts of the result
         for b in res['H'].keys():
@@ -41,9 +41,9 @@ def exp(name, num_trials=20, verbose=True, **run_kwargs):
             d_PAC[b].append(res['PAC'][b])
         for b in res['dist'].keys():
             d_dist[b].extend(res['dist'][b])
-        d_dist["m"].extend(range(1, run_kwargs["m"] + 1))
+        d_dist["m"].extend(range(1, oc_kwargs["m"] + 1))
         for b in res['spikes'].keys():
-            mrate = np.mean(res['spikes'][b].sum(0) / float(run_kwargs["t"]))
+            mrate = np.mean(res['spikes'][b].sum(0) / float(oc_kwargs["t"]))
             d_rate[b].append(mrate)
 
     # -- To disk!
@@ -62,7 +62,7 @@ def exp(name, num_trials=20, verbose=True, **run_kwargs):
 
 
 if __name__ == "__main__":
-    fire.Fire(exp)
+    fire.Fire(main)
 
     # path = sys.argv[1]
 
