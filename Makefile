@@ -91,3 +91,13 @@ exp5:
 			--joblog 'data/exp5.log' \
 			--nice 19 --colsep ',' \
 			'python theoc/run_oc.py data/exp5/num_background{1} --num_trials=20 --num_background={1} --t=5 --osc_rate=2 --f=6 --g=4 --g_max=8 --q=0.5 --stim_rate=20 --frac_std=0.01 --m=20 --num_pop=50' ::: 5 10 15 20 25
+
+# --------------------------------------------------------------------------
+# Explore num_pop by log (this might make a nice figure?)
+exp6:
+	-mkdir data/exp6
+	-rm data/exp6/*
+	parallel -j 4 -v \
+			--joblog 'data/exp6.log' \
+			--nice 19 --colsep ',' \
+			'python theoc/run_oc.py data/exp6/num_pop{1} --num_trials=20 --num_background=5 --t=5 --osc_rate=2 --f=6 --g=4 --g_max=8 --q=0.5 --stim_rate=20 --frac_std=0.01 --m=20 --num_pop={1}' ::: 10 100 1000
