@@ -60,6 +60,7 @@ mi_exp0 <- load.data(exp0path, "MI", stim_rates, qs, num_pops, qs)
 dmi_exp0 <- load.data(exp0path, "dMI", stim_rates, qs, num_pops, qs)
 h_exp0 <- load.data(exp0path, "H", stim_rates, qs, num_pops, qs)
 ```
+
 # Fig - H, overall
 ```{r, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
 h_exp0 %>% 
