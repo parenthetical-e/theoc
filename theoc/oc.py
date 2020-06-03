@@ -76,12 +76,6 @@ def oscillatory_coupling(num_pop=50,
                               seed=seed)
     times = ocspikes.times  # brevity
 
-    # drivespikes = neurons.Spikes(num_pop,
-    #                              t,
-    #                              dt=dt,
-    #                              private_stdev=priv_std,
-    #                              seed=seed)
-
     # Set stim std. It must be relative to stim_rate
     stim_std = frac_std * stim_rate
 
@@ -107,27 +101,20 @@ def oscillatory_coupling(num_pop=50,
     sub = (1 - q) * (g * d_bias['osc'])
     d_bias['div_sub'] = (d_bias['stim'] / div) - sub
 
+    # Create a ref stimulus
+    stim_ref = d_bias["stim"]
+
     # -- Simulate spiking --------------------------------------------------
     # Create the background pool.
     b_spks = backspikes.poisson(d_bias['back'])
-
-    # Create a ref stimulus
-    # stim_ref = np.hstack([drivespikes.poisson(d_bias['stim']), b_spks])
-    stim_ref = d_bias["stim"]
 
     # Create OC outputs. This includes a null op stimulus, our baseline.
     d_spikes = {}
     for k in d_bias.keys():
         d_spikes[k + "_p"] = np.hstack([ocspikes.poisson(d_bias[k]), b_spks])
 
-    # -- LFP ----------------------------------------------------------------
-    d_lfps = {}
-    for k in d_spikes.keys():
-        d_lfps[k] = create_lfps(d_spikes[k], tau=0.002, dt=.001)
-
     # -- I ------------------------------------------------------------------
     # Scale stim
-    # y_ref = normalize(stim_ref.sum(1))
     y_ref = normalize(stim_ref)
     d_rescaled = {}
     d_rescaled["stim_ref"] = y_ref
@@ -142,7 +129,7 @@ def oscillatory_coupling(num_pop=50,
     d_py["stim_ref"] = discrete_dist(y_ref, m)
     d_hs["stim_ref"] = discrete_entropy(y_ref, m)
 
-    # MI
+    # p(y), H, MI following rate norm
     for k in d_spikes.keys():
         y = normalize(d_spikes[k].sum(1))
         d_rescaled[k] = y
@@ -153,6 +140,11 @@ def oscillatory_coupling(num_pop=50,
     # Change in MI
     for k in d_mis.keys():
         d_deltas[k] = d_mis[k] - d_mis["stim_p"]
+
+    # -- LFP ----------------------------------------------------------------
+    d_lfps = {}
+    for k in d_spikes.keys():
+        d_lfps[k] = create_lfps(d_spikes[k], tau=0.002, dt=.001)
 
     # -- Measure OC using PAC -----------------------------------------------
     low_f = (int(f - 2), int(f + 2))
