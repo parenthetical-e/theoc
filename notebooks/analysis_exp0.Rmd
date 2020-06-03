@@ -1,5 +1,5 @@
 ---
-title: "exp1 - analysis"
+title: "exp0 - analysis"
 output: html_notebook
 ---
 
@@ -50,24 +50,24 @@ load.data <- function(path, type, stim_rates, qs, num_pops, pns){
 path <- "~/Code/theoc/data/"
 
 # 10 ::: 1 4 8 ::: 0.0 0.5 1.0 ::: 10 50 100
-stim_rates <- c(10)
-gs <- c(1,4, 8)
-num_pops <- c(10, 50,100, 500)
+stim_rates <- c(30)
+gs <- c(1, 4, 8)
+num_pops <- c(10, 50, 100)
 qs <- c("0.0", "0.5", "1.0")
 
-exp1path <- paste(path, "/exp0/", sep="")
-mi_exp1 <- load.all.data(exp1path, "MI", stim_rates, qs, num_pops, qs)
-dmi_exp1 <- load.all.data(exp1path, "dMI", stim_rates, qs, num_pops, qs)
-h_exp1 <- load.all.data(exp1path, "H", stim_rates, qs, num_pops, qs)
+exp0path <- paste(path, "/exp0/", sep="")
+mi_exp0 <- load.data(exp0path, "MI", stim_rates, qs, num_pops, qs)
+dmi_exp0 <- load.data(exp0path, "dMI", stim_rates, qs, num_pops, qs)
+h_exp0 <- load.data(exp0path, "H", stim_rates, qs, num_pops, qs)
 ```
 # Fig - H, overall
 ```{r, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
-h_exp1 %>% 
+h_exp0 %>% 
   filter(q == "0.0") %>% 
   gather(model, mi, stim_ref:div_sub_p) -> tmp
 
 tmp %>% 
-  filter(num_pop < 100) %>% 
+  filter(num_pop == 50) %>% 
   filter(model %in% c("stim_p", "stim_ref", "add_p", "mult_p", "sub_p", "osc_p")) %>% 
   ggplot(aes(x=model, y=mi, color=g)) +
   geom_jitter(size=.3, alpha=0.2) +
@@ -79,13 +79,14 @@ tmp %>%
 
 # Fig - MI, overall
 ```{r, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
-print(unique(mi_exp1$stim_rate))
-print(unique(mi_exp1$g))
+print(unique(mi_exp0$stim_rate))
+print(unique(mi_exp0$g))
 
 # Process all the exps, but div_sub which needs its own thing
 # and will be handled below
-mi_exp1 %>% 
+mi_exp0 %>% 
   filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
   gather(model, mi, back_p:div_sub_p) -> tmp
 
 tmp %>% 
@@ -101,12 +102,12 @@ tmp %>%
 
 # Fig - Change in MI, overall
 ```{r, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp1 %>% 
+dmi_exp0 %>% 
   filter(q == "0.0") %>% 
   gather(model, mi, back_p:div_sub_p) -> tmp
 
 tmp %>% 
-  filter(num_pop < 100) %>% 
+  filter(num_pop == 100) %>% 
   filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
   ggplot(aes(x=model, y=mi, color=g)) +
   geom_jitter(size=.3, alpha=0.2) +
@@ -116,11 +117,10 @@ tmp %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-
 # Fig - Overall, factored by `num_pop`
 ```{r, fig.width=2, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp1 %>% 
-  filter(q == "0.0") %>% 
+dmi_exp0 %>% 
+  filter(q == "0.5") %>% 
   group_by(stim_rate, g, num_pop) %>%
   summarise(add_p=median(add_p),
             back_p=median(back_p),
@@ -133,14 +133,34 @@ dmi_exp1 %>%
   gather(model, mi, add_p:sub_p) -> tmp
 
 tmp %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p")) %>% 
-  # filter(num_pop < 500) %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) %>% 
   ggplot(aes(x=num_pop, y=mi, color=g)) +
-  # geom_jitter(size=.5, alpha=0.9) +
-  # geom_boxplot() +
   geom_point(size=1, alpha=0.8) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   labs(y=expression(paste(Delta, "MI (bits)")), x="num_pop") +
   theme_classic() +
   facet_grid(.~model)
+```
+# Fig - The `did_sub`, factored by `q`
+```{r, fig.width=2, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp0 %>% 
+  group_by(stim_rate, g, num_pop, q) %>%
+  summarise(add_p=median(add_p),
+            back_p=median(back_p),
+            div_sub_p=median(div_sub_p),
+            mult_p=median(mult_p),
+            osc_p=median(osc_p),
+            stim_p=median(stim_p),
+            sub_p=median(sub_p)) %>%
+  ungroup() %>%
+  gather(model, mi, add_p:sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("div_sub_p")) %>% 
+  ggplot(aes(x=num_pop, y=mi, color=g)) +
+  geom_point(size=1, alpha=0.8) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="num_pop", title="div_sub") +
+  theme_classic() +
+  facet_grid(.~q)
 ```
