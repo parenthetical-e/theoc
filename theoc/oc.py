@@ -52,6 +52,7 @@ def oscillatory_coupling(num_pop=50,
                          m=8,
                          priv_std=0,
                          dt=0.001,
+                         save=None,
                          stim_seed=None,
                          seed=None):
     """Run a single OC simulation."""
@@ -168,5 +169,8 @@ def oscillatory_coupling(num_pop=50,
         'lfp': d_lfps,
         'times': times
     }
+
+    if save is not None:
+        save_result(save, result)
 
     return result
