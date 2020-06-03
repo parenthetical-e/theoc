@@ -2,6 +2,13 @@ SHELL=/bin/bash -O expand_aliases
 # DATA_PATH=/Users/qualia/Code/infomercial/data
 
 # ---------------------------------------------------------------------
+# 6-3-2020
+# Generates and saves a single example oc simulation. These are the 
+# basis for Fig 2 (?) in the final paper.
+examples:
+	python theoc/examples.py
+
+# ---------------------------------------------------------------------
 # 6-1-2020
 # A quick testing exp. 
 exp0:
