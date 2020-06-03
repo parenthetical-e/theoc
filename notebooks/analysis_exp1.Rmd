@@ -15,7 +15,7 @@ library(psd)
 library(tidyr)
 # library(bspec)
 
-load.all.data <- function(path, type, stim_rates, qs, num_pops, pns){
+load.data <- function(path, type, stim_rates, qs, num_pops, pns){
   df <- NULL
   for(r_s in stim_rates){
     for(g in gs){
@@ -34,7 +34,7 @@ load.all.data <- function(path, type, stim_rates, qs, num_pops, pns){
             di["g"] <- rep(g, nrow(di))
             di["num_pop"] <- rep(n, nrow(di))
             di["q"] <- rep(q, nrow(di))
-            di["trial"] <- 1:length(di$N)
+            di["trial"] <- 1:nrow(di)
             df <- rbind(df, di)  
           })  
         }
@@ -46,7 +46,7 @@ load.all.data <- function(path, type, stim_rates, qs, num_pops, pns){
 ```
 
 # Load data
-```{r load, message=FALSE, warning=FALSE}
+```{r load, message=FALSE, warning=FALSE, error=FALSE}
 path <- "~/Code/theoc/data/"
 
 stim_rates <- c(2, 6, 10, 14, 18, 22, 26, 30)
@@ -56,6 +56,24 @@ qs <- c("0.0", "0.5", "1.0")
 
 exp1path <- paste(path, "/exp1/", sep="")
 mi_exp1 <- load.all.data(exp1path, "MI", stim_rates, qs, num_pops, qs)
+h_exp1 <- load.all.data(exp1path, "H", stim_rates, qs, num_pops, qs)
+dist_exp1 <- load.all.data(exp1path, "dist", stim_rates, qs, num_pops, qs)
+```
+# Fig - H, overall
+```{r, fig.width=1.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+h_exp1 %>% 
+  filter(q == "0.0") %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(num_pop < 100) %>% 
+  filter(model %in% c("stim_p", "add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=model, y=mi, color=g)) +
+  geom_jitter(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y="H (bits)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 # Fig - Change in MI, overall
