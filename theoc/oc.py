@@ -28,14 +28,14 @@ def save_result(name, result):
     if not name.endswith(".cloudpickle"):
         name += ".cloudpickle"
     with open(name, "w") as f:
-        cloudpickle.dump(result, name)
+        cloudpickle.dump(result, f)
 
 
 def load_result(name):
     if not name.endswith(".cloudpickle"):
         name += ".cloudpickle"
     with open(name, "r") as f:
-        result = cloudpickle.load(name)
+        result = cloudpickle.load(f)
     return result
 
 
@@ -59,6 +59,9 @@ def oscillatory_coupling(num_pop=50,
     # -- Safety -------------------------------------------------------------
     if g > g_max:
         raise ValueError("g must be < g_max")
+    min_rate = 2
+    if stim_rate <= min_rate:
+        raise ValueError(f"stim_rate must be greater {min_rate}")
 
     # q can't be exactly 0
     q += EPS
@@ -71,12 +74,13 @@ def oscillatory_coupling(num_pop=50,
                               dt=dt,
                               private_stdev=priv_std,
                               seed=seed)
-    drivespikes = neurons.Spikes(num_pop,
-                                 t,
-                                 dt=dt,
-                                 private_stdev=priv_std,
-                                 seed=seed)
     times = ocspikes.times  # brevity
+
+    # drivespikes = neurons.Spikes(num_pop,
+    #                              t,
+    #                              dt=dt,
+    #                              private_stdev=priv_std,
+    #                              seed=seed)
 
     # Set stim std. It must be relative to stim_rate
     stim_std = frac_std * stim_rate
@@ -89,9 +93,13 @@ def oscillatory_coupling(num_pop=50,
     d_bias['back'] = rates.constant(times, 2)
 
     # Drives proper
-
     d_bias['osc'] = rates.osc(times, osc_rate, f)
-    d_bias['stim'] = rates.stim(times, stim_rate, stim_std, seed=stim_seed)
+    # def stim(times, d, scale, seed=None, min_rate=6):
+    d_bias['stim'] = rates.stim(times,
+                                stim_rate,
+                                stim_std,
+                                seed=stim_seed,
+                                min_rate=min_rate)
     d_bias['mult'] = d_bias['stim'] * ((g_max - g + 1) * d_bias['osc'])
     d_bias['add'] = d_bias['stim'] + (g * d_bias['osc'])
     d_bias['sub'] = d_bias['stim'] - (g * d_bias['osc'])
@@ -104,7 +112,8 @@ def oscillatory_coupling(num_pop=50,
     b_spks = backspikes.poisson(d_bias['back'])
 
     # Create a ref stimulus
-    stim_ref = np.hstack([drivespikes.poisson(d_bias['stim']), b_spks])
+    # stim_ref = np.hstack([drivespikes.poisson(d_bias['stim']), b_spks])
+    stim_ref = d_bias["stim"]
 
     # Create OC outputs. This includes a null op stimulus, our baseline.
     d_spikes = {}
@@ -118,21 +127,32 @@ def oscillatory_coupling(num_pop=50,
 
     # -- I ------------------------------------------------------------------
     # Scale stim
-    x_ref = normalize(stim_ref.sum(1))
+    # y_ref = normalize(stim_ref.sum(1))
+    y_ref = normalize(stim_ref)
     d_rescaled = {}
-    d_rescaled["stim_"] = x_ref
+    d_rescaled["stim_ref"] = y_ref
 
     # Calc MI and H
-    d_dists = {}
     d_mis = {}
+    d_deltas = {}
     d_hs = {}
-    for k in d_spikes.keys():
-        x = normalize(d_spikes[k].sum(1))
-        d_rescaled[k] = x
+    d_py = {}
 
-        d_dists[k] = discrete_dist(x, m)
-        d_mis[k] = discrete_mutual_information(x_ref, x, m)
-        d_hs[k] = discrete_entropy(x, m)
+    # Save ref H and dist
+    d_py["stim_ref"] = discrete_dist(y_ref, m)
+    d_hs["stim_ref"] = discrete_entropy(y_ref, m)
+
+    # MI
+    for k in d_spikes.keys():
+        y = normalize(d_spikes[k].sum(1))
+        d_rescaled[k] = y
+        d_py[k] = discrete_dist(y, m)
+        d_mis[k] = discrete_mutual_information(y_ref, y, m)
+        d_hs[k] = discrete_entropy(y, m)
+
+    # Change in MI
+    for k in d_mis.keys():
+        d_deltas[k] = d_mis[k] - d_mis["stim_p"]
 
     # -- Measure OC using PAC -----------------------------------------------
     low_f = (int(f - 2), int(f + 2))
@@ -144,9 +164,10 @@ def oscillatory_coupling(num_pop=50,
 
     result = {
         'MI': d_mis,
+        'dMI': d_deltas,
         'H': d_hs,
         'PAC': d_pacs,
-        'dist': d_dists,
+        'p_y': d_py,
         'bias': d_bias,
         'spikes': d_spikes,
         'rescaled': d_rescaled,
