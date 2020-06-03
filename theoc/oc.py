@@ -62,6 +62,8 @@ def oscillatory_coupling(num_pop=50,
     min_rate = 2
     if stim_rate <= min_rate:
         raise ValueError(f"stim_rate must be greater {min_rate}")
+    if f < 3:
+        raise ValueError("f (freq) must be greater then 2")
 
     # q can't be exactly 0
     q += EPS
