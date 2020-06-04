@@ -56,6 +56,9 @@ exp1:
 #
 # The search: freq, osc_rate, m, num_background
 #
+# RESULT: None of the controls changed the qual. results. This is as it 
+#         should be in linear/rate model.
+#
 # freq
 exp2:
 	-mkdir data/exp2

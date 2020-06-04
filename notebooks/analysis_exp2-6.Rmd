@@ -1,0 +1,290 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+title: "exp0 - analysis"
+output: html_notebook
+---
+
+```{r helper_fns, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(plyr)
+library(readr)
+library(dplyr)
+library(png)
+library(psd)
+library(tidyr)
+# library(bspec)
+
+load.data2 <- function(path, type, fs){
+  df <- NULL
+  for(f in fs){
+    try({
+      # stim_rate-_2_g-11_num_pop-10_q-0.0_rate
+      name <- paste("f", as.character(f), 
+                    "_", as.character(type), 
+                    ".csv", sep="")
+      di <- read.csv(paste(path, name, sep=""))
+      di["f"] <- rep(f, nrow(di))
+      di["trial"] <- 1:nrow(di)
+      df <- rbind(df, di)  
+    })  
+  }
+  df
+}
+load.data3 <- function(path, type, osc_rates){
+  df <- NULL
+  for(o_r in osc_rates){
+    try({
+      # stim_rate-_2_g-11_num_pop-10_q-0.0_rate
+      name <- paste("osc_rate", as.character(o_r), 
+                    "_", as.character(type), 
+                    ".csv", sep="")
+      di <- read.csv(paste(path, name, sep=""))
+      di["osc_rate"] <- rep(o_r, nrow(di))
+      di["trial"] <- 1:nrow(di)
+      df <- rbind(df, di)  
+    })  
+  }
+  df
+}
+load.data4 <- function(path, type, ms){
+  df <- NULL
+  for(m in ms){
+    try({
+      # stim_rate-_2_g-11_num_pop-10_q-0.0_rate
+      name <- paste("m", as.character(m), 
+                    "_", as.character(type), 
+                    ".csv", sep="")
+      di <- read.csv(paste(path, name, sep=""))
+      di["m"] <- rep(m, nrow(di))
+      di["trial"] <- 1:nrow(di)
+      df <- rbind(df, di)  
+    })  
+  }
+  df
+}
+load.data5 <- function(path, type, num_backgrounds){
+  df <- NULL
+  for(n_b in num_backgrounds){
+    try({
+      # stim_rate-_2_g-11_num_pop-10_q-0.0_rate
+      name <- paste("num_background", as.character(n_b), 
+                    "_", as.character(type), 
+                    ".csv", sep="")
+      di <- read.csv(paste(path, name, sep=""))
+      di["num_background"] <- rep(n_b, nrow(di))
+      di["trial"] <- 1:nrow(di)
+      df <- rbind(df, di)  
+    })  
+  }
+  df
+}
+load.data6 <- function(path, type, num_pops){
+  df <- NULL
+  for(n_p in num_pops){
+    try({
+      # stim_rate-_2_g-11_num_pop-10_q-0.0_rate
+      name <- paste("num_pop", as.character(n_p), 
+                    "_", as.character(type), 
+                    ".csv", sep="")
+      di <- read.csv(paste(path, name, sep=""))
+      di["num_pop"] <- rep(n_p, nrow(di))
+      di["trial"] <- 1:nrow(di)
+      df <- rbind(df, di)  
+    })  
+  }
+  df
+}
+```
+
+# Load data
+```{r load, message=FALSE, warning=FALSE, error=FALSE}
+path <- "~/Code/theoc/data/"
+
+# exp2
+fs <- c(4, 6, 8, 12, 20, 30)
+exp_path <- paste(path, "/exp2/", sep="")
+mi_exp2 <- load.data2(exp_path, "MI", fs)
+dmi_exp2 <- load.data2(exp_path, "dMI", fs)
+h_exp2 <- load.data2(exp_path, "H", fs)
+
+# exp3
+osc_rates <- c(2, 3, 4, 6, 8)
+exp_path <- paste(path, "/exp3/", sep="")
+mi_exp3 <- load.data3(exp_path, "MI", osc_rates)
+dmi_exp3 <- load.data3(exp_path, "dMI", osc_rates)
+h_exp3 <- load.data3(exp_path, "H", osc_rates)
+
+# exp4
+ms <- c(10, 20, 40)
+exp_path <- paste(path, "/exp4/", sep="")
+mi_exp4 <- load.data4(exp_path, "MI", ms)
+dmi_exp4 <- load.data4(exp_path, "dMI", ms)
+h_exp4 <- load.data4(exp_path, "H", ms)
+
+# exp5
+num_backgrounds <- c(5, 10, 15, 20, 25)
+exp_path <- paste(path, "/exp5/", sep="")
+mi_exp5 <- load.data5(exp_path, "MI", num_backgrounds)
+dmi_exp5 <- load.data5(exp_path, "dMI", num_backgrounds)
+h_exp5 <- load.data5(exp_path, "H", num_backgrounds)
+
+# exp6
+num_pops <- c(10, 100, 1000)
+exp_path <- paste(path, "/exp6/", sep="")
+mi_exp6 <- load.data6(exp_path, "MI", num_pops)
+dmi_exp6 <- load.data6(exp_path, "dMI", num_pops)
+h_exp6 <- load.data6(exp_path, "H", num_pops)
+```
+
+# Exp 2
+## Fig 1 - MI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp2 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=f, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y="MI (bits)", x="Freq (Hz)") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+## Fig 2 - dMI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp2 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=f, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Freq (Hz)") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+
+# Exp 3
+## Fig 1 - MI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp3 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=osc_rate, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y="MI (bits)", x="Osc firing rate (spk/s)", title="Fixed gain, g=1") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+## Fig 2 - dMI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp3 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=osc_rate, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Osc. firing rate (spk/s)", title="Fixed gain, g=1") +
+  lims(x=c(1, 8)) +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+# Exp 4
+## Fig 1 - MI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp4 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=m, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y="MI (bits)", x="Bin size") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+## Fig 2 - dMI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp4 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=m, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Bin size", title="Fixed gain, g=1") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+# Exp 5
+## Fig 1 - MI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp5 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=num_background, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y="MI (bits)", x="Num. background", title="Pop size = 50") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+## Fig 2 - dMI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp5 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=num_background, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Num. background", title="Pop size = 50") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+
+# Exp 6
+## Fig 1 - MI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+mi_exp6 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=num_pop, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y="MI (bits)", x="Num population") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
+## Fig 2 - dMI overall
+```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp6 %>% 
+  gather(model, mi, back_p:div_sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
+  ggplot(aes(x=num_pop, y=mi)) +
+  geom_point(size=.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="grey") + xlab("") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Num population") +
+  theme_classic() +
+  facet_wrap(model~., nrow=1) 
+```
