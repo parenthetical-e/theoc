@@ -12,9 +12,7 @@ EPS = np.finfo(float).eps
 
 
 def change_direction(x):
-    """Indictates whether a time series has changed direction,
-    from one point to the next.
-    """
+    """Indictates whether a time series changes direction."""
     if x.ndim != 1:
         raise ValueError("x must be 1d")
 
@@ -26,7 +24,7 @@ def Z(p):
     return norm.ppf(p)
 
 
-def signal_discrimination(x_true, x):
+def signal_discriminations(x_true, x):
     """Find hits, misses, ..., for every point in the series of x
     """
     d_true = change_direction(x_true)
@@ -59,7 +57,7 @@ def d_prime(x_true, x):
     """Estimate d' between momentary changes"""
 
     # These are time-series, but we want averages for the whole series
-    hits, misses, false_alarms, correct_rejects = signal_discrimination(
+    hits, misses, false_alarms, correct_rejects = signal_discriminations(
         x_true, x)
 
     hit = np.mean(hits)  # bound 0-1
