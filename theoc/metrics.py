@@ -55,6 +55,11 @@ def signal_discriminations(x_true, x):
 def d_prime(x_true, x):
     """Estimate d' between momentary changes"""
 
+    # ---------------------------------------------------------
+    # NOTE: this code was modified from:
+    # https://lindeloev.net/calculating-d-in-python-and-php/
+    # ---------------------------------------------------------
+
     # These are time-series, but we want averages for the whole series
     hits, misses, false_alarms, correct_rejects = signal_discriminations(
         x_true, x)
