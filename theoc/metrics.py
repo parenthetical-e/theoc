@@ -3,11 +3,92 @@ import numpy as np
 from scipy.special import gamma, psi
 from scipy import ndimage
 from scipy.linalg import det
+from scipy.stats import norm
 from numpy import pi
 
 from sklearn.neighbors import NearestNeighbors
 
 EPS = np.finfo(float).eps
+
+
+def change_direction(x):
+    """Indictates whether a time series has changed direction,
+    from one point to the next.
+    """
+    if x.ndim != 1:
+        raise ValueError("x must be 1d")
+
+    return np.sign(np.diff(x))
+
+
+def Z(p):
+    """The Z function - norm.ppf(p)"""
+    return norm.ppf(p)
+
+
+def signal_discrimination(x_true, x):
+    """Find hits, misses, ..., for every point in the series of x
+    """
+    d_true = change_direction(x_true)
+    d = change_direction(x)
+
+    # Hits: sign is not zero in ref, and x agrees
+    m = np.nonzero(d_true)
+    hits = (d_true[m] == d[m])
+
+    # Misses: sign is not zero in ref, and s disagrees
+    misses = np.logical_not(hits)
+
+    # False alarm: sign is zero in ref, and x agrees
+    m = np.logical_not(m)
+    false_alarms = (d_true[m] == d[m])
+
+    # Corrent reject: sign is zero in ref, and x agrees
+    correct_rejects = np.logical_not(false_alarms)
+
+    # Convert all the bools to ints
+    hits = hits.astype(int)
+    misses - misses.astype(int)
+    false_alarms = false_alarms.astype(int)
+    correct_rejects - correct_rejects.astype(int)
+
+    return hits, misses, false_alarms, correct_rejects
+
+
+def d_prime(x_true, x):
+    """Estimate d' between momentary changes"""
+
+    # These are time-series, but we want averages for the whole series
+    hits, misses, false_alarms, correct_rejects = signal_discrimination(
+        x_true, x)
+
+    hit = np.mean(hits)  # bound 0-1
+    miss = np.mean(misses)
+    fa = np.mean(false_alarms)
+    cr = np.mean(correct_rejects)
+
+    # Floors an ceilings are
+    # replaced by half hits and half FA's
+    half_hit = 0.5 / (hit + miss)
+    half_fa = 0.5 / (fa + cr)
+
+    # Calculate hit_rate and avoid d' infinity
+    hit_rate = hit / (hit + misses)
+    if hit_rate == 1:
+        hit_rate = 1 - half_hit
+    if hit_rate == 0:
+        hit_rate = half_hit
+
+    # Calculate false alarm rate and avoid d' infinity
+    fa_rate = fa / (fa + cr)
+    if fa_rate == 1:
+        fa_rate = 1 - half_fa
+    if fa_rate == 0:
+        fa_rate = half_fa
+
+    d_prime = Z(hit_rate) - Z(fa_rate)
+
+    return d_prime
 
 
 def normalize(x):
