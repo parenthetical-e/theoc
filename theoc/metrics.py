@@ -25,8 +25,7 @@ def Z(p):
 
 
 def signal_discriminations(x_true, x):
-    """Find hits, misses, ..., for every point in the series of x
-    """
+    """Find hits, misses, ..., for every point by comparing the series."""
     d_true = change_direction(x_true)
     d = change_direction(x)
 
