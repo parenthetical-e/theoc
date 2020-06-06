@@ -4,6 +4,8 @@ data/*
 *.Rhistory
 *.DS_store
 *.html 
+*.pdf 
+*.png 
 
 # vscode
 settings.json
