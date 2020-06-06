@@ -133,7 +133,7 @@ dmi_exp5 <- load.data5(exp_path, "dMI", num_backgrounds)
 h_exp5 <- load.data5(exp_path, "H", num_backgrounds)
 
 # exp6
-num_pops <- c(10, 100, 1000)
+num_pops <- c(10, 20, 40, 80, 160, 320, 640, 1280)
 exp_path <- paste(path, "/exp6/", sep="")
 mi_exp6 <- load.data6(exp_path, "MI", num_pops)
 dmi_exp6 <- load.data6(exp_path, "dMI", num_pops)
@@ -283,7 +283,10 @@ tmp %>%
   filter(model %in% c("add_p", "mult_p", "sub_p", "osc_p")) %>% 
   ggplot(aes(x=num_pop, y=mi)) +
   geom_point(size=.3, alpha=0.2) +
-  geom_hline(yintercept=0, color="grey") + xlab("") +
+  geom_hline(yintercept=0, color="grey") +
+  scale_x_continuous("N", num_pops) +
+  scale_x_log10() +
+  annotation_logticks(base = 10, sides = "b") +
   labs(y=expression(paste(Delta, "MI (bits)")), x="Num population") +
   theme_classic() +
   facet_wrap(model~., nrow=1) 
