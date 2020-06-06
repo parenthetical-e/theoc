@@ -107,7 +107,7 @@ def oscillatory_coupling(num_pop=50,
     # Create a ref stimulus
     stim_ref = d_bias["stim"]
 
-    # -- Simulate spiking --------------------------------------------------
+    # -- Simulate spiking ---------------------------------------------------
     # Create the background pool.
     b_spks = backspikes.poisson(d_bias['back'])
 
