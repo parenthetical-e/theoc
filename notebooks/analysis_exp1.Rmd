@@ -128,7 +128,7 @@ dmi_exp1 %>%
   gather(model, mi, add_p:sub_p) -> tmp
 
 tmp %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p")) %>% 
   filter(num_pop == 50) %>% 
   ggplot(aes(x=stim_rate, y=mi, color=g)) +
   geom_point(size=1, alpha=0.8) +
@@ -142,6 +142,7 @@ tmp %>%
 ```{r, fig.width=3.5, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
 dmi_exp1 %>% 
   filter(q == "0.5") %>%
+  # filter(num_pop < 500) %>% 
   group_by(stim_rate, g, num_pop) %>%
   summarise(add_p=mean(add_p),
             back_p=mean(back_p),
