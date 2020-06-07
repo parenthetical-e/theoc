@@ -114,7 +114,7 @@ def oscillatory_coupling(num_pop=50,
     d_bias['div_sub'] = (d_bias['stim'] / div) - sub
 
     # -
-    # Nonlinear transform
+    # Nonlinear transform (RELU)
     for k, v in d_bias.items():
         d_bias[k] = phi(v)
 
