@@ -39,6 +39,7 @@ def load_result(name):
 
 
 def phi(x, m=1, b=0):
+    """The rectified-linear transform"""
     x = x - b
     x[x <= 0] = 0
     x = x * m
