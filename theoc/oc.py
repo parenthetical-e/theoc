@@ -38,6 +38,13 @@ def load_result(name):
     return result
 
 
+def phi(x, m=1, b=0):
+    x = x - b
+    x[x <= 0] = 0
+    x = x * m
+    return x
+
+
 def oscillatory_coupling(num_pop=50,
                          num_background=5,
                          t=5,
@@ -96,6 +103,9 @@ def oscillatory_coupling(num_pop=50,
                                 stim_std,
                                 seed=stim_seed,
                                 min_rate=min_rate)
+
+    # -
+    # Linear modulatons
     d_bias['mult'] = d_bias['stim'] * ((g_max - g + 1) * d_bias['osc'])
     d_bias['add'] = d_bias['stim'] + (g * d_bias['osc'])
     d_bias['sub'] = d_bias['stim'] - (g * d_bias['osc'])
@@ -103,10 +113,15 @@ def oscillatory_coupling(num_pop=50,
     sub = (1 - q) * (g * d_bias['osc'])
     d_bias['div_sub'] = (d_bias['stim'] / div) - sub
 
+    # -
+    # Nonlinear transform
+    for k, v in d_bias.items():
+        d_bias[k] = phi(v)
+
+    # -- Simulate spiking ---------------------------------------------------
     # Create a ref stimulus
     stim_ref = d_bias["stim"]
 
-    # -- Simulate spiking ---------------------------------------------------
     # Create the background pool.
     b_spks = backspikes.poisson(d_bias['back'])
 
