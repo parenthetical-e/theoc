@@ -11,7 +11,6 @@ import numpy as np
 from fakespikes import neurons, rates
 from pacpy.pac import ozkurt as pacfn
 
-from joblib import Parallel, delayed
 from itertools import product
 from collections import defaultdict
 
