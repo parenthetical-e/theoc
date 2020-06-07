@@ -193,11 +193,17 @@ h_exp6 <- load.data6(exp_path, "H", num_pops)
 # Figure 2 - Mutual information and oscillation
 ## Panel - FI arithmatic
 ```{r, fig.width=0.8, fig.height=1.85, echo=FALSE, warning=FALSE, message=FALSE}
-phi <- function(x) {
+phi1 <- function(x) {
   30 / (1 + exp(-.2*x + 5))
 }
 
-rate = phi(1:50)
+phi2 <- function(x, m ,b) {
+  x <- x - b
+  x[x <= 0] <- 0
+  x <- x * m
+}
+
+rate = phi2(1:50, 1, 10)
 input = 1:50
 fi = data.frame(output=rate, ref=input, add=input-10, sub=input+10, mult=input*1.5)
 
