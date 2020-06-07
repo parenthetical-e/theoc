@@ -97,7 +97,6 @@ def oscillatory_coupling(num_pop=50,
 
     # Drives proper
     d_bias['osc'] = rates.osc(times, osc_rate, f)
-    # def stim(times, d, scale, seed=None, min_rate=6):
     d_bias['stim'] = rates.stim(times,
                                 stim_rate,
                                 stim_std,
