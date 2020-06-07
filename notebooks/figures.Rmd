@@ -192,30 +192,32 @@ h_exp6 <- load.data6(exp_path, "H", num_pops)
 
 # Figure 2 - Mutual information and oscillation
 ## Panel - FI arithmatic
-```{r, fig.width=0.8, fig.height=1.85, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=01.2, fig.height=1.85, echo=FALSE, warning=FALSE, message=FALSE}
 phi1 <- function(x) {
   30 / (1 + exp(-.2*x + 5))
 }
 
-phi2 <- function(x, m ,b) {
+phi2 <- function(x, m, b) {
   x <- x - b
   x[x <= 0] <- 0
   x <- x * m
 }
 
-rate = phi2(1:50, 1, 10)
-input = 1:50
-fi = data.frame(output=rate, ref=input, add=input-10, sub=input+10, mult=input*1.5)
+input = 1:100
+fi = data.frame(
+  ref=phi2(input, 1, 20), 
+  add=phi2(input+10, 1, 20), 
+  sub=phi2(input-10, 1, 20), 
+  mult=phi2(input*1.5, 1, 20))
 
 fi %>% 
-  ggplot(aes(x=add, y=output)) +
+  ggplot(aes(x=input, y=add)) +
   geom_line(color="black") +
-  geom_line(data=fi, mapping=aes(x=ref, y=output), color="grey") +
+  geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
   theme_classic() +
-  annotate("text", x = 28, y = 15, label = "+", size=4) +
-  geom_segment(aes(x = 24 , xend= 16, y = 15, yend = 15),
+  geom_segment(aes(x = 34, xend = 14, y = 30, yend = 30),
                   lineend = "round", linejoin = "round",
-                  size=.1,
+                  size=.08,
                   arrow = arrow(length = unit(0.1, "cm"))) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -225,18 +227,15 @@ fi %>%
         axis.ticks.y=element_blank()) ->
   p1
 
-p1_label <- as_ggplot(text_grob("E", hjust=4))
-
 fi %>% 
-  ggplot(aes(x=sub, y=output)) +
+  ggplot(aes(x=input, y=sub)) +
   geom_line(color="black") +
-  geom_line(data=fi, mapping=aes(x=ref, y=output), color="grey") +
+  geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
   theme_classic() + 
   labs(y="Output") +
-  annotate("text", x = 20, y = 16, label = "-", size=6) +
-  geom_segment(aes(x = 26, xend= 34, y = 15, yend = 15),
+  geom_segment(aes(x = 66, xend = 86, y = 30, yend = 30),
                   lineend = "round", linejoin = "round",
-                  size=.1,
+                  size=.08,
                   arrow = arrow(length = unit(0.1, "cm"))) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -248,13 +247,12 @@ fi %>%
 # plot(p2)
 
 fi %>% 
-  ggplot(aes(x=mult, y=output)) +
-  geom_line(color="grey") +
-  geom_line(data=fi, mapping=aes(x=ref, y=output), color="black") +
+  ggplot(aes(x=input, y=mult)) +
+  geom_line(color="black") +
+  geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
   theme_classic() + 
   labs(x="Input") +
-  annotate("text", x = 36.5, y = 18, label = "*", size=6) +
-  geom_curve(aes(x = 36, xend= 28.5, y = 15, yend = 18),
+  geom_curve(aes(x = 70, xend = 60, y = 55, yend = 64),
                   lineend = "round", linejoin = "round",
                   size=.08,
                   arrow = arrow(length = unit(0.1, "cm"))) +
@@ -267,8 +265,12 @@ fi %>%
   p3
 # plot(p3)
 
-p.fi <- plot(p1 / p2 / p3)
-ggsave("figures/fi.png", dpi=600)
+p1_label <- as_ggplot(text_grob("E", hjust=3))
+p2_label <- as_ggplot(text_grob("I", hjust=6))
+p3_label <- as_ggplot(text_grob("EI", hjust=2))
+
+(p1 + p1_label) / (p2 + p2_label) / (p3 + p3_label)
+ggsave("figures/fi1.png", dpi=600)
 ```
 
 
@@ -494,7 +496,96 @@ p1 / p2 / p3 / p4 / p5 +
 ggsave("figures/figure3.pdf", dpi=600)
 ```
 
-# TODO - need timecourse plots for these below. Put them in a figure here aboure dMI. For intuition.
+# Figure 4 - Div/sub intro
+## Panel - FI arithmatic
+```{r, fig.width=1.2, fig.height=1.85, echo=FALSE, warning=FALSE, message=FALSE}
+phi1 <- function(x) {
+  30 / (1 + exp(-.2*x + 5))
+}
+
+phi2 <- function(x, m, b) {
+  x <- x - b
+  x[x <= 0] <- 0
+  x <- x * m
+}
+
+input = 1:100
+fi = data.frame(
+  ref=phi2(input, 1, 10), 
+  sub=phi2(input-15, 1, 10), 
+  div=phi2(input/1.5, 1, 10), 
+  div_sub=phi2((input/1.5)-10, 1, 10))
+
+fi %>% 
+  ggplot(aes(x=input, y=sub)) +
+  geom_line(color="black") +
+  geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
+  theme_classic() +
+  geom_segment(aes(x = 66, xend = 86, y = 30, yend = 30),
+                  lineend = "round", linejoin = "round",
+                  size=.08,
+                  arrow = arrow(length = unit(0.1, "cm"))) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->
+  p1
+
+fi %>% 
+  ggplot(aes(x=input, y=div)) +
+  geom_line(color="black") +
+  geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
+  theme_classic() + 
+  labs(y="Output") +
+  geom_curve(aes(x = 51, xend = 60, y = 40, yend = 34),
+                  lineend = "round", linejoin = "round",
+                  size = .06,
+                  arrow = arrow(length = unit(0.1, "cm"))) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        #axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) -> 
+  p2
+
+fi %>% 
+  ggplot(aes(x=input, y=div_sub)) +
+  geom_line(color="black") +
+  geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
+  theme_classic() + 
+  labs(x="Input") +
+  geom_segment(aes(x = 32, xend = 52, y = 20, yend = 20),
+                  lineend = "round", linejoin = "round",
+                  size = 0.06,
+                  arrow = arrow(length = unit(0.1, "cm"))) +
+  geom_curve(aes(x = 54, xend = 75, y = 44, yend = 34),
+                  lineend = "round", linejoin = "round",
+                  size = .06,
+                  arrow = arrow(length = unit(0.1, "cm"))) +
+  theme(#axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->  
+  p3
+
+# Labels
+p1_label <- as_ggplot(text_grob(TeX("I^{-}"), hjust=3))
+p2_label <- as_ggplot(text_grob(TeX("I^{\\div}"), hjust=3))
+p3_label <- as_ggplot(text_grob(TeX("II"), hjust=4))
+
+# Build
+p.fi <- plot((p1 + p1_label) /( p2 + p2_label) / (p3 + p3_label))
+ggsave("figures/fi2.png", dpi=600)
+```
+## Panel - Examples
+TODO - need timecourse plots for these below. Put them in a figure here aboure dMI. For intuition.
+
+
 # Figure 5 - Div/Sub results
 ```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
 dmi_exp1 %>% 
