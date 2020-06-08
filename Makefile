@@ -104,3 +104,22 @@ exp6:
 			--joblog 'data/exp6.log' \
 			--nice 19 --colsep ',' \
 			'python theoc/run_oc.py data/exp6/num_pop{1} --num_trials=20 --num_background=5 --t=5 --osc_rate=2 --f=6 --g=4 --g_max=8 --q=0.5 --stim_rate=20 --frac_std=0.01 --m=20 --num_pop={1}' ::: 10 20 40 80 160 320 640 1280
+
+# -------------------------------------------------------------------------
+# 6-8-2020
+# 3f0d2f1490a391ad358896121cb4630bfca05899
+#
+# In analyzing PAC on 6/7 I realized I should also be analyzing peak power. 
+#
+# I modified oc to extract that. Here we rerun exp1, less the pop_size search to adds powers to the results. pop_size is explored on its own in a control, 
+# exp6.
+# 
+# For consistency sake, this should be the new default run for Figure 2,
+# or whatever number the main results figure ends up as.
+exp7:
+	-mkdir data/exp7
+	-rm data/exp7/*
+	parallel -j 4 -v \
+			--joblog 'data/exp7.log' \
+			--nice 19 --colsep ',' \
+			'python theoc/run_oc.py data/exp7/stim_rate{1}_g{2}_num_pop{4}_q{3} --num_trials=20 --num_background=5 --t=5 --osc_rate=2 --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 15 20 25 30 ::: 1 2 3 4 5 7 8 ::: 0.0 0.25 0.5 0.75 1.0 ::: 50 
