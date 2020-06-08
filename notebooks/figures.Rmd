@@ -507,7 +507,8 @@ Plot raw, not deltas. Overall r_s, g, pop_size=50.
 1. PAC v H (E,I,EI)
 2. PAC v MI (....)
 3. PAC v MI, split by E,I,EI models and S alone.
-```{r, fig.width=1.4, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=1.4, fig.height=2.1, echo=FALSE, warning=FALSE, message=FALSE}
+# E, I, IE
 h_exp1 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
@@ -540,11 +541,40 @@ tmp <- full_join(tmp1, tmp2)
 tmp <- full_join(tmp, tmp3)
 tmp <- full_join(tmp, tmp4)
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+# Get II
+h_exp1 %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, h, back_p:div_sub_p) %>% 
+  filter(model %in% c("div_sub_p")) -> 
+  tmp5
+
+mi_exp1 %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("div_sub_p")) -> 
+  tmp6
+
+dmi_exp1 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("div_sub_p")) -> 
+  tmp7
+
+pac_exp1 %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, pac, back_p:div_sub_p) %>% 
+  filter(model %in% c("div_sub_p")) -> 
+  tmp8
+
+tmp_ii <- full_join(tmp5, tmp6)
+tmp_ii <- full_join(tmp_ii, tmp7)
+tmp_ii <- full_join(tmp_ii, tmp8)
+
+
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p" == "II"))
+tmp$model <- factor(tmp$model, levels=c("EI", "E", "I", "II"))
 
 tmp %>% 
-  ggplot(aes(x=pac, y=h, color=g)) +
+  ggplot(aes(x=pac, y=h, color=model)) +
   geom_point(size=0.1, alpha=0.5) +
   geom_hline(yintercept=0, color="dark grey") +
   labs(y="Entropy", x="PAC") +
@@ -558,7 +588,7 @@ tmp %>%
 # plot(p1)
 
 tmp %>% 
-  ggplot(aes(x=pac, y=dmi, color=g)) +
+  ggplot(aes(x=pac, y=dmi, color=model)) +
   geom_point(size=0.1, alpha=0.5) +
   geom_hline(yintercept=0, color="dark grey") + 
   labs(y=expression(paste(Delta, "MI")), x="PAC") +
@@ -576,6 +606,16 @@ tmp %>%
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
   
 ggsave("figures/pac.pdf", dpi=600)
+```
+
+```{r, fig.width=1.4, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
+bind_rows(tmp_ii,tmp) %>% 
+  filter(model == "div_sub_p") %>% 
+  ggplot(aes(x=pac, y=mi)) +
+  geom_point(size=.5) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  theme_classic() +
+  facet_grid(q~.)
 ```
 ### Sig test results
 ```{r}
