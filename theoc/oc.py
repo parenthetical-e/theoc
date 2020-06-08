@@ -135,6 +135,7 @@ def oscillatory_coupling(num_pop=50,
     y_ref = normalize(stim_ref)
     d_rescaled = {}
     d_rescaled["stim_ref"] = y_ref
+    d_rescaled["osc_ref"] = normalize(d_bias["osc"])
 
     # Calc MI and H
     d_mis = {}
