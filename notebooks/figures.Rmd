@@ -507,7 +507,7 @@ Plot raw, not deltas. Overall r_s, g, pop_size=50.
 1. PAC v H (E,I,EI)
 2. PAC v MI (....)
 3. PAC v MI, split by E,I,EI models and S alone.
-```{r, fig.width=1.1, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=1.4, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
 h_exp1 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
@@ -544,25 +544,23 @@ tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
 tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
 
 tmp %>% 
-  ggplot(aes(x=pac, y=h)) +
-  geom_point(size=0.1, alpha=0.4) +
+  ggplot(aes(x=pac, y=h, color=g)) +
+  geom_point(size=0.1, alpha=0.5) +
   geom_hline(yintercept=0, color="dark grey") +
-  lims(y=c(0, 1.5)) +
   labs(y="Entropy", x="PAC") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
-  facet_grid(model~.) ->
+  facet_grid(model~., scales="free_y") ->
   p1
 # plot(p1)
 
 tmp %>% 
-  ggplot(aes(x=pac, y=dmi)) +
-  geom_point(size=0.1, alpha=0.9) +
+  ggplot(aes(x=pac, y=dmi, color=g)) +
+  geom_point(size=0.1, alpha=0.5) +
   geom_hline(yintercept=0, color="dark grey") + 
-  lims(y=c(-.5, 0.75)) +
   labs(y=expression(paste(Delta, "MI")), x="PAC") +
   theme_classic() +
   theme(strip.background = element_blank()) +
@@ -570,7 +568,7 @@ tmp %>%
   theme(legend.key.size = unit(.3, "cm")) +
   theme(legend.position =  "none") +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
-  facet_grid(model~.) ->
+  facet_grid(model~., scales="free_y") ->
   p2
 # plot(p2)
 
@@ -599,9 +597,6 @@ tmp %>%
 t3 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
 t3
 ```
-
-
-
 
 
 # Figure 4 - Div/sub intro
