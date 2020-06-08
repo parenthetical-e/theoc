@@ -6,7 +6,8 @@ SHELL=/bin/bash -O expand_aliases
 # Generates and saves a single example oc simulation. These are the 
 # basis for Fig 2 (?) in the final paper.
 examples:
-	python theoc/examples.py
+	jupyter nbconvert --execute notebooks/examples.ipynb
+
 
 # ---------------------------------------------------------------------
 # 6-1-2020
