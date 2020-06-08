@@ -132,21 +132,21 @@ load.data6 <- function(path, type, num_pops){
 ```
 
 # Load data
-## Exp 1 - the main results 
+## Exp 7 - the main results 
 ```{r load1, message=FALSE, warning=FALSE, error=FALSE}
 path <- "~/Code/theoc/data/"
 
-# 5 10 15 20 25 30 ::: 1 2 3 4 5 7 8 ::: 0.0 0.25 0.5 0.75 1.0 ::: 10 25 50 75 100 500 
 stim_rates <- c(5, 10, 15, 20, 25, 30)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
-num_pops <- c(10, 25, 50, 75, 100, 500)
+num_pops <- c(50)
 qs <- c("0.0", "0.25", "0.5", "0.75", "1.0")
 
-exp1path <- paste(path, "/exp1/", sep="")
-mi_exp1 <- load.data1(exp1path, "MI", stim_rates, qs, num_pops, qs)
-dmi_exp1 <- load.data1(exp1path, "dMI", stim_rates, qs, num_pops, qs)
-h_exp1 <- load.data1(exp1path, "H", stim_rates, qs, num_pops, qs)
-pac_exp1 <- load.data1(exp1path, "PAC", stim_rates, qs, num_pops, qs)
+exp1path <- paste(path, "/exp7/", sep="")
+mi_exp7 <- load.data1(exp1path, "MI", stim_rates, qs, num_pops, qs)
+dmi_exp7 <- load.data1(exp1path, "dMI", stim_rates, qs, num_pops, qs)
+h_exp7 <- load.data1(exp1path, "H", stim_rates, qs, num_pops, qs)
+pac_exp7 <- load.data1(exp1path, "PAC", stim_rates, qs, num_pops, qs)
+pow_exp7 <- load.data1(exp1path, "power", stim_rates, qs, num_pops, qs)
 ```
 
 ## Exp 2-6 - control experiments
@@ -277,7 +277,7 @@ ggsave("figures/fi1.png", dpi=600)
 
 ## Panel - Modulation overall 
 ```{r, fig.width=1.1, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp1 %>% 
+dmi_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
@@ -290,11 +290,13 @@ tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
 my_comparisons <- list( c("EI", "E"), c("EI", "I"), c("E", "I") )
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  lims(y=c(-.5, 0.75)) +
-  geom_jitter(size=.3, alpha=0.2) +
+  lims(y=c(-.3, 0.5)) +
+  geom_jitter(size=.04, alpha=0.15) +
+  stat_summary(aes(group=model), fun.y=median, 
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   labs(y=expression(paste(Delta, "MI")), x="") +
-  stat_compare_means(comparisons = my_comparisons, label = "p.signif", label.y = c(0.55, 0.7, 0.2)) +
+  stat_compare_means(comparisons = my_comparisons, label = "p.signif", label.y = c(0.45, 0.3, 0.15)) +
   theme_classic() -> 
   p1
 plot(p1)
@@ -307,7 +309,7 @@ compare_means(mi~model, tmp)
 
 ## Panel - Oscillation overall
 ```{r, fig.width=0.6, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp1 %>% 
+dmi_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
@@ -317,9 +319,11 @@ tmp$model <- revalue(tmp$model, c("osc_p"="O"))
 
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.3, alpha=0.2) +
+  geom_jitter(size=.04, alpha=0.15) +
+  stat_summary(aes(group=model), fun.y=median, 
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  lims(y=c(-.5, 0.75)) +
+  lims(y=c(-.35, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), x="") +
   theme_classic() -> 
   p2
@@ -327,7 +331,7 @@ plot(p2)
 ```
 ## Panel - Timecourses of stimulus strength, and g.
 ```{r, fig.width=2, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp1 %>% 
+dmi_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   group_by(stim_rate, g, num_pop) %>%
@@ -347,12 +351,21 @@ tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
 tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
 
 tmp %>% 
-  ggplot(aes(x=stim_rate, y=mi, color=g, group=g)) +
+  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=factor(g))) +
   geom_line(size=0.5, alpha=0.9) +
   geom_point(size=0.7, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  lims(y=c(-.5, 0.75)) +
+  lims(y=c(-.3, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -362,7 +375,7 @@ tmp %>%
   p3
 plot(p3)
 ```
-## Build Figure 2
+## Build Figure 
 ```{r, fig.width=3.5, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
 p1 + p2 + p3 + 
   plot_layout(widths = c(2, 0.75, 6)) +
@@ -502,35 +515,151 @@ p1 / p2 / p3 / p4 / p5 +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/figure3.pdf", dpi=600)
 ```
-# FIgure - PAC and info
-Plot raw, not deltas. Overall r_s, g, pop_size=50.
-1. PAC v H (E,I,EI)
-2. PAC v MI (....)
-3. PAC v MI, split by E,I,EI models and S alone.
-```{r, fig.width=1.4, fig.height=2.1, echo=FALSE, warning=FALSE, message=FALSE}
+# Figure - Power (spectral) and info
+```{r, fig.width=2, fig.height=4.1, echo=FALSE, warning=FALSE, message=FALSE}
 # E, I, IE
-h_exp1 %>% 
+h_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   gather(model, h, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
   tmp1
 
-mi_exp1 %>% 
+mi_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
   tmp2
 
-dmi_exp1 %>% 
+dmi_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   gather(model, dmi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
   tmp3
 
-pac_exp1 %>% 
+pow_exp7 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp4
+
+tmp <- full_join(tmp1, tmp2)
+tmp <- full_join(tmp, tmp3)
+tmp <- full_join(tmp, tmp4)
+
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
+tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+
+tmp %>% 
+  filter(stim_rate == 20, model == "EI") %>% 
+  ggplot(aes(x=pow, y=dmi, color=factor(g))) +
+  geom_point(size=1.2, alpha=0.2) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  stat_smooth(method="lm", se = FALSE, alpha=1) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power") +
+  theme_classic2() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(legend.position = "none") +
+  theme(strip.text.x = element_blank()) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~., scale = "free_y") ->
+  p1
+
+tmp %>% 
+  filter(stim_rate == 20, model == "E") %>% 
+  ggplot(aes(x=pow, y=dmi, color=factor(g))) +
+  geom_point(size=1.2, alpha=0.2) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  stat_smooth(method="lm", se = FALSE, alpha=1) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power") +
+  theme_classic2() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.x = element_blank()) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~., scale = "free_y") ->
+  p2
+
+tmp %>% 
+  filter(stim_rate == 20, model == "I") %>% 
+  ggplot(aes(x=pow, y=dmi, color=factor(g))) +
+  geom_point(size=1.2, alpha=0.2) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  stat_smooth(method="lm", se = FALSE, alpha=1) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power") +
+  theme_classic2() +
+  theme(strip.background = element_blank()) +
+  theme(legend.position = "none") +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.x = element_blank()) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~., scale = "free_y") ->
+  p3
+
+p1 / p2 / p3 + plot_layout(guides = "collect") +
+  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+ggsave("figures/pow.pdf", dpi=600)
+```
+
+# Figure - PAC and info
+```{r, fig.width=2, fig.height=4.1, echo=FALSE, warning=FALSE, message=FALSE}
+# E, I, IE
+h_exp7 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, h, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp1
+
+mi_exp7 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp2
+
+dmi_exp7 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp3
+
+pac_exp7 %>% 
   filter(q == "0.0") %>% 
   filter(num_pop == 50) %>% 
   gather(model, pac, back_p:div_sub_p) %>% 
@@ -541,101 +670,89 @@ tmp <- full_join(tmp1, tmp2)
 tmp <- full_join(tmp, tmp3)
 tmp <- full_join(tmp, tmp4)
 
-# Get II
-h_exp1 %>% 
-  filter(num_pop == 50) %>% 
-  gather(model, h, back_p:div_sub_p) %>% 
-  filter(model %in% c("div_sub_p")) -> 
-  tmp5
-
-mi_exp1 %>% 
-  filter(num_pop == 50) %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("div_sub_p")) -> 
-  tmp6
-
-dmi_exp1 %>% 
-  gather(model, dmi, back_p:div_sub_p) %>% 
-  filter(model %in% c("div_sub_p")) -> 
-  tmp7
-
-pac_exp1 %>% 
-  filter(num_pop == 50) %>% 
-  gather(model, pac, back_p:div_sub_p) %>% 
-  filter(model %in% c("div_sub_p")) -> 
-  tmp8
-
-tmp_ii <- full_join(tmp5, tmp6)
-tmp_ii <- full_join(tmp_ii, tmp7)
-tmp_ii <- full_join(tmp_ii, tmp8)
-
-
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p" == "II"))
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I", "II"))
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
+tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
 
 tmp %>% 
-  ggplot(aes(x=pac, y=h, color=model)) +
-  geom_point(size=0.1, alpha=0.5) +
-  geom_hline(yintercept=0, color="dark grey") +
-  labs(y="Entropy", x="PAC") +
-  theme_classic() +
+  filter(stim_rate == 20, model == "EI") %>% 
+  ggplot(aes(x=pac, y=dmi, color=factor(g))) +
+  geom_point(size=1.2, alpha=0.2) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  stat_smooth(method="lm", se = FALSE, alpha=1) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling") +
+  theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
+  theme(legend.position = "none") +
+  theme(strip.text.x = element_blank()) +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
-  facet_grid(model~., scales="free_y") ->
+  facet_grid(model~., scale = "free_y") ->
   p1
-# plot(p1)
 
 tmp %>% 
-  ggplot(aes(x=pac, y=dmi, color=model)) +
-  geom_point(size=0.1, alpha=0.5) +
+  filter(stim_rate == 20, model == "E") %>% 
+  ggplot(aes(x=pac, y=dmi, color=factor(g))) +
+  geom_point(size=1.2, alpha=0.2) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="PAC") +
-  theme_classic() +
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling") +
+  theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
-  theme(legend.position =  "none") +
+  theme(strip.text.x = element_blank()) +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
-  facet_grid(model~., scales="free_y") ->
+  facet_grid(model~., scale = "free_y") ->
   p2
-# plot(p2)
 
-(p1 / p2) + plot_layout(guides = 'collect') +
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
-  
-ggsave("figures/pac.pdf", dpi=600)
-```
-
-```{r, fig.width=1.4, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
-bind_rows(tmp_ii,tmp) %>% 
-  filter(model == "div_sub_p") %>% 
-  ggplot(aes(x=pac, y=mi)) +
-  geom_point(size=.5) +
+tmp %>% 
+  filter(stim_rate == 20, model == "I") %>% 
+  ggplot(aes(x=pac, y=dmi, color=factor(g))) +
+  geom_point(size=1.2, alpha=0.2) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  theme_classic() +
-  facet_grid(q~.)
-```
-### Sig test results
-```{r}
-tmp %>% 
-  filter(model=="E") ->
-  ctmp
-t1 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
-t1
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling") +
+  theme_classic2() +
+  theme(strip.background = element_blank()) +
+  theme(legend.position = "none") +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.x = element_blank()) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~., scale = "free_y") ->
+  p3
 
-tmp %>% 
-  filter(model=="I") ->
-  ctmp
-t2 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
-t2
-
-tmp %>% 
-  filter(model=="EI") ->
-  ctmp
-t3 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
-t3
+p1 / p2 / p3 + plot_layout(guides = "collect") +
+  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+ggsave("figures/pac.pdf", dpi=600)
 ```
 
 
@@ -732,7 +849,7 @@ TODO - need timecourse plots for these below. Put them in a figure here aboure d
 # Figure 5 - Div/Sub results
 ## Panel - timecourses
 ```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp1 %>% 
+dmi_exp7 %>% 
   group_by(stim_rate, g, num_pop, q) %>%
   summarise(add_p=mean(add_p),
             back_p=mean(back_p),
@@ -747,11 +864,20 @@ dmi_exp1 %>%
 tmp %>% 
   filter(model %in% c("div_sub_p")) %>% 
   filter(num_pop == 50) %>% 
-  ggplot(aes(x=stim_rate, y=mi, color=g, group=g)) +
+  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=g)) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
   geom_line(size=0.5, alpha=0.9) +
   geom_point(size=0.7, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  lims(y=c(-.5, 0.75)) +
+  lims(y=c(-.3, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), 
        x="Stimulus firing rate", 
        title=TeX('Divisive fraction:')) +
