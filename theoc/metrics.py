@@ -116,7 +116,7 @@ def discrete_dist(x, m):
     return dist
 
 
-def discrete_entropy(x, m, logfn=np.log10):
+def discrete_entropy(x, m, logfn=np.log10, normalize=True):
     '''Returns the entropy of the X.
 
     Parameters
@@ -134,6 +134,9 @@ def discrete_entropy(x, m, logfn=np.log10):
     dist = discrete_dist(x, m)
     dist = dist[np.nonzero(dist)[0]]  # drop zeros
     h = -np.sum(dist * logfn(dist))
+
+    if normalize:
+        h /= logfn(m)
 
     return h
 
