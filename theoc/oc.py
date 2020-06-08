@@ -6,7 +6,7 @@ import cloudpickle
 import pandas as pd
 import os
 import numpy as np
-# import pyentropy as en
+from scipy.signal import welch
 
 from fakespikes import neurons, rates
 from pacpy.pac import ozkurt as pacfn
@@ -163,6 +163,18 @@ def oscillatory_coupling(num_pop=50,
     for k in d_spikes.keys():
         d_lfps[k] = create_lfps(d_spikes[k], tau=0.002, dt=.001)
 
+    # -- Extract peak power -------------------------------------------------
+    d_powers = {}
+    d_centers = {}
+    for k in d_lfps.keys():
+        freq, spectrum = welch(d_lfps[k],
+                               fs=1000,
+                               scaling='spectrum',
+                               average='median')
+        max_i = np.argmax(spectrum)
+        d_powers[k] = spectrum[max_i]
+        d_centers[k] = freq[max_i]
+
     # -- Measure OC using PAC -----------------------------------------------
     low_f = (int(f - 2), int(f + 2))
     high_f = (80, 250)
@@ -171,11 +183,14 @@ def oscillatory_coupling(num_pop=50,
     for k in d_lfps.keys():
         d_pacs[k] = pacfn(d_lfps['osc_p'], d_lfps[k], low_f, high_f)
 
+    # -
     result = {
         'MI': d_mis,
         'dMI': d_deltas,
         'H': d_hs,
         'PAC': d_pacs,
+        'power': d_powers,
+        'center': d_centers,
         'p_y': d_py,
         'bias': d_bias,
         'spikes': d_spikes,

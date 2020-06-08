@@ -24,6 +24,7 @@ def main(name, num_trials=20, verbose=False, **oc_kwargs):
     MI = defaultdict(list)
     dMI = defaultdict(list)
     PAC = defaultdict(list)
+    power = defaultdict(list)
 
     # -- Run
     iterations = range(num_trials)
@@ -53,6 +54,11 @@ def main(name, num_trials=20, verbose=False, **oc_kwargs):
             PAC[b].append(res['PAC'][b])
         PAC["trial"].append(i)
 
+        # Peak power
+        for b in res['power'].keys():
+            power[b].append(res['power'][b])
+        power["trial"].append(i)
+
     # -- Dump to disk!
     df_H = pd.DataFrame(H)
     df_H.to_csv(name + "_H.csv", index=False)
@@ -62,6 +68,8 @@ def main(name, num_trials=20, verbose=False, **oc_kwargs):
     df_dMI.to_csv(name + "_dMI.csv", index=False)
     df_PAC = pd.DataFrame(PAC)
     df_PAC.to_csv(name + "_PAC.csv", index=False)
+    df_power = pd.DataFrame(power)
+    df_power.to_csv(name + "_power.csv", index=False)
 
     return None
 
