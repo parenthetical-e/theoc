@@ -146,6 +146,7 @@ exp1path <- paste(path, "/exp1/", sep="")
 mi_exp1 <- load.data1(exp1path, "MI", stim_rates, qs, num_pops, qs)
 dmi_exp1 <- load.data1(exp1path, "dMI", stim_rates, qs, num_pops, qs)
 h_exp1 <- load.data1(exp1path, "H", stim_rates, qs, num_pops, qs)
+pac_exp1 <- load.data1(exp1path, "PAC", stim_rates, qs, num_pops, qs)
 ```
 
 ## Exp 2-6 - control experiments
@@ -356,6 +357,7 @@ tmp %>%
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.x = element_text(face = "bold")) +
   facet_grid(.~model) ->
   p3
 plot(p3)
@@ -387,6 +389,7 @@ tmp %>%
   labs(y=expression(paste(Delta, "MI")), x="Oscillation frequency") +
   theme_classic() +
   theme(strip.background = element_blank()) +
+  theme(strip.text.x = element_text(face = "bold")) +
   facet_wrap(model~., nrow=1) ->
   p1
 plot(p1)
@@ -409,6 +412,7 @@ tmp %>%
   labs(y=expression(paste(Delta, "MI")), x="Oscillation firing rate") +
   lims(x=c(1, 8), y=c(-0.5, 0.75)) +
   theme_classic() +
+  theme(strip.text.x = element_text(face = "bold")) +
   theme(strip.background = element_blank()) +
   facet_wrap(model~., nrow=1) ->
   p2
@@ -433,6 +437,7 @@ tmp %>%
   annotation_logticks(base = 10, sides = "b") +
   labs(y=expression(paste(Delta, "MI")), x="Population size") +
   theme_classic() +
+  theme(strip.text.x = element_text(face = "bold")) +
   theme(strip.background = element_blank()) +
   facet_wrap(model~., nrow=1) ->
   p3
@@ -458,6 +463,7 @@ tmp %>%
   labs(y=expression(paste(Delta, "MI")), x="Background size") +
   theme_classic() +
   theme(strip.background = element_blank()) +
+  theme(strip.text.x = element_text(face = "bold")) +
   facet_wrap(model~., nrow=1) ->
   p4
 plot(p4)
@@ -484,17 +490,121 @@ tmp %>%
   labs(y=expression(paste(Delta, "MI")), x="Entropy bin size (m)") +
   theme_classic() +
   theme(strip.background = element_blank()) +
+  theme(strip.text.x = element_text(face = "bold")) +
   facet_wrap(model~., nrow=1) -> 
   p5
 plot(p5)
 ```
 
-## Build Figure 3
+## Build Figure
 ```{r, fig.width=2.1, fig.height=4.4, echo=FALSE, warning=FALSE, message=FALSE}
 p1 / p2 / p3 / p4 / p5 + 
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/figure3.pdf", dpi=600)
 ```
+# FIgure - PAC and info
+Plot raw, not deltas. Overall r_s, g, pop_size=50.
+1. PAC v H (E,I,EI)
+2. PAC v MI (....)
+3. PAC v MI, split by E,I,EI models and S alone.
+```{r, fig.width=1.1, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
+h_exp1 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, h, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp1
+
+mi_exp1 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp2
+
+dmi_exp1 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp3
+
+pac_exp1 %>% 
+  filter(q == "0.0") %>% 
+  filter(num_pop == 50) %>% 
+  gather(model, pac, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp4
+
+tmp <- full_join(tmp1, tmp2)
+tmp <- full_join(tmp, tmp3)
+tmp <- full_join(tmp, tmp4)
+
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
+tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+
+tmp %>% 
+  ggplot(aes(x=pac, y=h)) +
+  geom_point(size=0.1, alpha=0.4) +
+  geom_hline(yintercept=0, color="dark grey") +
+  lims(y=c(0, 1.5)) +
+  labs(y="Entropy", x="PAC") +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~.) ->
+  p1
+# plot(p1)
+
+tmp %>% 
+  # filter(g == 1) %>% 
+  ggplot(aes(x=pac, y=dmi)) +
+  geom_point(size=0.1, alpha=0.9) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  lims(y=c(-.5, 0.75)) +
+  labs(y=expression(paste(Delta, "MI")), x="PAC") +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(legend.position =  "none") +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  # stat_cor(method = "spearman", label.x = 0.01, label.y = 0.72, cor.coef.name = "rho") +
+  facet_grid(model~.) ->
+  p2
+# plot(p2)
+
+(p1 / p2) + plot_layout(guides = 'collect') +
+  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+  
+ggsave("figures/pac.pdf", dpi=600)
+```
+### Sig test results
+```{r}
+tmp %>% 
+  filter(model=="E") ->
+  ctmp
+t1 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
+t1
+
+tmp %>% 
+  filter(model=="I") ->
+  ctmp
+t2 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
+t2
+
+tmp %>% 
+  filter(model=="EI") ->
+  ctmp
+t3 <- cor.test(ctmp$pac, ctmp$dmi, method="spearman")
+t3
+```
+
+
+
+
 
 # Figure 4 - Div/sub intro
 ## Panel - FI arithmatic
@@ -587,6 +697,7 @@ TODO - need timecourse plots for these below. Put them in a figure here aboure d
 
 
 # Figure 5 - Div/Sub results
+## Panel - timecourses
 ```{r, fig.width=3, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
 dmi_exp1 %>% 
   group_by(stim_rate, g, num_pop, q) %>%
