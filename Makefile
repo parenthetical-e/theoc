@@ -149,3 +149,48 @@ exp8:
 			--joblog 'data/exp8.log' \
 			--nice 19 --colsep ',' \
 			'python theoc/run_oc.py data/exp8/stim_rate{1}_g{2}_num_pop{4}_q{3} --num_trials=100 --num_background=5 --t=5 --osc_rate=2 --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 15 20 25 30 ::: 1 2 3 4 5 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 50 
+
+
+ --------------------------------------------------------------------------
+# 6/3/2020
+# ba9f3a887843d213ac8d34f25b8ffa4630c8b920
+#
+# RERUN -  Control experiments. (These were exp9-5). 
+#
+#                      ***I changed how H is calculated***
+#
+# freq
+exp9:
+	-mkdir data/exp9
+	-rm data/exp9/*
+	parallel -j 4 -v \
+			--joblog 'data/exp9.log' \
+			--nice 19 --colsep ',' \
+			'python theoc/run_oc.py data/exp9/f{1} --num_trials=20 --num_background=5 --t=5 --osc_rate=2 --f={1} --g=4 --g_max=8 --q=0.5 --stim_rate=10 --frac_std=0.01 --m=10 --num_pop=50' ::: 4 6 8 12 20 30
+
+# osc_rate (fix g=1, freq=6)
+exp10:
+	-mkdir data/exp10
+	-rm data/exp10/*
+	parallel -j 4 -v \
+			--joblog 'data/exp10.log' \
+			--nice 19 --colsep ',' \
+			'python theoc/run_oc.py data/exp10/osc_rate{1} --num_trials=20 --num_background=5 --t=5 --osc_rate={1} --f=6 --g=1 --g_max=8 --q=0.5 --stim_rate=10 --frac_std=0.01 --m=10 --num_pop=50' ::: 2 3 4 6 8
+
+# m (2*stim, 1/2stim)
+exp11:
+	-mkdir data/exp11
+	-rm data/exp11/*
+	parallel -j 4 -v \
+			--joblog 'data/exp11.log' \
+			--nice 19 --colsep ',' \
+			'python theoc/run_oc.py data/exp11/m{1} --num_trials=20 --num_background=5 --t=5 --osc_rate=2 --f=6 --g=4 --g_max=8 --q=0.5 --stim_rate=10 --frac_std=0.01 --m={1} --num_pop=50' ::: 5 10 20
+
+# num_background
+exp12:
+	-mkdir data/exp12
+	-rm data/exp12/*
+	parallel -j 4 -v \
+			--joblog 'data/exp12.log' \
+			--nice 19 --colsep ',' \
+			'python theoc/run_oc.py data/exp12/num_background{1} --num_trials=20 --num_background={1} --t=5 --osc_rate=2 --f=6 --g=4 --g_max=8 --q=0.5 --stim_rate=10 --frac_std=0.01 --m=10 --num_pop=50' ::: 5 10 15 20 25
