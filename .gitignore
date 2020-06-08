@@ -1,6 +1,7 @@
 # data
 data/*
 *.Rproj
+*.Rdata
 *.Rhistory
 *.DS_store
 *.html 
