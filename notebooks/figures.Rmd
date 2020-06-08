@@ -559,7 +559,6 @@ tmp %>%
 # plot(p1)
 
 tmp %>% 
-  # filter(g == 1) %>% 
   ggplot(aes(x=pac, y=dmi)) +
   geom_point(size=0.1, alpha=0.9) +
   geom_hline(yintercept=0, color="dark grey") + 
@@ -571,7 +570,6 @@ tmp %>%
   theme(legend.key.size = unit(.3, "cm")) +
   theme(legend.position =  "none") +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
-  # stat_cor(method = "spearman", label.x = 0.01, label.y = 0.72, cor.coef.name = "rho") +
   facet_grid(model~.) ->
   p2
 # plot(p2)
