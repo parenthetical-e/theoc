@@ -109,9 +109,9 @@ def oscillatory_coupling(num_pop=50,
     d_bias['mult'] = d_bias['stim'] * ((g_max - g + 1) * d_bias['osc'])
     d_bias['add'] = d_bias['stim'] + (g * d_bias['osc'])
     d_bias['sub'] = d_bias['stim'] - (g * d_bias['osc'])
-    div = q * (g * d_bias['osc'])
-    sub = (1 - q) * (g * d_bias['osc'])
-    d_bias['div_sub'] = (d_bias['stim'] / div) - sub
+    div = d_bias['stim'] / (g * d_bias['osc'])
+    sub = d_bias['stim'] - (g * d_bias['osc'])
+    d_bias['div_sub'] = (q * div) + ((1 - q) * sub)
 
     # -
     # Nonlinear transform (RELU)
