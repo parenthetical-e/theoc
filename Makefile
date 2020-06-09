@@ -155,7 +155,7 @@ exp8:
 # 6/3/2020
 # ba9f3a887843d213ac8d34f25b8ffa4630c8b920
 #
-# RERUN -  Control experiments. (These were exp9-5). 
+# RERUN -  Control experiments. (These were exp2-5). 
 #
 #				***I changed how H is calculated***
 #
@@ -208,7 +208,7 @@ exp12:
 exp13:
 	-mkdir data/exp13
 	-rm data/exp13/*
-	parallel -j 4 -v \
+	parallel -j 2 -v \
 			--joblog 'data/exp13.log' \
 			--nice 19 --colsep ',' \
 			'python theoc/run_oc.py data/exp13/stim_rate{1}_g{2}_num_pop{4}_q{3} --num_trials=100 --num_background=5 --t=5 --osc_rate=2 --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 15 20 25 30 ::: 1 2 3 4 5 7 8 ::: 0.05 0.25 0.5 0.75 0.95 ::: 50 
