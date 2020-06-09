@@ -210,11 +210,11 @@ fi = data.frame(
   mult=phi2(input*1.5, 1, 20))
 
 fi %>% 
-  ggplot(aes(x=input, y=add)) +
+  ggplot(aes(x=input, y=mult)) +
   geom_line(color="black") +
   geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
-  theme_classic() +
-  geom_segment(aes(x = 34, xend = 14, y = 30, yend = 30),
+  theme_classic() + 
+  geom_curve(aes(x = 45, xend = 25, y = 55, yend = 64),
                   lineend = "round", linejoin = "round",
                   size=.08,
                   arrow = arrow(length = unit(0.1, "cm"))) +
@@ -223,35 +223,34 @@ fi %>%
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) ->
+        axis.ticks.y=element_blank()) ->  
   p1
 
 fi %>% 
-  ggplot(aes(x=input, y=sub)) +
+  ggplot(aes(x=input, y=add)) +
   geom_line(color="black") +
   geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
-  theme_classic() + 
+  theme_classic() +
   labs(y="Output") +
-  geom_segment(aes(x = 66, xend = 86, y = 30, yend = 30),
+  geom_segment(aes(x = 34, xend = 14, y = 30, yend = 30),
                   lineend = "round", linejoin = "round",
                   size=.08,
                   arrow = arrow(length = unit(0.1, "cm"))) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
-        #axis.title.y=element_blank(),
+        # axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) -> 
+        axis.ticks.y=element_blank()) ->
   p2
-# plot(p2)
 
 fi %>% 
-  ggplot(aes(x=input, y=mult)) +
+  ggplot(aes(x=input, y=sub)) +
   geom_line(color="black") +
   geom_line(data=fi, mapping=aes(x=input, y=ref), color="grey") +
   theme_classic() + 
   labs(x="Input") +
-  geom_curve(aes(x = 70, xend = 60, y = 55, yend = 64),
+  geom_segment(aes(x = 66, xend = 86, y = 30, yend = 30),
                   lineend = "round", linejoin = "round",
                   size=.08,
                   arrow = arrow(length = unit(0.1, "cm"))) +
@@ -260,20 +259,105 @@ fi %>%
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) ->  
+        axis.ticks.y=element_blank()) -> 
   p3
-# plot(p3)
 
-p1_label <- as_ggplot(text_grob("E", hjust=3))
-p2_label <- as_ggplot(text_grob("I", hjust=6))
-p3_label <- as_ggplot(text_grob("EI", hjust=2))
-
-(p1 + p1_label) / (p2 + p2_label) / (p3 + p3_label)
+p1 / p2 / p3
 ```
+## Panel - timecourse
+```{r, fig.width=2.5, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+examples <- read_csv("../data/examples.csv")
+example_dists <- read_csv("../data/example_dists.csv")
 
+examples %>% 
+  ggplot(aes(x=times, y=stim_p)) +
+  geom_line() +
+  geom_line(aes(x=times, y=stim_ref), color="red") +
+  scale_y_continuous(breaks=c(0, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="", y="S") + 
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_text(angle = 0, vjust = 0.5),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->
+p4
+
+examples %>% 
+  ggplot(aes(x=times, y=osc_ref)) +
+  geom_line() +
+  scale_y_continuous(breaks=c(0, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="", y="O") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_text(angle = 0, vjust = 0.5),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->
+p5
+
+examples %>% 
+  ggplot(aes(x=times, y=mult_p)) +
+  geom_line() +
+  geom_line(aes(x=times, y=stim_ref), color="red") +
+  scale_y_continuous(breaks=c(0, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="", y="EI") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_text(angle = 0, vjust = 0.5),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->
+p6
+
+examples %>% 
+  ggplot(aes(x=times, y=add_p)) +
+  geom_line() +
+  geom_line(aes(x=times, y=stim_ref), color="red") +
+  scale_y_continuous(breaks=c(0, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="", y="E") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_text(angle = 0, vjust = 0.5),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->
+p7
+
+examples %>% 
+  ggplot(aes(x=times, y=sub_p)) +
+  geom_line() +
+  geom_line(aes(x=times, y=stim_ref), color="red") +
+  scale_y_continuous(breaks=c(0, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="Time", y="I") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_text(angle = 0, vjust = 0.5),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) ->
+p8
+
+p4 / p5 / p6 / p7 / p8
+```
 ## Build Figure
+```{r, fig.width=2.2, fig.height=2.4, echo=FALSE, warning=FALSE, message=FALSE}
+b1 <- plot_spacer() + p4 + plot_layout(widths = c(0.2, 0.8))
+b2 <- plot_spacer() + p5 + plot_layout(widths = c(0.2, 0.8))
+b3 <- p1 + 
+  ggtitle("FI modulation") + 
+  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) + 
+  p6 + plot_layout(widths = c(0.2, 0.8))
+b4 <- p2 + p7 + plot_layout(widths = c(0.2, 0.8))
+b5 <- p3 + p8 + plot_layout(widths = c(0.2, 0.8))
 
+b1 / b2 / b3 / b4 / b5 
+ggsave("figures/example.pdf", dpi=600)
+```
 # Figure - Entropy and probability
+
+# Figure - Dists
+
 
 # Figure - Mutual information and oscillation
 ## Panel - Overall 
@@ -378,7 +462,7 @@ plot(p3)
 ```
 
 ## Build Figure 
-```{r, fig.width=3.5, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=3.5, fig.height=1.1, echo=FALSE, warning=FALSE, message=FALSE}
 p1 + p2 + p3 + 
   plot_layout(widths = c(2, 0.75, 6)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
