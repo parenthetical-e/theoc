@@ -189,6 +189,21 @@ dmi_exp6 <- load.data6(exp_path, "dMI", num_pops)
 h_exp6 <- load.data6(exp_path, "H", num_pops)
 ```
 
+## II results
+```{r, message=FALSE, warning=FALSE, error=FALSE}
+stim_rates <- c(5, 10, 15, 20, 25, 30)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(50)
+qs <- c("0.05", "0.25", "0.5", "0.75", "0.95")
+
+exp_path <- paste(path, "/exp13/", sep="")
+mi_exp13 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops, qs)
+dmi_exp13 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops, qs)
+h_exp13 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
+pac_exp13 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
+pow_exp13 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
+```
+
 # Figure - Examples 
 ## Panel - FI
 ```{r, fig.width=01.2, fig.height=1.85, echo=FALSE, warning=FALSE, message=FALSE}
@@ -1015,7 +1030,7 @@ b1
 
 ## Panel - MI
 ```{r, fig.width=3, fig.height=1.9, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp8 %>%
+dmi_exp13 %>%
   filter(num_pop == 50) %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("div_sub_p")) -> tmp
@@ -1034,7 +1049,7 @@ tmp %>%
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
 
-dmi_exp8 %>% 
+dmi_exp13 %>% 
   group_by(stim_rate, g, num_pop, q) %>%
   summarise(add_p=mean(add_p),
             back_p=mean(back_p),
