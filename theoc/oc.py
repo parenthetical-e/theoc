@@ -59,6 +59,7 @@ def oscillatory_coupling(num_pop=50,
                          m=8,
                          priv_std=0,
                          dt=0.001,
+                         squelch=False,
                          save=None,
                          stim_seed=None,
                          seed=None):
@@ -96,8 +97,14 @@ def oscillatory_coupling(num_pop=50,
     # Background is 2 Hz
     d_bias['back'] = rates.constant(times, 2)
 
-    # Drives proper
-    d_bias['osc'] = rates.osc(times, osc_rate, f)
+    # Drives proper:
+    # 1. O
+    if not squelch:
+        d_bias['osc'] = rates.osc(times, osc_rate, f)
+    else:
+        d_bias['osc'] = rates.constant(times, osc_rate)
+
+    # 2. S
     d_bias['stim'] = rates.stim(times,
                                 stim_rate,
                                 stim_std,
