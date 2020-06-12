@@ -99,9 +99,8 @@ def oscillatory_coupling(num_pop=50,
 
     # Drives proper:
     # 1. O
-    if not squelch:
-        d_bias['osc'] = rates.osc(times, osc_rate, f)
-    else:
+    d_bias['osc'] = rates.osc(times, osc_rate, f)
+    if squelch:
         d_bias['osc'] = rates.constant(times, osc_rate)
 
     # 2. S
