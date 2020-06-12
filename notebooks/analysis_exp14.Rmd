@@ -1,0 +1,165 @@
+---
+title: "Exp14 - modulation without oscillation"
+output: html_notebook
+---
+
+# Libraries and helpers
+```{r helper_fns, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(plyr)
+library(readr)
+library(dplyr)
+library(png)
+library(psd)
+library(tidyr)
+library(patchwork)
+library(scales)
+library(ggpubr)
+library(cowplot)
+library(latex2exp)
+# library(NNTbiomarker)
+# library(bspec)
+
+load.data1 <- function(path, type, stim_rates, qs, num_pops){
+  df <- NULL
+  for(r_s in stim_rates){
+    for(g in gs){
+      for(n in num_pops){
+        for(q in qs){
+          try({
+            name <- paste("stim_rate", as.character(r_s), 
+                          "_g", as.character(g),
+                          "_num_pop", as.character(n),
+                          "_q", as.character(q),
+                          "_", as.character(type), 
+                          ".csv", sep="")
+            di <- read.csv(paste(path, name, sep=""))
+            di["stim_rate"] <- rep(r_s, nrow(di))
+            di["g"] <- rep(g, nrow(di))
+            di["num_pop"] <- rep(n, nrow(di))
+            di["q"] <- rep(q, nrow(di))
+            di["trial"] <- 1:nrow(di)
+            df <- rbind(df, di)  
+          })  
+        }
+      }
+    }
+  }
+  df
+}
+```
+
+
+## Exp - the main results 
+```{r load1, message=FALSE, warning=FALSE, error=FALSE}
+path <- "~/Code/theoc/data/"
+
+# Params
+stim_rates <- c(5, 10, 15, 20, 25, 30)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(50)
+qs <- c("0.5")
+
+# Exp8 is the osc standard
+exp_path <- paste(path, "/exp8/", sep="")
+mi_exp8 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops)
+dmi_exp8 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops)
+
+# Exp14 is what I'm interested in
+exp_path <- paste(path, "/exp14/", sep="")
+mi_exp14 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops)
+dmi_exp14 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops)
+
+# Add labels, and full_join
+mi_exp8$exp <- "Osc."
+mi_exp14$exp <- "Tonic"
+dmi_exp8$exp <- "Osc."
+dmi_exp14$exp <- "Tonic"
+mi <- full_join(mi_exp8, mi_exp14)
+dmi <- full_join(dmi_exp8, dmi_exp14)
+```
+
+```{r, fig.width=0.9, fig.height=1.6, echo=FALSE, warning=TRUE, message=FALSE}
+dmi %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  tmp
+
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
+tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+tmp$exp <- factor(tmp$exp, levels=c("Osc.", "Tonic"))
+
+# --------------------------------------------------------------
+# Models overall
+tmp %>% 
+  group_by(stim_rate,g,exp,model) %>% 
+  summarise(m=mean(mi)) ->
+  tmp
+
+tmp %>% 
+  ggplot(aes(x=exp, y=m, group=interaction(stim_rate,g))) +
+  geom_line(size=0.2, alpha=0.3) +
+  geom_point(size=0.3, alpha=0.3) +
+  stat_summary(aes(group=exp), fun=mean, 
+               geom="point", colour="black", alpha=1, size=6, shape="_") +
+  geom_hline(yintercept=0, size=0.4, color="dark grey") + 
+  labs(y=expression(paste(Delta, "MI")), x="Modulation") +
+  facet_grid(model~., scale = "free_y") +
+  theme_classic2() +
+  theme(strip.background = element_blank()) +
+  theme(legend.position = "none") +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.x = element_blank()) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~., scale = "free_y") ->
+  p1
+
+p1
+```
+
+# Plot diffs of diffs
+
+```{r, fig.width=4, fig.height=2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi %>% 
+  group_by(exp) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p")) %>% 
+  spread(exp, mi) %>% 
+  group_by(trial, stim_rate, g, num_pop, q, model) %>% 
+  mutate(ddmi = const - osc) %>% 
+  ungroup() ->
+  tmp
+
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
+tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+
+tmp %>% 
+  ggplot(aes(x=stim_rate, y=ddmi, color=factor(g))) +
+  geom_jitter(size=0.1, alpha=0.3) +
+  stat_smooth(se=TRUE) +
+  facet_grid(model~.) +
+  lims(x=c(0, 30)) +
+  theme_classic2() + 
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  theme(strip.background = element_blank()) +
+  theme(legend.position = "none") +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  theme(strip.text.x = element_text(angle = 0, face = "bold")) +
+  facet_grid(model~g, scale = "free_y") ->
+p2
+p2
+```
