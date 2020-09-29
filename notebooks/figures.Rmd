@@ -206,7 +206,7 @@ pow_exp13 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
 ```
 
 # Figure - FI
-```{r, fig.width=0.8, fig.height=1.4, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=0.8, fig.height=1.7, echo=FALSE, warning=FALSE, message=FALSE}
 phi1 <- function(x) {
   30 / (1 + exp(-.2*x + 5))
 }
@@ -223,12 +223,13 @@ fi = data.frame(
   ref=phi2(input, 1, 0), 
   E=phi2(input+10, 1, 0), 
   I=phi2(input-10, 1, 0), 
-  EI=phi2(input*1.5, 1, 0))
+  EI=phi2(input*1.5, 1, 0),
+  II=phi2((input/1.5)-10, 1, 0))
 
 fi %>% 
-  gather(model, fi, E:EI) -> fi
+  gather(model, fi, E:II) -> fi
 
-fi$model <- factor(fi$model, levels=c("EI", "E", "I"))
+fi$model <- factor(fi$model, levels=c("EI", "E", "I", "II"))
 
 fi %>% 
   filter(model != "ref") %>% 
@@ -249,7 +250,7 @@ p1
 ggsave("figures/arithmetic.pdf", dpi=600)
 ```
 # Figure - Examples
-```{r, fig.width=3, fig.height=4.5, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=3, fig.height=5.2, echo=FALSE, warning=FALSE, message=FALSE}
 examples <- read_csv("../data/examples.csv")
 
 # S
@@ -395,11 +396,34 @@ ggplot(aes(x=frequency, y=log10(power))) +
   lims(y=c(-3,2)) +
   theme_classic2() -> s8
 
+# II
+examples %>% 
+  ggplot(aes(x=times, y=div_sub_p)) +
+  geom_line() +
+  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
+  labs(x="Time", y="II", tag="f.") +
+  theme_classic2() + 
+  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
+  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face="bold")) ->
+p10
 
-((p4 / p5 / p9 / p6 / p7 / p8) | (s4 / s5 / s9 / s6 / s7 / s8)) +
+
+examples %>% 
+  select(div_sub_p) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="black") +
+  labs(x="Frequency.", y="Power", tag="k.") +
+  lims(y=c(-3,2)) +
+  theme_classic2() -> s10
+
+((p4 / p5 / p9 / p6 / p7 / p8 / p10) | (s4 / s5 / s9 / s6 / s7 / s8 / s10)) +
   plot_layout(width = c(0.75, 0.25)) +
   # plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/example.pdf", dpi=600, width=2*3, height=2*4.8)
+ggsave("figures/example.pdf", dpi=600, width=2*3, height=2*5.4)
 ```
 
 # Figure - Entropy and probability
@@ -475,7 +499,7 @@ ggsave("figures/entropy.pdf", dpi=600)
 ```
 
 # Figure - Dists
-```{r, fig.width=1.4, fig.height=2.5, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=1.4, fig.height=4.2, echo=FALSE, warning=FALSE, message=FALSE}
 example_dists <- read_csv("../data/example_dists.csv")
 
 example_dists %>% 
@@ -483,59 +507,68 @@ example_dists %>%
   geom_bar(stat="identity", alpha=1) +
   geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
-  labs(y="", x="", title="Estimating mutual\ninformation") +
+  labs(y="", x="", tag="a.", title="Estimating mutual\ninformation") +
   lims(y=c(0,1)) +
   theme_classic2() + 
-  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
-  theme(axis.text.x=element_blank()) -> p0
+  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p0
 
 example_dists %>% 
   ggplot(aes(x=m, y=mult_p)) +
   geom_bar(stat="identity", alpha=1) +
   geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
-  labs(y="", x="") +
+  labs(y="", x="", tag="b.") +
   lims(y=c(0,1)) +
   theme_classic2() + 
-  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
-  theme(axis.text.x=element_blank()) -> p1
+  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p1
 
 example_dists %>% 
   ggplot(aes(x=m, y=add_p)) +
   geom_bar(stat="identity", alpha=1) +
   geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
-  labs(y="", x="") +
+  labs(y="", x="", tag="c.") +
   lims(y=c(0,1)) +
-  theme_classic2() + 
-  theme(axis.text.x=element_blank()) -> p2
+  theme_classic2() -> p2
 
 example_dists %>% 
   ggplot(aes(x=m, y=sub_p)) +
   geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
   geom_bar(stat="identity", alpha=1) +
   scale_x_continuous(breaks=0:9, labels=1:10) +
-  labs(y="", x="m") +
+  labs(y="", x="", tag="d.") +
   lims(y=c(0,1)) +
   theme_classic2() -> p3
+
+example_dists %>% 
+  ggplot(aes(x=m, y=div_sub_p)) +
+  geom_bar(stat="identity", alpha=1) +
+  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  scale_x_continuous(breaks=0:9, labels=1:10) +
+  labs(y="", x="m", tag="e.") +
+  lims(y=c(0,1)) +
+  theme_classic2() + 
+  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p4
 
 y_label <- as_ggplot(text_grob("Probability", hjust=0, rot = 90))
 p0_label <- as_ggplot(text_grob("S", hjust=1, face="bold"))
 p1_label <- as_ggplot(text_grob("EI", hjust=1, face="bold"))
 p2_label <- as_ggplot(text_grob("E", hjust=1, face="bold"))
 p3_label <- as_ggplot(text_grob("I", hjust=1, face="bold"))
+p4_label <- as_ggplot(text_grob("II", hjust=1, face="bold"))
 
 b0 <- p0 + p0_label + plot_layout(widths = c(0.8, 0.2))
 b1 <- p1 + p1_label + plot_layout(widths = c(0.8, 0.2))
 b2 <- p2 + p2_label + plot_layout(widths = c(0.8, 0.2))
 b3 <- p3 + p3_label + plot_layout(widths = c(0.8, 0.2))
+b4 <- p4 + p4_label + plot_layout(widths = c(0.8, 0.2))
 
-b <- (b0 / b1 / b2 / b3) 
+b <- (b0 / b1 / b2 / b3 / b4) 
 y_label + b + plot_layout(widths = c(0.1, 0.9))
 ggsave("figures/dist.pdf", dpi=600)
 ```
 
-# Figure - Overall - Mutual information and oscillation
+# Figure - Overall 1 - Mutual information and oscillation
 ```{r, fig.width=3.5, fig.height=1.1, echo=FALSE, warning=FALSE, message=FALSE}
 dmi_exp8 %>% 
   filter(q == "0.05") %>% 
@@ -636,13 +669,85 @@ tmp %>%
 p1 + p2 + p3 + 
   plot_layout(widths = c(0.2, 0.08, 0.7)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/mi.pdf", dpi=600)
+ggsave("figures/overall1.pdf", dpi=600)
 ```
 ### Sig test results 
 - For the paper.
 ```{r}
 compare_means(mi~model, tmp)
 ```
+
+# Figure - Overall 2 - Div/sub 
+```{r, fig.width=3.2, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+# --------------------------------------------------------------
+## Panel - MI
+dmi_exp13 %>%
+  filter(num_pop == 50) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("div_sub_p")) -> tmp
+
+tmp$model <- revalue(tmp$model, c("div_sub_p"="II")) 
+
+tmp %>% 
+  ggplot(aes(x=model, y=mi)) +
+  geom_jitter(size=.04, alpha=0.15) +
+  stat_summary(aes(group=model), fun.y=median, 
+               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+  geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
+  lims(y=c(-.35, 0.5)) +
+  labs(y=expression(paste(Delta, "MI")), x="", title="") +
+  theme_classic() + 
+  theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
+  p1
+
+# --------------------------------------------------------------
+dmi_exp13 %>% 
+  group_by(stim_rate, g, num_pop, q) %>%
+  summarise(add_p=mean(add_p),
+            back_p=mean(back_p),
+            div_sub_p=mean(div_sub_p),
+            mult_p=mean(mult_p),
+            osc_p=mean(osc_p),
+            stim_p=mean(stim_p),
+            sub_p=mean(sub_p)) %>%
+  ungroup() %>%
+  gather(model, mi, add_p:sub_p) -> tmp
+
+tmp %>% 
+  filter(model %in% c("div_sub_p")) %>% 
+  filter(num_pop == 50) %>% 
+  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=g)) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  geom_line(size=0.5, alpha=0.9) +
+  geom_point(size=0.7, alpha=1) +
+  geom_hline(yintercept=0, color="dark grey") + xlab("") +
+  lims(y=c(-.3, 0.5)) +
+  labs(y=expression(paste(Delta, "MI")), 
+       x="Stimulus firing rate", 
+       title='II - divisive fraction') +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(plot.title = element_text(size = 10, hjust=0.5, face = "bold")) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  facet_grid(.~q) -> p2
+
+# --------------------------------------------------------------
+## Build Figure
+p1 + p2 + plot_layout(widths = c(0.07, 0.9)) +
+  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+ggsave("figures/overall2.pdf", dpi=600)
+```
+
+
 
 # Figure - Constant
 ```{r, fig.width=0.9, fig.height=1.6, echo=FALSE, warning=TRUE, message=FALSE}
@@ -1108,129 +1213,5 @@ tmp %>%
 p1 / p2 / p3 + plot_layout(guides = "collect") +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/pac.pdf", dpi=600)
-```
-
-# Figure - Div/sub intro
-```{r, fig.width=3.2, fig.height=1.8, echo=FALSE, warning=FALSE, message=FALSE}
-input = -20:40
-
-fi = data.frame(
-  ref=phi2(input, 1, 0), 
-  II=phi2((input/1.5)-10, 1, 0))
-
-fi %>% 
-  gather(model, fi, II) -> fi
-
-fi %>% 
-  filter(model != "ref") %>% 
-  ggplot(aes(x=input, y=fi)) +
-  geom_line() +
-  geom_line(aes(x=input, y=ref), color="black", linetype = 2) +
-  facet_grid(model~.) +
-  labs(x="Input", y="Output", title="Neural arithmetic") +
-  theme_classic2() +
-  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
-  theme(strip.background = element_blank()) +
-  theme(legend.background = element_rect(colour ="black")) +
-  theme(legend.key.size = unit(.3, "cm")) +
-  theme(strip.text.y = element_text(face = "bold", angle = 0)) ->
-  p0
-
-# --------------------------------------------------------------
-## Panel - Example
-examples <- read_csv("../data/examples.csv")
-example_dists <- read_csv("../data/example_dists.csv")
-
-examples %>% 
-  ggplot(aes(x=times, y=div_sub_p)) +
-  geom_line() +
-  geom_line(aes(x=times, y=stim_ref), color="darkgrey") +
-  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
-  labs(x="Time", y="II", title="Example timecourse") +
-  theme_classic2() + 
-  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
-  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face="bold")) ->
-p1
-
-## Dist
-example_dists %>% 
-  ggplot(aes(x=m, y=div_sub_p)) +
-  geom_bar(stat="identity", alpha=1) +
-  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
-  scale_x_continuous(breaks=0:9, labels=1:10) +
-  labs(y="Probability", x="m", title="Distribution") +
-  lims(y=c(0,1)) +
-  theme_classic2() + 
-  theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p2
-
-b1 <- p0 + p1 + p2 + plot_layout(widths = c(0.2, 0.6, 0.3))
-
-# --------------------------------------------------------------
-## Panel - MI
-dmi_exp13 %>%
-  filter(num_pop == 50) %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("div_sub_p")) -> tmp
-
-tmp$model <- revalue(tmp$model, c("div_sub_p"="II")) 
-
-tmp %>% 
-  ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.04, alpha=0.15) +
-  stat_summary(aes(group=model), fun.y=median, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
-  geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  lims(y=c(-.35, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="", title="") +
-  theme_classic() + 
-  theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
-  p1
-
-# --------------------------------------------------------------
-dmi_exp13 %>% 
-  group_by(stim_rate, g, num_pop, q) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) -> tmp
-
-tmp %>% 
-  filter(model %in% c("div_sub_p")) %>% 
-  filter(num_pop == 50) %>% 
-  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=g)) +
-  scale_color_manual("g", values = c(
-    "lightsteelblue3",
-    "lightskyblue3",
-    "steelblue3",
-    "steelblue4",
-    "slateblue2", 
-    "slateblue3",
-    "mediumpurple4"
-    )) +
-  geom_line(size=0.5, alpha=0.9) +
-  geom_point(size=0.7, alpha=1) +
-  geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  lims(y=c(-.3, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), 
-       x="Stimulus firing rate", 
-       title='Divisive fraction') +
-  theme_classic() +
-  theme(strip.background = element_blank()) +
-  theme(plot.title = element_text(size = 7, hjust=0, face = "bold")) +
-  theme(legend.background = element_rect(colour ="black")) +
-  theme(legend.key.size = unit(.3, "cm")) +
-  facet_grid(.~q) -> p2
-
-# --------------------------------------------------------------
-## Build Figure
-b2 <- p1 + p2 + plot_layout(widths = c(0.07, 0.9))
-(b1 / b2) + plot_layout(heights = c(0.4, 0.6)) + 
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/ii.pdf", dpi=600)
 ```
 
