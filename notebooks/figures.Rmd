@@ -12,6 +12,7 @@ library(plyr)
 library(readr)
 library(dplyr)
 library(png)
+library(bspec)
 library(psd)
 library(tidyr)
 library(patchwork)
@@ -247,9 +248,27 @@ fi %>%
 p1
 ggsave("figures/arithmetic.pdf", dpi=600)
 ```
+# Figure - Examples
+```{r}
+# arrow 
+arrow <- data.frame(x=0.5, xend=0.5, y=1, yend=0)
+arrow %>% 
+ggplot(aes(x=x, y=y, xend=xend, yend = yend)) +
+  geom_segment(
+    lineend = "butt", linejoin = "mitre",
+    size = 1, arrow = arrow(length = unit(0.2, "inches"))
+  ) +
+  labs(x="", y="") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank()) +
+  theme(axis.text = element_blank()) +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  theme(strip.text = element_blank()) +
+  theme(axis.line = element_blank()) -> a1
+```
 
-# Figure - Timecourse
-```{r, fig.width=2.5, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=3, fig.height=4.5, echo=FALSE, warning=FALSE, message=FALSE}
 examples <- read_csv("../data/examples.csv")
 
 # S
@@ -258,10 +277,23 @@ examples %>%
   geom_line(color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="S", title="Timecourse examples") + 
+  labs(x="", y="S", tag="a.", title="Timecourse examples") + 
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) +
   theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) ->
 p4
+
+examples %>% 
+  select(stim_p) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="darkgrey") +
+  labs(x="", y="Power", tag="f.", title="Power spectrum") +
+  lims(y=c(-3,2)) +
+  theme_classic2() +
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> s4
 
 # O
 examples %>% 
@@ -269,46 +301,98 @@ examples %>%
   geom_line(size=1.2) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="O") +
+  labs(x="", y="O", tag="b.") +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
 p5
+
+examples %>% 
+  select(osc_p) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="black") +
+  labs(x="", y="Power", tag="g.") +
+  lims(y=c(-3,2)) +
+  theme_classic2() -> s5
+
 
 # EI
 examples %>% 
   ggplot(aes(x=times, y=mult_p)) +
   geom_line() +
-  geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
+  # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="EI") +
+  labs(x="", y="EI", tag="c.") +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
 p6
+
+examples %>% 
+  select(mult_p) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="black") +
+  labs(x="", y="Power", tag="h.") +
+  lims(y=c(-3,2)) +
+  theme_classic2() -> s6
 
 # E
 examples %>% 
   ggplot(aes(x=times, y=add_p)) +
   geom_line() +
-  geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
+  # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="E") +
+  labs(x="", y="E", tag="d.") +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
 p7
+
+examples %>% 
+  select(add_p) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="black") +
+  labs(x="", y="Power", tag="i.") +
+  lims(y=c(-3,2)) +
+  theme_classic2() -> s7
+
 
 # I
 examples %>% 
   ggplot(aes(x=times, y=sub_p)) +
   geom_line() +
-  geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.2) +
+  # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.2) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="Time", y="I") +
+  labs(x="Time", y="I", tag="e.") +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
 p8
 
-p4 / p5 / p6 / p7 / p8 + 
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/example.pdf", dpi=600)
+examples %>% 
+  select(sub_p) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="black") +
+  labs(x="Frequency.", y="Power", tag="k.") +
+  lims(y=c(-3,2)) +
+  theme_classic2() -> s8
+
+
+((p4 / p5 / a1 / p6 / p7 / p8) | (s4 / s5 / plot_spacer() / s6 / s7 / s8)) +
+  plot_layout(width = c(0.75, 0.25)) +
+  # plot_annotation(tag_levels = 'a', tag_suffix = ".")
+ggsave("figures/example.pdf", dpi=600, width=2*3, height=2*4.5)
 ```
 # Figure - Entropy and probability
 ```{r, fig.width=1, fig.height=2, echo=FALSE, warning=FALSE, message=FALSE}
@@ -368,13 +452,15 @@ b2 <- p_h
 b1 /  b2  
 ggsave("figures/entropy.pdf", dpi=600)
 ```
+
 # Figure - Dists
-```{r, fig.width=1.1, fig.height=2.25, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=1.4, fig.height=2.25, echo=FALSE, warning=FALSE, message=FALSE}
 example_dists <- read_csv("../data/example_dists.csv")
 
 example_dists %>% 
-  ggplot(aes(x=m, y=stim_ref)) +
-  geom_bar(stat="identity", fill="darkgrey", alpha=0.6, alpha=1) +
+  ggplot(aes(x=m, y=stim_p)) +
+  geom_bar(stat="identity", alpha=1) +
+  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="", title="Example distributions") +
   lims(y=c(0,1)) +
@@ -540,8 +626,6 @@ compare_means(mi~model, tmp)
 # Figure - Constant
 ```{r, fig.width=0.9, fig.height=1.6, echo=FALSE, warning=TRUE, message=FALSE}
 # --------------------------------------------------------------
-# Reload the exp8 data and loaf 14, but I need custom function for that.
-# Note the exp8 reload gets labelled as exp8b to
 load.data14 <- function(path, type, stim_rates, qs, num_pops){
   df <- NULL
   for(r_s in stim_rates){
@@ -570,6 +654,9 @@ load.data14 <- function(path, type, stim_rates, qs, num_pops){
   df
 }
 
+# --------------------------------------------------------------
+# Reload the exp8 data and loaf 14, but I need custom function for that.
+# Note the exp8 reload gets labelled as exp8b to
 path <- "~/Code/theoc/data/"
 
 # Params
@@ -596,7 +683,8 @@ dmi_exp14$exp <- "Tonic"
 mi <- full_join(mi_exp8b, mi_exp14)
 dmi <- full_join(dmi_exp8b, dmi_exp14)
 
-# 
+# --------------------------------------------------------------
+# Join 8 and14
 dmi %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
@@ -607,7 +695,7 @@ tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
 tmp$exp <- factor(tmp$exp, levels=c("Osc.", "Tonic"))
 
 # --------------------------------------------------------------
-# Models overall
+# Average by cond, and plot by exp
 tmp %>% 
   group_by(stim_rate,g,exp,model) %>% 
   summarise(m=mean(mi)) ->
