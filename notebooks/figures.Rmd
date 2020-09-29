@@ -249,25 +249,6 @@ p1
 ggsave("figures/arithmetic.pdf", dpi=600)
 ```
 # Figure - Examples
-```{r}
-# arrow 
-arrow <- data.frame(x=0.5, xend=0.5, y=1, yend=0)
-arrow %>% 
-ggplot(aes(x=x, y=y, xend=xend, yend = yend)) +
-  geom_segment(
-    lineend = "butt", linejoin = "mitre",
-    size = 1, arrow = arrow(length = unit(0.2, "inches"))
-  ) +
-  labs(x="", y="") +
-  theme_pubr(base_size = 8, legend = "none") +
-  theme(strip.background = element_blank()) +
-  theme(axis.text = element_blank()) +
-  theme(axis.text = element_blank()) +
-  theme(axis.ticks = element_blank()) +
-  theme(strip.text = element_blank()) +
-  theme(axis.line = element_blank()) -> a1
-```
-
 ```{r, fig.width=3, fig.height=4.5, echo=FALSE, warning=FALSE, message=FALSE}
 examples <- read_csv("../data/examples.csv")
 
@@ -277,10 +258,59 @@ examples %>%
   geom_line(color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="S", tag="a.", title="Timecourse examples") + 
-  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) +
+  labs(x="", y="S", tag="a.", title="Stimulus") + 
+  theme(axis.title.y=element_text(angle = 0, vjust = 0.5)) +
   theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) ->
 p4
+
+examples %>% 
+  select(stim_ref) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="darkgrey") +
+  labs(x="", y="Power", tag="f.") +
+  lims(y=c(-3,2)) +
+  theme_classic2() +
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> s4
+
+# O
+examples %>% 
+  ggplot(aes(x=times, y=osc_ref)) +
+  geom_line(size=1.2, color="darkgrey") +
+  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="", y="O", tag="b.", title="Pacemaker") +
+  theme(axis.title.y=element_text(angle = 0, vjust = 0.5)) + 
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> 
+p5
+
+examples %>% 
+  select(osc_ref) %>% 
+ welchPSD(seglength=1000) -> spec
+spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
+spec %>% 
+  filter(frequency < 25) %>% 
+ggplot(aes(x=frequency, y=log10(power))) +
+  geom_line(size=0.8, color="darkgray") +
+  labs(x="", y="Power", tag="g.") +
+  lims(y=c(-3,2.1)) +
+  theme_classic2() -> s5
+
+
+# S
+examples %>% 
+  ggplot(aes(x=times, y=stim_p)) +
+  geom_line() +
+  # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
+  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
+  theme_classic2() + 
+  labs(x="", y="S", tag="c.",  title="Unmodulated") +
+  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) + 
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> 
+p9
 
 examples %>% 
   select(stim_p) %>% 
@@ -289,34 +319,10 @@ spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
 spec %>% 
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
-  geom_line(size=0.8, color="darkgrey") +
-  labs(x="", y="Power", tag="f.", title="Power spectrum") +
-  lims(y=c(-3,2)) +
-  theme_classic2() +
-  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> s4
-
-# O
-examples %>% 
-  ggplot(aes(x=times, y=osc_ref)) +
-  geom_line(size=1.2) +
-  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
-  theme_classic2() + 
-  labs(x="", y="O", tag="b.") +
-  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
-p5
-
-examples %>% 
-  select(osc_p) %>% 
- welchPSD(seglength=1000) -> spec
-spec <- data.frame(frequency=spec$frequency*1000, power=spec$power)
-spec %>% 
-  filter(frequency < 25) %>% 
-ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="", y="Power", tag="g.") +
+  labs(x="", y="Power", tag="h.") +
   lims(y=c(-3,2)) +
-  theme_classic2() -> s5
-
+  theme_classic2() -> s9
 
 # EI
 examples %>% 
@@ -325,8 +331,9 @@ examples %>%
   # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="EI", tag="c.") +
-  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
+  labs(x="", y="EI", tag="c.",  title="Modulated") +
+  theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) + 
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> 
 p6
 
 examples %>% 
@@ -389,13 +396,33 @@ ggplot(aes(x=frequency, y=log10(power))) +
   theme_classic2() -> s8
 
 
-((p4 / p5 / a1 / p6 / p7 / p8) | (s4 / s5 / plot_spacer() / s6 / s7 / s8)) +
+((p4 / p5 / p9 / p6 / p7 / p8) | (s4 / s5 / s9 / s6 / s7 / s8)) +
   plot_layout(width = c(0.75, 0.25)) +
   # plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/example.pdf", dpi=600, width=2*3, height=2*4.5)
+ggsave("figures/example.pdf", dpi=600, width=2*3, height=2*4.8)
 ```
+
 # Figure - Entropy and probability
-```{r, fig.width=1, fig.height=2, echo=FALSE, warning=FALSE, message=FALSE}
+```{r}
+# arrow 
+arrow <- data.frame(x=0, xend=1, y=0.5, yend=0.5)
+arrow %>% 
+ggplot(aes(x=x, y=y, xend=xend, yend = yend)) +
+  geom_segment(
+    lineend = "butt", linejoin = "mitre",
+    size = 1, arrow = arrow(length = unit(0.2, "inches"))
+  ) +
+  labs(x="", y="") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank()) +
+  theme(axis.text = element_blank()) +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  theme(strip.text = element_blank()) +
+  theme(axis.line = element_blank()) -> a1
+```
+
+```{r, fig.width=4, fig.height=1, echo=FALSE, warning=FALSE, message=FALSE}
 examples <- read_csv("../data/examples.csv")
 example_dists <- read_csv("../data/example_dists.csv")
 
@@ -413,7 +440,7 @@ examples %>%
   geom_hline(yintercept=0.3, color="grey", size=0.2) +
   geom_hline(yintercept=0.2, color="grey", size=0.2) +
   geom_hline(yintercept=0.1, color="grey", size=0.2) +
-  labs(x="Time", y="S", title="Discretize into m bins") +
+  labs(x="Time", y="S", tag="a.", title="Discretize into m bins") +
   theme_classic2() + 
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5)) +
   theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) ->
@@ -435,26 +462,20 @@ example_dists %>%
   geom_vline(xintercept=8+del, color="grey", size=0.2) +
   geom_vline(xintercept=9+del, color="grey", size=0.2) +
   geom_vline(xintercept=10+del, color="grey", size=0.2) +
-  labs(y="Probability", x="m", title="Estimate m probabilities") +
+  labs(y="Probability", x="m", tag="b.", title="Estimate m probabilities") +
   lims(y=c(0,1)) +
   theme_classic2() +
   theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p2
 
-p_h <- as_ggplot(
-  text_grob(TeX("\\sum_m \\frac{p log p}{log m} = \\frac{H_m}{H_{max}}"), vjust = 0.7, hjust=0.75)) +
-  labs(title="Estimate entropy") +
-  theme(plot.title = element_text(size = 7, hjust=0, vjust = 0, face = "bold"))
 
 # ----------------------------------------------------
 ## Build
-b1 <- ((p1 / p2) + plot_annotation(tag_levels = 'a', tag_suffix = "."))
-b2 <- p_h
-b1 /  b2  
+p1 + a1 + p2 + plot_layout(widths = c(0.65, 0.1, 0.25))
 ggsave("figures/entropy.pdf", dpi=600)
 ```
 
 # Figure - Dists
-```{r, fig.width=1.4, fig.height=2.25, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=1.4, fig.height=2.5, echo=FALSE, warning=FALSE, message=FALSE}
 example_dists <- read_csv("../data/example_dists.csv")
 
 example_dists %>% 
@@ -462,7 +483,7 @@ example_dists %>%
   geom_bar(stat="identity", alpha=1) +
   geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
-  labs(y="", x="", title="Example distributions") +
+  labs(y="", x="", title="Estimating mutual\ninformation") +
   lims(y=c(0,1)) +
   theme_classic2() + 
   theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
@@ -491,8 +512,8 @@ example_dists %>%
 
 example_dists %>% 
   ggplot(aes(x=m, y=sub_p)) +
-  geom_bar(stat="identity", alpha=1) +
   geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  geom_bar(stat="identity", alpha=1) +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="m") +
   lims(y=c(0,1)) +
