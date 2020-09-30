@@ -938,7 +938,7 @@ tmp %>%
   stat_summary(aes(group=m), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   lims(y=c(-0.3, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="Entropy bin size (m)") +
+  labs(y=expression(paste(Delta, "MI")), x="Dist. bin size (m)") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(strip.text.x = element_text(face = "bold")) +
