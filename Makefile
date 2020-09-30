@@ -238,3 +238,15 @@ exp15:
 			--nice 19 --colsep ',' \
 			--progress \
 			'python theoc/run_oc.py data/exp15/stim_rate{1}_g{2}_num_pop{4}_q{3} --num_trials=100 --num_background=5 --t=5 --osc_rate=2 --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 10 ::: 1 2 3 4 5 7 8 ::: 0.5 ::: 10 20 40 80 160 320 640 1280
+
+# 9-30-2020
+# fcfbdf34ed6d4555589ec5b9a1202368729afeb2
+# Vary osc_rate and g
+exp16:
+	-mkdir data/exp16
+	-rm data/exp16/*
+	parallel -j 4 -v \
+			--joblog 'data/exp16.log' \
+			--nice 19 --colsep ',' \
+			--progress \
+			'python theoc/run_oc.py data/exp16/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 10 ::: 1 2 3 4 5 7 8 ::: 0.5 ::: 40 ::: 2 4 6 8 10 12
