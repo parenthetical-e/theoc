@@ -130,6 +130,37 @@ load.data6 <- function(path, type, num_pops){
   }
   df
 }
+load.data7 <- function(path, type, stim_rates, qs, num_pops, osc_rates, pns){
+  df <- NULL
+  for(r_s in stim_rates){
+    for(g in gs){
+      for(n in num_pops){
+        for(q in qs){
+          for(osr in osc_rates) {
+            try({
+              name <- paste("stim_rate", as.character(r_s), 
+                            "_g", as.character(g),
+                            "_num_pop", as.character(n),
+                            "_q", as.character(q),
+                            "_osc_rate", as.character(osr),
+                            "_", as.character(type), 
+                            ".csv", sep="")
+              di <- read.csv(paste(path, name, sep=""))
+              di["stim_rate"] <- rep(r_s, nrow(di))
+              di["osc_rate"] <- rep(osr, nrow(di))
+              di["g"] <- rep(g, nrow(di))
+              di["num_pop"] <- rep(n, nrow(di))
+              di["q"] <- rep(q, nrow(di))
+              di["trial"] <- 1:nrow(di)
+              df <- rbind(df, di)  
+            })  
+          }
+        }
+      }
+    }
+  }
+  df
+}
 ```
 
 # Load data
@@ -161,6 +192,20 @@ dmi_exp15 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops, qs)
 h_exp15 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
 pac_exp15 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
 pow_exp15 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
+
+# -------------------------------------------------------
+stim_rates <- c(10)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(40)
+num_oscs <- c(2, 4, 6, 8, 10, 12)
+qs <- c("0.5")
+
+exp_path <- paste(path, "/exp16/", sep="")
+mi_exp16 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, num_oscs, qs)
+dmi_exp16 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, num_oscs, qs)
+h_exp16 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, num_oscs, qs)
+pac_exp16 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, num_oscs, qs)
+pow_exp16 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, num_oscs, qs)
 ```
 
 ## Exp - control experiments
@@ -843,9 +888,91 @@ ggsave("figures/overall3.pdf", dpi=600)
 compare_means(mi~model, tmp,  p.adjust.method = "bonf")
 ```
 
+# Figure - Overall 4 - osc firing rate
+```{r, fig.width=3.6, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+# --------------------------------------------------------------
+my_comparisons <- list( c("EI", "E"), c("EI", "I"), c("E", "I"),  c("EI", "II"), c("E", "II"), c("I", "II"))
+
+dmi_exp16 %>%
+  gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
+
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+tmp %>% 
+  ggplot(aes(x=model, y=mi)) +
+  geom_jitter(size=.04, alpha=0.05) +
+  stat_summary(aes(group=model), fun.y=mean, 
+               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+  geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
+  stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
+  # lims(y=c(-.35, 0.5)) +
+  labs(y=expression(paste(Delta, "MI")), x="", title="") +
+  theme_classic() + 
+  theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
+  p1
+
+# ------------------------------------------------------------------------------
+dmi_exp16 %>%
+  group_by(g, osc_rate) %>%
+  summarise(add_p=mean(add_p),
+            back_p=mean(back_p),
+            div_sub_p=mean(div_sub_p),
+            mult_p=mean(mult_p),
+            osc_p=mean(osc_p),
+            stim_p=mean(stim_p),
+            sub_p=mean(sub_p)) %>%
+  ungroup() %>%
+  gather(model, mi, add_p:sub_p) %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
+  tmp
+
+# Set by hand. 
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+tmp %>% 
+  ggplot(aes(x=osc_rate,  y=mi, color=factor(g), group=factor(g))) +
+  geom_line(size=0.5, alpha=0.9) +
+  geom_point(size=0.7, alpha=1) +
+  geom_hline(yintercept=0, color="dark grey") + xlab("") +
+  # lims(y=c(-.3, 0.5)) +
+  labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "mediumpurple4"
+    )) +
+  theme_classic() +
+  scale_x_continuous(limits=c(1.8, 12.1), breaks=c(2,4,6,8,10,12)) +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(legend.key.size = unit(.3, "cm")) +
+  theme(strip.text.x = element_text(face = "bold")) +
+  facet_grid(.~model) ->
+  p2
+
+# --------------------------------------------------------------
+## Build Figure
+p1 + p2 + plot_layout(widths = c(0.2, 0.8)) +
+  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+ggsave("figures/overall4.pdf", dpi=600)
+```
+
+### Sig test results 
+- For the paper.
+```{r}
+compare_means(mi~model, tmp,  p.adjust.method = "bonf")
+```
+
 # Figure - Control
 ## Other params
-```{r, fig.width=2.1, fig.height=3.8, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=2.1, fig.height=2.8, echo=FALSE, warning=FALSE, message=FALSE}
 # --------------------------------------------------------------
 dmi_exp9 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
@@ -870,29 +997,6 @@ tmp %>%
   facet_wrap(model~., nrow=1) ->
   p1
 
-# --------------------------------------------------------------
-## Panel - Osc. firing rate
-dmi_exp10 %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
-  tmp
-
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
-
-tmp %>% 
-  ggplot(aes(x=osc_rate, y=mi)) +
-  geom_jitter(width=0.5, size=.3, alpha=0.2) +
-  geom_hline(yintercept=0, color="grey") + xlab("") +
-  stat_summary(aes(group=osc_rate), fun=mean, 
-               geom="point", colour="black", alpha=1, size=6, shape="_") +
-  labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
-  lims(x=c(1, 8), y=c(-0.3, 0.5)) +
-  theme_classic() +
-  theme(strip.text.x = element_text(face = "bold")) +
-  theme(strip.background = element_blank()) +
-  facet_wrap(model~., nrow=1) ->
-  p2
 
 # --------------------------------------------------------------
 ## Panel - Background
@@ -946,7 +1050,7 @@ tmp %>%
   p5
 
 # --------------------------------------------------------------
-p1 / p2 / p4 / p5 + 
+p1 / p4 / p5 + 
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/control.pdf", dpi=600)
 ```
@@ -1055,41 +1159,48 @@ ggsave("figures/constant.pdf", dpi=600)
 
 # Figure - Power, PAC, and info
 ```{r, fig.width=3.2, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
-# E, I, IE
-h_exp8 %>% 
-  filter(q == "0.05") %>% 
-  filter(num_pop == 50) %>% 
-  gather(model, h, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
-  tmp1
-
-mi_exp8 %>% 
-  filter(q == "0.05") %>% 
-  filter(num_pop == 50) %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
-  tmp2
-
+tmp <- NULL
+# Join exp 8, 15 16
 dmi_exp8 %>% 
-  filter(q == "0.05") %>% 
-  filter(num_pop == 50) %>% 
   gather(model, dmi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
-  tmp3
-
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
 pow_exp8 %>% 
-  filter(q == "0.05") %>% 
-  filter(num_pop == 50) %>% 
   gather(model, pow, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
-  tmp4
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp, tmp1)
+tmp <- full_join(tmp, tmp2)
 
-tmp <- full_join(tmp1, tmp2)
-tmp <- full_join(tmp, tmp3)
-tmp <- full_join(tmp, tmp4)
+# -
+dmi_exp15 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp15 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp, tmp1)
+tmp <- full_join(tmp, tmp2)
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I"))
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+
+# -
+dmi_exp16 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp16 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp, tmp1)
+tmp <- full_join(tmp, tmp2)
+
+
+# -------------------------------------
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II"))
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   filter(stim_rate == 20, model == "EI") %>% 
@@ -1195,12 +1306,7 @@ dmi_exp8 %>%
   filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
   tmp3
 
-pac_exp8 %>% 
-  filter(q == "0.05") %>% 
-  filter(num_pop == 50) %>% 
-  gather(model, pac, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
-  tmp4
+
 
 tmp <- full_join(tmp1, tmp2)
 tmp <- full_join(tmp, tmp3)
