@@ -1027,7 +1027,7 @@ tmp %>%
   stat_summary(aes(group=exp), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   geom_hline(yintercept=0, size=0.4, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Modulation") +
+  labs(y=expression(paste(Delta, "MI")), x="") +
   facet_grid(model~., scale = "free_y") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
@@ -1097,7 +1097,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Spectral power", tag="a.", title="Power and MI") +
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power", tag="b.") +
   theme_classic2() +
   theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) +
   theme(strip.background = element_blank()) +
@@ -1124,7 +1124,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Spectral power",  tag="b.") +
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power",  tag="a.", title="Power and MI") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -1214,7 +1214,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling",  tag="d.", title="PAC and MI") +
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling",  tag="e.") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -1241,7 +1241,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling", tag="e.") +
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling", tag="d.", title="PAC and MI") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
