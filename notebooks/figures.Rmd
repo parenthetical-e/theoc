@@ -285,7 +285,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="darkgrey") +
-  labs(x="", y="Power", tag="f.") +
+  labs(x="", y="Power", tag="h.") +
   lims(y=c(-3,2)) +
   theme_classic2() +
   theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> s4
@@ -309,7 +309,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="darkgray") +
-  labs(x="", y="Power", tag="g.") +
+  labs(x="", y="Power", tag="i.") +
   lims(y=c(-3,2.1)) +
   theme_classic2() -> s5
 
@@ -334,7 +334,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="", y="Power", tag="h.") +
+  labs(x="", y="Power", tag="j.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s9
 
@@ -345,7 +345,7 @@ examples %>%
   # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="EI", tag="c.",  title="Modulated") +
+  labs(x="", y="EI", tag="e.") +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) + 
   theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) -> 
 p6
@@ -358,7 +358,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="", y="Power", tag="h.") +
+  labs(x="", y="Power", tag="l.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s6
 
@@ -369,7 +369,8 @@ examples %>%
   # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="E", tag="d.") +
+  labs(x="", y="E", tag="d.", title="Modulated") +
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
 p7
 
@@ -381,7 +382,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="", y="Power", tag="i.") +
+  labs(x="", y="Power", tag="k.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s7
 
@@ -393,7 +394,7 @@ examples %>%
   # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.2) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="Time", y="I", tag="e.") +
+  labs(x="Time", y="I", tag="f.") +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face = "bold")) -> 
 p8
 
@@ -405,7 +406,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="Frequency.", y="Power", tag="k.") +
+  labs(x="Frequency.", y="Power", tag="m.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s8
 
@@ -414,7 +415,7 @@ examples %>%
   ggplot(aes(x=times, y=div_sub_p)) +
   geom_line() +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
-  labs(x="Time", y="II", tag="f.") +
+  labs(x="Time", y="II", tag="g.") +
   theme_classic2() + 
   theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) +
   theme(axis.title.y=element_text(angle = 0, vjust = 0.5, face="bold")) ->
@@ -429,7 +430,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="Frequency.", y="Power", tag="k.") +
+  labs(x="Frequency.", y="Power", tag="n.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s10
 
@@ -688,7 +689,7 @@ ggsave("figures/overall1.pdf", dpi=600)
 ### Sig test results 
 - For the paper.
 ```{r}
-compare_means(mi~model, tmp)
+compare_means(mi~model, tmp, p.adjust.method = "bonf")
 ```
 
 # Figure - Overall 2 - Div/sub 
@@ -839,26 +840,28 @@ ggsave("figures/overall3.pdf", dpi=600)
 ### Sig test results 
 - For the paper.
 ```{r}
-compare_means(mi~model, tmp)
+compare_means(mi~model, tmp,  p.adjust.method = "bonf")
 ```
 
 # Figure - Control
 ## Other params
 ```{r, fig.width=2.1, fig.height=3.8, echo=FALSE, warning=FALSE, message=FALSE}
+# --------------------------------------------------------------
 dmi_exp9 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p")) -> 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-# --------------------------------------------------------------
 ## Panel - Osc. freq.
 tmp %>% 
   ggplot(aes(x=f, y=mi)) +
-  geom_point(size=.3, alpha=0.2) +
-  geom_hline(yintercept=0, color="darkgrey") + xlab("") +
+  geom_jitter(width=1.5, size=.3, alpha=0.2) +
+  stat_summary(aes(group=f), fun=mean, 
+               geom="point", colour="black", alpha=1, size=6, shape="_") +
+  geom_hline(yintercept=0, color="black") + xlab("") +
   lims(x=c(1, 30), y=c(-0.3, 0.5)) + 
   labs(y=expression(paste(Delta, "MI")), x="Oscillation frequency") +
   theme_classic() +
@@ -871,16 +874,18 @@ tmp %>%
 ## Panel - Osc. firing rate
 dmi_exp10 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p"))-> 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=osc_rate, y=mi)) +
-  geom_point(size=.3, alpha=0.2) +
+  geom_jitter(width=0.5, size=.3, alpha=0.2) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
+  stat_summary(aes(group=osc_rate), fun=mean, 
+               geom="point", colour="black", alpha=1, size=6, shape="_") +
   labs(y=expression(paste(Delta, "MI")), x="Oscillation firing rate") +
   lims(x=c(1, 8), y=c(-0.3, 0.5)) +
   theme_classic() +
@@ -893,16 +898,18 @@ tmp %>%
 ## Panel - Background
 dmi_exp12 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p"))-> 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=num_background, y=mi)) +
-  geom_point(size=.3, alpha=0.2) +
+  geom_jitter(width=1, size=.3, alpha=0.2) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
+  stat_summary(aes(group=num_background), fun=mean, 
+               geom="point", colour="black", alpha=1, size=6, shape="_") +
   lims(y=c(-0.3, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), x="Background size") +
   theme_classic() +
@@ -915,19 +922,21 @@ tmp %>%
 ## Panel - Bin size
 dmi_exp11 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p"))-> 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp$m <- as.character((tmp$m))
 tmp$m <- revalue(tmp$m, c("5"="m/2", "10"="m", "20"="2m")) 
 tmp$m <- factor(tmp$m, levels=c("m/2", "m", "2m"))
 tmp %>% 
   ggplot(aes(x=m, y=mi)) +
-  geom_point(size=.3, alpha=0.2) +
+  geom_jitter(width=0.2, size=.3, alpha=0.2) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
+  stat_summary(aes(group=m), fun=mean, 
+               geom="point", colour="black", alpha=1, size=6, shape="_") +
   lims(y=c(-0.3, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), x="Entropy bin size (m)") +
   theme_classic() +
@@ -1130,6 +1139,7 @@ tmp %>%
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
   theme(strip.text.x = element_blank()) +
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
   facet_grid(model~., scale = "free_y") ->
   p2
@@ -1221,7 +1231,6 @@ tmp %>%
   theme(legend.key.size = unit(.3, "cm")) +
   theme(legend.position = "none") +
   theme(strip.text.x = element_blank()) +
-  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
   facet_grid(model~., scale = "free_y") ->
   p1
@@ -1247,6 +1256,7 @@ tmp %>%
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
   theme(strip.text.x = element_blank()) +
+  theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) +
   theme(strip.text.y = element_text(angle = 0, face = "bold")) +
   facet_grid(model~., scale = "free_y") ->
   p2
@@ -1281,7 +1291,7 @@ col2 <- p2 / p1 / p3 + plot_layout(guides = "collect")
 
 
 # ----------------------------------------------------------------
-col1 | col2 + 
+col1 | col2 
 ggsave("figures/powpac.pdf", dpi=600)
 ```
 
