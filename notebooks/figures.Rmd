@@ -812,7 +812,7 @@ tmp %>%
   geom_point(size=0.7, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   # lims(y=c(-.3, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="Pop. size") +
+  labs(y=expression(paste(Delta, "MI")), x="Population size") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -836,10 +836,15 @@ p1 + p2 + plot_layout(widths = c(0.2, 0.8)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/overall3.pdf", dpi=600)
 ```
+### Sig test results 
+- For the paper.
+```{r}
+compare_means(mi~model, tmp)
+```
 
-# Figure - Control exps for MI
+# Figure - Control
 ## Other params
-```{r, fig.width=2.1, fig.height=4.4, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=2.1, fig.height=3.8, echo=FALSE, warning=FALSE, message=FALSE}
 dmi_exp9 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p")) -> 
@@ -883,30 +888,6 @@ tmp %>%
   theme(strip.background = element_blank()) +
   facet_wrap(model~., nrow=1) ->
   p2
-
-# --------------------------------------------------------------
-## Panel - Population size
-dmi_exp6 %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p"))-> 
-  tmp
-
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
-
-tmp %>% 
-  ggplot(aes(x=num_pop, y=mi)) +
-  geom_point(size=.3, alpha=0.2) +
-  geom_hline(yintercept=0, color="grey") +
-  lims(y=c(-0.3, 0.5)) +
-  scale_x_log10()+
-  annotation_logticks(base = 10, sides = "b") +
-  labs(y=expression(paste(Delta, "MI")), x="Population size") +
-  theme_classic() +
-  theme(strip.text.x = element_text(face = "bold")) +
-  theme(strip.background = element_blank()) +
-  facet_wrap(model~., nrow=1) ->
-  p3
 
 # --------------------------------------------------------------
 ## Panel - Background
@@ -956,7 +937,7 @@ tmp %>%
   p5
 
 # --------------------------------------------------------------
-p1 / p2 / p3 / p4 / p5 + 
+p1 / p2 / p4 / p5 + 
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/control.pdf", dpi=600)
 ```
