@@ -1044,8 +1044,8 @@ p1
 ggsave("figures/constant.pdf", dpi=600)
 ```
 
-# Figure - Power (spectral) and info
-```{r, fig.width=1.6, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
+# Figure - Power, PAC, and info
+```{r, fig.width=3.2, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
 # E, I, IE
 h_exp8 %>% 
   filter(q == "0.05") %>% 
@@ -1097,7 +1097,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Spectral power", title="Power and MI") +
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power", tag="a.", title="Power and MI") +
   theme_classic2() +
   theme(plot.title = element_text(size = 9, hjust=1, face = "bold")) +
   theme(strip.background = element_blank()) +
@@ -1124,7 +1124,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Spectral power") +
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power",  tag="b.") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -1149,7 +1149,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Spectral power") +
+  labs(y=expression(paste(Delta, "MI")), x="Spectral power",  tag="c.") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.position = "none") +
@@ -1160,13 +1160,9 @@ tmp %>%
   facet_grid(model~., scale = "free_y") ->
   p3
 
-col1 <- p1 / p2 / p3 + plot_layout(guides = "collect") +
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/pow.pdf", dpi=600)
-```
-
-# Figure - PAC and info
-```{r, fig.width=1.6, fig.height=3.1, echo=FALSE, warning=FALSE, message=FALSE}
+col1 <- p2 / p1 / p3 + plot_layout(guides = "collect") 
+  
+# ------------------------------------------------------------------
 # E, I, IE
 h_exp8 %>% 
   filter(q == "0.05") %>% 
@@ -1218,7 +1214,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling", title="PAC and MI") +
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling",  tag="d.", title="PAC and MI") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -1245,7 +1241,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling") +
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling", tag="e.") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -1270,7 +1266,7 @@ tmp %>%
     )) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + 
-  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling") +
+  labs(y=expression(paste(Delta, "MI")), x="Phase-amplitude coupling", tag="f.") +
   theme_classic2() +
   theme(strip.background = element_blank()) +
   theme(legend.position = "none") +
@@ -1281,8 +1277,11 @@ tmp %>%
   facet_grid(model~., scale = "free_y") ->
   p3
 
-p1 / p2 / p3 + plot_layout(guides = "collect") +
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/pac.pdf", dpi=600)
+col2 <- p2 / p1 / p3 + plot_layout(guides = "collect") 
+
+
+# ----------------------------------------------------------------
+col1 | col2 + 
+ggsave("figures/powpac.pdf", dpi=600)
 ```
 
