@@ -37,7 +37,7 @@ def create_lfps(spikes, tau=0.002, dt=.001):
     # then abusing a bit (too much?).
     #
     # We want 10*tau but we have to resample to dt time first
-    n_alpha_samples = ((tau * 10) / dt)
+    n_alpha_samples = int((tau * 10) / dt)
     t0 = np.linspace(0, tau * 10, n_alpha_samples)
 
     # Define the alpha (g notation borrow from BV's initial code)
