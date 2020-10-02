@@ -237,7 +237,7 @@ exp15:
 			--joblog 'data/exp15.log' \
 			--nice 19 --colsep ',' \
 			--progress \
-			'python theoc/run_oc.py data/exp15/stim_rate{1}_g{2}_num_pop{4}_q{3} --num_trials=100 --num_background=5 --t=5 --osc_rate=2 --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 10 ::: 1 2 3 4 5 7 8 ::: 0.5 ::: 10 20 40 80 160 320 640 1280
+			'python theoc/run_oc.py data/exp15/stim_rate{1}_g{2}_num_pop{4}_q{3} --num_trials=100 --num_background=5 --t=5 --osc_rate=2 --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 10 ::: 1 2 3 4 5 7 8 ::: 0.5 ::: 10 20 40 80 160 320 640 1280 2560 5120 10240 20480 40960
 
 # 9-30-2020
 # fcfbdf34ed6d4555589ec5b9a1202368729afeb2
