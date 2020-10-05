@@ -265,7 +265,7 @@ exp16:
 exp17:
 	-mkdir data/exp17
 	-rm data/exp17/*
-	parallel -j 4 -v \
+	parallel -j 20 -v \
 			--joblog 'data/exp17.log' \
 			--nice 19 --colsep ',' \
 			--progress \
