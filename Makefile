@@ -284,7 +284,7 @@ exp18:
 	parallel -j 30 -v \
 			--joblog 'data/exp18.log' \
 			--nice 19 --colsep ',' \
-			'python theoc/run_oc.py data/exp18/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 2.5 5 10 12 15 20 25 30 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 10240 ::: 2
+			'python theoc/run_oc.py data/exp18/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 12 15 20 25 30 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 10240 ::: 2
 
 # osc
 exp19:
@@ -294,7 +294,7 @@ exp19:
 			--joblog 'data/exp19.log' \
 			--nice 19 --colsep ',' \
 			--progress \
-			'python theoc/run_oc.py data/exp19/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 10240 ::: 2.5 5 10 12 15 20 25 30
+			'python theoc/run_oc.py data/exp19/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 10 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 10240 ::: 2 5 10 12 15 20 
 
 # stim and osc (fix q)
 exp20:
@@ -304,7 +304,7 @@ exp20:
 			--joblog 'data/exp20.log' \
 			--nice 19 --colsep ',' \
 			--progress \
-			'python theoc/run_oc.py data/exp20/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 2 5 10 12 15 ::: 1 2 3 4 5 6 7 8 ::: 0.5 ::: 10240 ::: 2 5 10 12 15
+			'python theoc/run_oc.py data/exp20/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 12 15 ::: 1 2 3 4 5 6 7 8 ::: 0.5 ::: 10240 ::: 2 5 10 12
 
 # ----------------------------------------------------------------------
 # 10-6-2020
@@ -322,7 +322,7 @@ exp21:
 	parallel -j 40 -v \
 			--joblog 'data/exp21.log' \
 			--nice 19 --colsep ',' \
-			'python theoc/run_oc.py data/exp21/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 2.5 5 10 12 15 20 25 30 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 40 ::: 2
+			'python theoc/run_oc.py data/exp21/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 12 15 20 25 30 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 40 ::: 2
 
 # osc
 exp22:
@@ -332,7 +332,7 @@ exp22:
 			--joblog 'data/exp22.log' \
 			--nice 19 --colsep ',' \
 			--progress \
-			'python theoc/run_oc.py data/exp22/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 40 ::: 2.5 5 10 12 15 20 25 30
+			'python theoc/run_oc.py data/exp22/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 10 ::: 1 2 3 4 5 6 7 8 ::: 0.05 0.25 0.5 0.75 1.0 ::: 40 ::: 2 5 10 12 15 20
 
 # stim and osc (fix q)
 exp23:
@@ -342,4 +342,4 @@ exp23:
 			--joblog 'data/exp23.log' \
 			--nice 19 --colsep ',' \
 			--progress \
-			'python theoc/run_oc.py data/exp23/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 2 5 10 12 15 ::: 1 2 3 4 5 6 7 8 ::: 0.5 ::: 40 ::: 2 5 10 12 15
+			'python theoc/run_oc.py data/exp23/stim_rate{1}_g{2}_num_pop{4}_q{3}_osc_rate{5} --num_trials=100 --num_background=5 --t=5 --osc_rate={5} --f=6 --g={2} --g_max=8 --q={3} --stim_rate={1} --frac_std=0.01 --m={1} --num_pop={4}' ::: 5 10 12 15 ::: 1 2 3 4 5 6 7 8 ::: 0.5 ::: 40 ::: 2 5 10 12
