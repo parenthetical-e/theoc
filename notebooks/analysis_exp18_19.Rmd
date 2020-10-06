@@ -226,6 +226,7 @@ ggsave("figures/overall1.pdf", dpi=600)
 
 # osc_rate
 ```{r, fig.width=3.6, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+# ------------------------------------------------------------------------------
 dmi_exp19 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
