@@ -1,0 +1,218 @@
+---
+title: "Analysis - 17"
+output: html_notebook
+---
+
+# Libraries and helpers
+```{r helper_fns, echo=FALSE, fig.width=6, fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(plyr)
+library(readr)
+library(dplyr)
+library(png)
+library(bspec)
+library(psd)
+library(tidyr)
+library(patchwork)
+library(scales)
+library(ggpubr)
+library(cowplot)
+library(latex2exp)
+# library(NNTbiomarker)
+# library(bspec)
+
+load.data7 <- function(path, type, stim_rates, qs, num_pops, osc_rates, pns){
+  df <- NULL
+  for(r_s in stim_rates){
+    for(g in gs){
+      for(n in num_pops){
+        for(q in qs){
+          for(osr in osc_rates) {
+            try({
+              name <- paste("stim_rate", as.character(r_s), 
+                            "_g", as.character(g),
+                            "_num_pop", as.character(n),
+                            "_q", as.character(q),
+                            "_osc_rate", as.character(osr),
+                            "_", as.character(type), 
+                            ".csv", sep="")
+              di <- read.csv(paste(path, name, sep=""))
+              di["stim_rate"] <- rep(r_s, nrow(di))
+              di["osc_rate"] <- rep(osr, nrow(di))
+              di["g"] <- rep(g, nrow(di))
+              di["num_pop"] <- rep(n, nrow(di))
+              di["q"] <- rep(q, nrow(di))
+              di["trial"] <- 1:nrow(di)
+              df <- rbind(df, di)  
+            })  
+          }
+        }
+      }
+    }
+  }
+  df
+}
+```
+
+# Load data
+```{r}
+path <- "~/Code/theoc/data/"
+
+# -------------------------------------------------------
+# stim_rate
+stim_rates <- c(5, 10, 15, 20, 25, 30)
+osc_rates <- c(2, 4, 6, 8, 10, 12)
+gs <- c(1, 8)
+num_pops <- c(40, 1280)
+qs <- c("0.5")
+
+exp_path <- paste(path, "/exp17/", sep="")
+mi_exp17 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+dmi_exp17 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
+h_exp17 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, qs)
+pac_exp17 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
+pow_exp17 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
+```
+
+# All
+```{r, fig.width=2.2, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp17 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp17 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp1, tmp2)
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II"))
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+# --
+tmp %>% 
+  ggplot(aes(x=pow, y=dmi)) +
+  geom_point(size=0.3, alpha=0.2) +
+  stat_smooth(method="lm", se = FALSE, alpha=1, color="darkgrey") +
+  geom_hline(yintercept=0, color="dark grey") + 
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(.~model) 
+```
+# pop
+```{r, fig.width=2.6, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp17 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp17 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp1, tmp2)
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II"))
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+# --
+tmp %>% 
+  ggplot(aes(x=pow, y=dmi)) +
+  geom_point(size=0.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  stat_smooth(aes(color=factor(num_pop)), method="lm", se = FALSE, alpha=1) +
+  # scale_color_grey("Pop. size") +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(num_pop~model) 
+```
+
+# g
+```{r, fig.width=2.6, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp17 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp17 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp1, tmp2)
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II"))
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+# --
+tmp %>% 
+  ggplot(aes(x=pow, y=dmi)) +
+  geom_point(size=0.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  stat_smooth(aes(color=factor(g)), method="lm", se = FALSE, alpha=1) +
+  scale_color_manual("g", values = c(
+    "lightsteelblue3",
+    "mediumpurple4"
+    )) +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(num_pop~model) 
+```
+
+# stim
+```{r, fig.width=2.6, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp17 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp17 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp1, tmp2)
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II"))
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+# --
+tmp %>% 
+  ggplot(aes(x=pow, y=dmi)) +
+  geom_point(size=0.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  stat_smooth(aes(color=factor(stim_rate)), method="lm", se = FALSE, alpha=1) +
+  scale_color_grey("Stim. rate") +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(num_pop~model) 
+```
+
+
+# osc
+```{r, fig.width=2.6, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
+dmi_exp17 %>% 
+  gather(model, dmi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp1
+pow_exp17 %>% 
+  gather(model, pow, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
+  tmp2
+tmp <- full_join(tmp1, tmp2)
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II"))
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+# --
+tmp %>% 
+  ggplot(aes(x=pow, y=dmi)) +
+  geom_point(size=0.3, alpha=0.2) +
+  geom_hline(yintercept=0, color="dark grey") + 
+  stat_smooth(aes(color=factor(osc_rate)), method="lm", se = FALSE, alpha=1) +
+  # scale_color_grey("Pace. rate") +
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  theme(legend.background = element_rect(colour ="black")) +
+  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
+  facet_grid(num_pop~model) 
+```
