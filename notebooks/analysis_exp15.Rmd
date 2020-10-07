@@ -60,7 +60,7 @@ path <- "~/Code/theoc/data/"
 # num_pop - all
 stim_rates <- c(10)
 # gs <- c(1, 2, 3, 4, 5, 7, 8)
-gs <- c(1, 4, 8)
+gs <- c(2, 4, 8)
 num_pops <- c(40, 80, 160, 1280, 10240, 40960)
 qs <- c("0.5")
 
