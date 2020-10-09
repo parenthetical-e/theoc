@@ -168,36 +168,7 @@ load.data7 <- function(path, type, stim_rates, qs, num_pops, osc_rates, pns){
 ```{r load1, message=FALSE, warning=FALSE, error=FALSE}
 path <- "~/Code/theoc/data/"
 
-# -------------------------------------------------------
-# stim - E, EI, I
-stim_rates <- c(5, 10, 15, 20, 25, 30)
-gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
-num_pops <- c(50)
-qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
-
-exp_path <- paste(path, "/exp8/", sep="")
-mi_exp8 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops, qs)
-dmi_exp8 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops, qs)
-h_exp8 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
-pac_exp8 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
-pow_exp8 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
-
-# -------------------------------------------------------
-# stim - II
-stim_rates <- c(5, 10, 15, 20, 25, 30)
-gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
-num_pops <- c(50)
-qs <- c("0.05", "0.25", "0.5", "0.75", "0.95")
-
-exp_path <- paste(path, "/exp13/", sep="")
-mi_exp13 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops, qs)
-dmi_exp13 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops, qs)
-h_exp13 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
-pac_exp13 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
-pow_exp13 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
-
-# -------------------------------------------------------
-# num_pop - all
+# -- num_pop search-----------------------------------------------------------  
 stim_rates <- c(10)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(10, 20, 40, 80, 160, 320, 640, 1280, 2560, 5120, 10240, 20480, 40960)
@@ -210,48 +181,85 @@ h_exp15 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
 pac_exp15 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
 pow_exp15 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
 
-# -------------------------------------------------------
-stim_rates <- c(10)
-gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
-num_pops <- c(40)
-osc_rates <- c(2, 4, 6, 8, 10, 12)
-qs <- c("0.5")
-
-exp_path <- paste(path, "/exp16/", sep="")
-mi_exp16 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
-dmi_exp16 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
-h_exp16 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
-pac_exp16 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
-pow_exp16 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
-
-# -------------------------------------------------------
+# -- num_pop = 10240  -----------------------------------------------------
 # stim_rate
 stim_rates <- c(5, 10, 15, 20, 25, 30)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(10240)
+osc_rates <- c(2)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
-
 exp_path <- paste(path, "/exp18/", sep="")
-mi_exp18 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops, qs)
-dmi_exp18 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops, qs)
-h_exp8 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
-pac_exp18 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
-pow_exp18 <- load.data1(exp_path, "power", stim_rates, qs, num_pops, qs)
+mi_exp18 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+dmi_exp18 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
+h_exp18 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
+pac_exp18 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
+pow_exp18 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
 
-# -------------------------------------------------------
-# pop_rate
+# osc_rate
 stim_rates <- c(10)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(10240)
-osc_rates <- c(2, 4, 6, 8, 10, 12)
+osc_rates <- c(2, 5, 10, 12, 15, 20)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
-
 exp_path <- paste(path, "/exp19/", sep="")
 mi_exp19 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp19 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp19 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp19 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
 pow_exp19 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
+
+# stim_rate / osc_rate
+stim_rates <- c(5, 10, 12, 15)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(10240)
+osc_rates <- c(2, 5, 10, 12)
+qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
+exp_path <- paste(path, "/exp20/", sep="")
+mi_exp20 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+dmi_exp20 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
+h_exp20 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
+pac_exp20 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
+pow_exp20 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
+
+# -- num_pop = 40 -----------------------------------------------------
+# stim_rate
+stim_rates <- c(5, 10, 15, 20, 25, 30)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(40)
+osc_rates <- c(2)
+qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
+exp_path <- paste(path, "/exp21/", sep="")
+mi_exp21 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+dmi_exp21 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
+h_exp21 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
+pac_exp21 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
+pow_exp21 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
+
+# osc_rate
+stim_rates <- c(10)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(40)
+osc_rates <- c(2, 5, 10, 12, 15, 20)
+qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
+exp_path <- paste(path, "/exp22/", sep="")
+mi_exp22 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+dmi_exp22 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
+h_exp22 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
+pac_exp22 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
+pow_exp22 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
+
+# stim_rate / osc_rate
+stim_rates <- c(5, 10, 12, 15)
+gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
+num_pops <- c(40)
+osc_rates <- c(2, 5, 10, 12)
+qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
+exp_path <- paste(path, "/exp23/", sep="")
+mi_exp23 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+dmi_exp23 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
+h_exp23 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
+pac_exp23 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
+pow_exp23 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
 ```
 
 ## Exp - control experiments
@@ -670,9 +678,9 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.04, alpha=0.05) +
+  geom_jitter(size=.02, alpha=0.01) +
   stat_summary(aes(group=model), fun.y=mean, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
   # stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
   # lims(y=c(-.35, 0.5)) +
@@ -710,7 +718,7 @@ p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
 tmp %>% 
   ggplot(aes(x=num_pop,  y=mi, color=factor(g), group=factor(g))) +
   geom_line(size=0.5, alpha=1) +
-  geom_jitter(data=p_tmp, aes(x=num_pop, y=mi), size=0.1, alpha=0.02, width=.05, color="black") +
+  geom_jitter(data=p_tmp, aes(x=num_pop, y=mi), size=.02, alpha=0.01, width=.05, color="black") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
@@ -741,33 +749,29 @@ ggsave("figures/overall1.pdf", dpi=600)
 ```
 
 # Figure - Overall 2 - small num_pop
-```{r, fig.width=3.6, fig.height=2.3, echo=FALSE, warning=FALSE, message=FALSE}
-dmi_exp18 %>% 
+```{r, fig.width=4.2, fig.height=2.3, echo=FALSE, warning=FALSE, message=FALSE}
+# --------------------------------------------------------------
+## Models overall
+dmi_exp21 %>% 
   filter(q == "0.5") %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
   tmp
-
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-# --------------------------------------------------------------
-# Models overall
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  # lims(y=c(-.3, 0.5)) +
-  geom_jitter(size=.04, alpha=0.05) +
+  geom_jitter(size=.01, alpha=0.05, color="black") +
   stat_summary(aes(group=model), fun.y=mean, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   labs(y=expression(paste(Delta, "MI")), x="") +
-  # stat_compare_means(comparisons = my_comparisons, label = "p.signif", label.y = c(0.45, 0.32, 0.15)) +
   theme_classic() ->
   p1
 
-# --------------------------------------------------------------
-## Timecourses
-dmi_exp18 %>% 
+## Timecourse
+dmi_exp21 %>% 
   filter(q == "0.5") %>% 
   group_by(stim_rate, g, num_pop) %>%
   summarise(add_p=mean(add_p),
@@ -781,11 +785,10 @@ dmi_exp18 %>%
   gather(model, mi, add_p:sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
-
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-dmi_exp18 %>%
+dmi_exp21 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   p_tmp
@@ -794,9 +797,9 @@ p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=factor(g))) +
-  geom_line(size=0.5, alpha=1) +
+  geom_line(size=0.6, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.1, alpha=0.02, width=.25, color="black") +
+  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=.01, alpha=0.01, width=.6, color="black") +
   labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -805,41 +808,39 @@ tmp %>%
     "steelblue4",
     "slateblue2", 
     "slateblue3",
+    "slateblue4",
     "mediumpurple4"
     )) +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
+  theme(panel.spacing = unit(1, "lines")) +
   theme(strip.text.x = element_text(face = "bold")) +
   facet_grid(.~model) ->
   p2
 
-
 # ------------------------------------------------------------------------------
 # osc_rate
-dmi_exp19 %>%
+dmi_exp22 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
-
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
-
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.04, alpha=0.05) +
+  geom_jitter(size=.02, alpha=0.1, color="darkgrey") +
   stat_summary(aes(group=model), fun.y=mean, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  # stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
-  # lims(y=c(-.35, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), x="", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p3
 
 # ------------------------------------------------------------------------------
-dmi_exp19 %>%
+# timecourse
+dmi_exp22 %>%
   group_by(g, osc_rate) %>%
   summarise(add_p=mean(add_p),
             back_p=mean(back_p),
@@ -852,12 +853,11 @@ dmi_exp19 %>%
   gather(model, mi, add_p:sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
-
 # Set by hand. 
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
-
-dmi_exp19 %>%
+# indiv points for jitter
+dmi_exp22 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   p_tmp
@@ -866,9 +866,9 @@ p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=osc_rate,  y=mi, color=factor(g), group=factor(g))) +
-  geom_line(size=0.5, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=osc_rate, y=mi), size=0.1, alpha=0.02, width=.25, color="black") +
+  geom_jitter(data=p_tmp, aes(x=osc_rate, y=mi), size=.01, alpha=0.005, width=.25, color="black") +
+  geom_line(size=0.6, alpha=1) +
   labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -877,6 +877,7 @@ tmp %>%
     "steelblue4",
     "slateblue2", 
     "slateblue3",
+    "slateblue4",
     "mediumpurple4"
     )) +
   theme_classic() +
@@ -885,12 +886,13 @@ tmp %>%
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
   theme(legend.position = "none") +
+  theme(panel.spacing = unit(1, "lines")) +
   theme(strip.text.x = element_text(face = "bold")) +
   facet_grid(.~model) ->
   p4
 
 # --------------------------------------------------------------
-## Build Figure
+# Build Figure
 ((p1 / p3) | (p2 / p4)) + 
   plot_layout(widths = c(0.2, 0.8), guides = "collect") +
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
@@ -921,9 +923,9 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
   # lims(y=c(-.3, 0.5)) +
-  geom_jitter(size=.04, alpha=0.05) +
+  geom_jitter(size=0.04, alpha=0.02) +
   stat_summary(aes(group=model), fun.y=mean, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   labs(y=expression(paste(Delta, "MI")), x="") +
   # stat_compare_means(comparisons = my_comparisons, label = "p.signif", label.y = c(0.45, 0.32, 0.15)) +
@@ -961,7 +963,7 @@ tmp %>%
   ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=factor(g))) +
   geom_line(size=0.5, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.1, alpha=0.02, width=.25, color="black") +
+  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.04, alpha=0.02, width=.25, color="black") +
   labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -970,6 +972,7 @@ tmp %>%
     "steelblue4",
     "slateblue2", 
     "slateblue3",
+    "slateblue4",
     "mediumpurple4"
     )) +
   theme_classic() +
@@ -992,9 +995,9 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.04, alpha=0.05) +
+  geom_jitter(size=0.04, alpha=0.02) +
   stat_summary(aes(group=model), fun.y=mean, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
   # stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
   # lims(y=c(-.35, 0.5)) +
@@ -1033,7 +1036,7 @@ tmp %>%
   ggplot(aes(x=osc_rate,  y=mi, color=factor(g), group=factor(g))) +
   geom_line(size=0.5, alpha=1) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=osc_rate, y=mi), size=0.1, alpha=0.02, width=.25, color="black") +
+  geom_jitter(data=p_tmp, aes(x=osc_rate, y=mi), size=0.04, alpha=0.02, width=.25, color="black") +
   labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -1042,6 +1045,7 @@ tmp %>%
     "steelblue4",
     "slateblue2", 
     "slateblue3",
+    "slateblue4",
     "mediumpurple4"
     )) +
   theme_classic() +
@@ -1077,7 +1081,7 @@ tmp$model <- revalue(tmp$model, c("div_sub_p"="II"))
 
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.04, alpha=0.05) +
+  geom_jitter(size=0.04, alpha=0.02) +
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="grey", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
@@ -1122,7 +1126,7 @@ tmp %>%
     )) +
   geom_line(size=0.5, alpha=1) +
   # geom_point(size=0.7, alpha=1) +
-  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.1, alpha=0.02, width=.25, color="black") +
+  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.04, alpha=0.02, width=.25, color="black") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   lims(y=c(-.3, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), 
@@ -1164,7 +1168,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 ## Panel - Osc. freq.
 tmp %>% 
   ggplot(aes(x=f, y=mi)) +
-  geom_jitter(width=1.5, size=.3, alpha=0.2) +
+  geom_jitter(width=1.5, size=0.04, alpha=0.02) +
   stat_summary(aes(group=f), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   geom_hline(yintercept=0, color="grey") + xlab("") +
@@ -1189,7 +1193,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=num_background, y=mi)) +
-  geom_jitter(width=1, size=.3, alpha=0.2) +
+  geom_jitter(width=1, size=0.04, alpha=0.02) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   stat_summary(aes(group=num_background), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
@@ -1216,7 +1220,7 @@ tmp$m <- revalue(tmp$m, c("5"="m/2", "10"="m", "20"="2m"))
 tmp$m <- factor(tmp$m, levels=c("m/2", "m", "2m"))
 tmp %>% 
   ggplot(aes(x=m, y=mi)) +
-  geom_jitter(width=0.2, size=.3, alpha=0.2) +
+  geom_jitter(width=0.2, size=0.04, alpha=0.02) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   stat_summary(aes(group=m), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
