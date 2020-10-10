@@ -547,7 +547,7 @@ example_dists <- read_csv("../data/example_dists.csv")
 examples %>% 
   ggplot(aes(x=times, y=stim_ref)) +
   geom_line(color="darkgrey", size=1.1) +
-  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
+  scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1.1)) +
   geom_hline(yintercept=1, color="grey", size=0.2) +
   geom_hline(yintercept=0.9, color="grey", size=0.2) +
   geom_hline(yintercept=0.8, color="grey", size=0.2) +
@@ -558,9 +558,10 @@ examples %>%
   geom_hline(yintercept=0.3, color="grey", size=0.2) +
   geom_hline(yintercept=0.2, color="grey", size=0.2) +
   geom_hline(yintercept=0.1, color="grey", size=0.2) +
-  labs(x="Time", y="S", tag="a.", title="Discretize into m bins") +
+  annotate("text", y=1.1, x=5, label="m") +
+  labs(x="Time", y="Norm. rate", tag="a.", title="Discretize into m bins") +
   theme_classic2() + 
-  theme(axis.title.y=element_text(angle = 0, vjust = 0.5)) +
+  # theme(axis.title.y=element_text(angle = 0, vjust = 0.5)) +
   theme(plot.title = element_text(size = 9, face = "bold")) ->
 p1
 
@@ -664,7 +665,9 @@ ggsave("figures/dist.pdf", dpi=600)
 ```
 
 # Figure - Overall 1 - num_pop
-```{r, fig.width=4.6, fig.height=1.4, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=4.6, fig.height=1.6, echo=FALSE, warning=FALSE, message=FALSE}
+# --------------------------------------------------------------
+# Overall
 # --------------------------------------------------------------
 my_comparisons <- list(
   c("EI", "E"), c("EI", "I"), c("E", "I"),  c("EI", "II"), c("E", "II"), c("I", "II"))
@@ -678,29 +681,23 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.02, alpha=0.01) +
+  geom_jitter(size=.02, alpha=0.01, width=0.3) +
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  # stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
-  # lims(y=c(-.35, 0.5)) +
   labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
 
-# ------------------------------------------------------------------------------
+# --------------------------------------------------------------
+# Timecourse
+# --------------------------------------------------------------
 dmi_exp15 %>%
-  group_by(stim_rate, g, num_pop) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  group_by(model, stim_rate, g, num_pop) %>%
+  summarise(m=mean(mi), sd=sd(mi)) %>%
+  ungroup() %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
@@ -716,9 +713,9 @@ p_tmp$model <- revalue(p_tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "
 p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
-  ggplot(aes(x=num_pop,  y=mi, color=factor(g), group=factor(g))) +
-  geom_line(size=0.5, alpha=1) +
-  geom_jitter(data=p_tmp, aes(x=num_pop, y=mi), size=.02, alpha=0.01, width=.05, color="black") +
+  ggplot(aes(x=num_pop,  y=m, color=factor(g), group=factor(g))) +
+  geom_line(size=0.7, alpha=1) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
@@ -730,6 +727,17 @@ tmp %>%
     "steelblue4",
     "slateblue2", 
     "slateblue3",
+    "slateblue4",
+    "mediumpurple4"
+    )) +
+  scale_fill_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "slateblue4",
     "mediumpurple4"
     )) +
   theme_classic() +
@@ -742,64 +750,58 @@ tmp %>%
   p2
 
 # --------------------------------------------------------------
-## Build Figure
+# Build figure
+# --------------------------------------------------------------
 p1 + p2 + plot_layout(widths = c(0.15, 0.85)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/overall1.pdf", dpi=600)
 ```
 
 # Figure - Overall 2 - small num_pop
-```{r, fig.width=4.2, fig.height=2.3, echo=FALSE, warning=FALSE, message=FALSE}
-# --------------------------------------------------------------
-## Models overall
+```{r, fig.width=4.2, fig.height=3.2, echo=FALSE, warning=FALSE, message=FALSE}
+# -----------------------------------------------------------
+# stim_rate
+# -----------------------------------------------------------
+## Overall
+# process
 dmi_exp21 %>% 
-  filter(q == "0.5") %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
-  tmp
+   gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
+# plot
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.01, alpha=0.05, color="black") +
+  geom_jitter(size=.02, alpha=0.01, width=0.3) +
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
-  geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="") +
-  theme_classic() ->
+  geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
+  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  theme_classic() + 
+  theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
 
 ## Timecourse
+# process
 dmi_exp21 %>% 
   filter(q == "0.5") %>% 
-  group_by(stim_rate, g, num_pop) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  group_by(model, stim_rate, g, num_pop) %>%
+  summarise(m=mean(mi), sd=sd(mi)) %>%
+  ungroup() %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-dmi_exp21 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
-  p_tmp
-p_tmp$model <- revalue(p_tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
-
+# plot
 tmp %>% 
-  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=factor(g))) +
-  geom_line(size=0.6, alpha=1) +
+  ggplot(aes(x=stim_rate,  y=m, color=factor(g), group=factor(g))) +
+  geom_line(size=0.8, alpha=1) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=.01, alpha=0.01, width=.6, color="black") +
+  scale_x_continuous(breaks=c(5,10,15,20,15,20,25,30)) +
   labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -811,6 +813,16 @@ tmp %>%
     "slateblue4",
     "mediumpurple4"
     )) +
+  scale_fill_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "slateblue4",
+    "mediumpurple4"
+    )) +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -820,55 +832,50 @@ tmp %>%
   facet_grid(.~model) ->
   p2
 
-# ------------------------------------------------------------------------------
-# osc_rate
+# -----------------------------------------------------------
+# osc_rate 
+# -----------------------------------------------------------
+## overall
+# process
 dmi_exp22 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
+
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
+
+# plot
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=.02, alpha=0.1, color="darkgrey") +
+  geom_jitter(size=.02, alpha=0.01, width=0.3) +
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="", title="") +
+  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p3
 
-# ------------------------------------------------------------------------------
-# timecourse
+## timecourse
+# process
 dmi_exp22 %>%
-  group_by(g, osc_rate) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) %>% 
+  filter(q == "0.5") %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  group_by(model, osc_rate, g, num_pop) %>%
+  summarise(m=mean(mi), sd=sd(mi)) %>%
+  ungroup() %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
-# Set by hand. 
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
-# indiv points for jitter
-dmi_exp22 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
-  p_tmp
-p_tmp$model <- revalue(p_tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
 
+# plot
 tmp %>% 
-  ggplot(aes(x=osc_rate,  y=mi, color=factor(g), group=factor(g))) +
+  ggplot(aes(x=osc_rate,  y=m, color=factor(g), group=factor(g))) +
+  geom_line(size=0.8, alpha=1) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=osc_rate, y=mi), size=.01, alpha=0.005, width=.25, color="black") +
-  geom_line(size=0.6, alpha=1) +
+  scale_x_continuous(breaks=c(2,6,10,14,18)) +
   labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -880,8 +887,17 @@ tmp %>%
     "slateblue4",
     "mediumpurple4"
     )) +
+  scale_fill_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "slateblue4",
+    "mediumpurple4"
+    )) +
   theme_classic() +
-  scale_x_continuous(limits=c(1.8, 12.1), breaks=c(2,4,6,8,10,12)) +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
@@ -891,8 +907,9 @@ tmp %>%
   facet_grid(.~model) ->
   p4
 
-# --------------------------------------------------------------
+# -----------------------------------------------------------
 # Build Figure
+# -----------------------------------------------------------
 ((p1 / p3) | (p2 / p4)) + 
   plot_layout(widths = c(0.2, 0.8), guides = "collect") +
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
@@ -908,62 +925,52 @@ ggsave("figures/overall2.pdf", dpi=600)
 ```
 
 # Figure - Overall 3 - large num_pop
-```{r, fig.width=3.5, fig.height=2.3, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=4.2, fig.height=3.2, echo=FALSE, warning=FALSE, message=FALSE}
+# -----------------------------------------------------------
+# stim_rate
+# -----------------------------------------------------------
+## Overall
+# process
 dmi_exp18 %>% 
-  filter(q == "0.5") %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
-  tmp
-
+   gather(model, mi, back_p:div_sub_p) %>% 
+  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-# --------------------------------------------------------------
-# Models overall
+# plot
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  # lims(y=c(-.3, 0.5)) +
-  geom_jitter(size=0.04, alpha=0.02) +
+  geom_jitter(size=.02, alpha=0.01, width=0.3) +
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
-  geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="") +
-  # stat_compare_means(comparisons = my_comparisons, label = "p.signif", label.y = c(0.45, 0.32, 0.15)) +
-  theme_classic() ->
+  geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
+  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  lims(y=c(-0.75, 0.25)) +
+  theme_classic() + 
+  theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
 
-# --------------------------------------------------------------
-## Timecourses
+## Timecourse
+# process
 dmi_exp18 %>% 
   filter(q == "0.5") %>% 
-  group_by(stim_rate, g, num_pop) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  group_by(model, stim_rate, g, num_pop) %>%
+  summarise(m=mean(mi), sd=sd(mi)) %>%
+  ungroup() %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
-
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-dmi_exp18 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
-  p_tmp
-p_tmp$model <- revalue(p_tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
-
+# plot
 tmp %>% 
-  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=factor(g))) +
-  geom_line(size=0.5, alpha=1) +
+  ggplot(aes(x=stim_rate,  y=m, color=factor(g), group=factor(g))) +
+  geom_line(size=0.8, alpha=1) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.04, alpha=0.02, width=.25, color="black") +
+  scale_x_continuous(breaks=c(5,10,15,20,15,20,25,30)) +
+  lims(y=c(-0.75, 0.25)) +
   labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -975,68 +982,70 @@ tmp %>%
     "slateblue4",
     "mediumpurple4"
     )) +
+  scale_fill_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "slateblue4",
+    "mediumpurple4"
+    )) +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
+  theme(panel.spacing = unit(1, "lines")) +
   theme(strip.text.x = element_text(face = "bold")) +
   facet_grid(.~model) ->
   p2
 
-
-# ------------------------------------------------------------------------------
-# osc_rate
+# -----------------------------------------------------------
+# osc_rate 
+# -----------------------------------------------------------
+## overall
+# process
 dmi_exp19 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> tmp
-
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
+# plot
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=0.04, alpha=0.02) +
+  geom_jitter(size=.02, alpha=0.01, width=0.3) +
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  # stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
-  # lims(y=c(-.35, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="", title="") +
+  lims(y=c(-0.75, 0.25)) +
+  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p3
 
-# ------------------------------------------------------------------------------
+## timecourse
+# process
 dmi_exp19 %>%
-  group_by(g, osc_rate) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) %>% 
+  filter(q == "0.5") %>% 
+  gather(model, mi, back_p:div_sub_p) %>% 
+  group_by(model, osc_rate, g, num_pop) %>%
+  summarise(m=mean(mi), sd=sd(mi)) %>%
+  ungroup() %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
-
-# Set by hand. 
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-dmi_exp19 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
-  p_tmp
-p_tmp$model <- revalue(p_tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
-
+# plot
 tmp %>% 
-  ggplot(aes(x=osc_rate,  y=mi, color=factor(g), group=factor(g))) +
-  geom_line(size=0.5, alpha=1) +
+  ggplot(aes(x=osc_rate,  y=m, color=factor(g), group=factor(g))) +
+  geom_line(size=0.8, alpha=1) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  geom_jitter(data=p_tmp, aes(x=osc_rate, y=mi), size=0.04, alpha=0.02, width=.25, color="black") +
+  scale_x_continuous(breaks=c(2,6,10,14,18)) +
+  lims(y=c(-0.75, 0.25)) +
   labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
@@ -1048,12 +1057,22 @@ tmp %>%
     "slateblue4",
     "mediumpurple4"
     )) +
+  scale_fill_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "slateblue4",
+    "mediumpurple4"
+    )) +
   theme_classic() +
-  scale_x_continuous(limits=c(1.8, 12.1), breaks=c(2,4,6,8,10,12)) +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
   theme(legend.position = "none") +
+  theme(panel.spacing = unit(1, "lines")) +
   theme(strip.text.x = element_text(face = "bold")) +
   facet_grid(.~model) ->
   p4
@@ -1069,52 +1088,47 @@ ggsave("figures/overall3.pdf", dpi=600)
 ```
 
 # Figure - Overall 4 - Div/sub (stim) small
-```{r, fig.width=3.6, fig.height=1.4, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=3.9, fig.height=1.4, echo=FALSE, warning=FALSE, message=FALSE}
 # --------------------------------------------------------------
-## Panel - MI
-dmi_exp13 %>%
-  filter(num_pop == 50) %>% 
+# Overall
+# --------------------------------------------------------------
+dmi_exp21 %>%
   gather(model, mi, back_p:div_sub_p) %>% 
   filter(model %in% c("div_sub_p")) -> tmp
-
 tmp$model <- revalue(tmp$model, c("div_sub_p"="II")) 
 
 tmp %>% 
   ggplot(aes(x=model, y=mi)) +
-  geom_jitter(size=0.04, alpha=0.02) +
+  geom_jitter(size=.02, alpha=0.01, width=0.2) +
   stat_summary(aes(group=model), fun.y=mean, 
-               geom="point", colour="grey", alpha=1, size=10, shape="_") +
-  geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  lims(y=c(-.35, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="", title="") +
+               geom="point", colour="black", alpha=1, size=10, shape="_") +
+  geom_hline(yintercept=0, color="dark grey", size=0.5) +
+  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  lims(y=c(-0.4, 0)) +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
 
-dmi_exp13 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("div_sub_p")) -> 
-  p_tmp
-p_tmp$model <- revalue(p_tmp$model, c("div_sub_p"="II")) 
-# p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
-
 # --------------------------------------------------------------
-dmi_exp13 %>% 
-  group_by(stim_rate, g, num_pop, q) %>%
-  summarise(add_p=mean(add_p),
-            back_p=mean(back_p),
-            div_sub_p=mean(div_sub_p),
-            mult_p=mean(mult_p),
-            osc_p=mean(osc_p),
-            stim_p=mean(stim_p),
-            sub_p=mean(sub_p)) %>%
-  ungroup() %>%
-  gather(model, mi, add_p:sub_p) -> tmp
+# Timecourse
+# --------------------------------------------------------------
+dmi_exp21 %>%
+  gather(model, mi, back_p:div_sub_p) %>% 
+  group_by(model, q, stim_rate, g) %>%
+  summarise(m=mean(mi), sd=sd(mi)) %>%
+  ungroup() %>% 
+  filter(model %in% c("div_sub_p")) -> 
+  tmp
+tmp$model <- revalue(tmp$model, c("div_sub_p"="II")) 
 
 tmp %>% 
-  filter(model %in% c("div_sub_p")) %>% 
-  filter(num_pop == 50) %>% 
-  ggplot(aes(x=stim_rate, y=mi, color=factor(g), group=g)) +
+  ggplot(aes(x=stim_rate,  y=m, color=factor(g), group=factor(g))) +
+  geom_line(size=0.7, alpha=1) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
+  scale_x_continuous(breaks=c(5,10,15,20,15,20,25,30)) +
+  lims(y=c(-0.4, 0)) +
+  geom_hline(yintercept=0, color="dark grey") +
+  labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate", title = "Division fraction") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1122,23 +1136,30 @@ tmp %>%
     "steelblue4",
     "slateblue2", 
     "slateblue3",
+    "slateblue4",
     "mediumpurple4"
     )) +
-  geom_line(size=0.5, alpha=1) +
-  # geom_point(size=0.7, alpha=1) +
-  geom_jitter(data=p_tmp, aes(x=stim_rate, y=mi), size=0.04, alpha=0.02, width=.25, color="black") +
-  geom_hline(yintercept=0, color="dark grey") + xlab("") +
-  lims(y=c(-.3, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), 
-       x="Stimulus firing rate", title = "Divisive fraction (II)") +
+  scale_fill_manual("g", values = c(
+    "lightsteelblue3",
+    "lightskyblue3",
+    "steelblue3",
+    "steelblue4",
+    "slateblue2", 
+    "slateblue3",
+    "slateblue4",
+    "mediumpurple4"
+    )) +
   theme_classic() +
   theme(strip.background = element_blank()) +
-  theme(plot.title = element_text(size = 9, face="bold")) +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
-  facet_grid(.~q) -> p2
+  theme(panel.spacing = unit(1, "lines")) +
+  theme(plot.title = element_text(size = 9, face = "bold")) +
+  theme(strip.text.x = element_text(face = "bold")) +
+  facet_grid(.~q) ->
+  p2
 
-# --------------------------------------------------------------
+# --------------------------------x------------------------------
 ## Build Figure
 p1 + p2 + plot_layout(widths = c(0.07, 0.9)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
@@ -1155,7 +1176,7 @@ compare_means(mi~model, tmp,  p.adjust.method = "bonf")
 
 # Figure - Control
 ## Other params
-```{r, fig.width=2.1, fig.height=2.8, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=2.1, fig.height=3.2, echo=FALSE, warning=FALSE, message=FALSE}
 # --------------------------------------------------------------
 dmi_exp9 %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
@@ -1168,7 +1189,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 ## Panel - Osc. freq.
 tmp %>% 
   ggplot(aes(x=f, y=mi)) +
-  geom_jitter(width=1.5, size=0.04, alpha=0.02) +
+  geom_jitter(width=1, size=0.1, alpha=0.5) +
   stat_summary(aes(group=f), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   geom_hline(yintercept=0, color="grey") + xlab("") +
@@ -1193,7 +1214,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=num_background, y=mi)) +
-  geom_jitter(width=1, size=0.04, alpha=0.02) +
+  geom_jitter(width=0.75, size=0.1, alpha=0.5) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   stat_summary(aes(group=num_background), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
@@ -1220,7 +1241,7 @@ tmp$m <- revalue(tmp$m, c("5"="m/2", "10"="m", "20"="2m"))
 tmp$m <- factor(tmp$m, levels=c("m/2", "m", "2m"))
 tmp %>% 
   ggplot(aes(x=m, y=mi)) +
-  geom_jitter(width=0.2, size=0.04, alpha=0.02) +
+  geom_jitter(width=0.1, size=0.1, alpha=0.5) +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   stat_summary(aes(group=m), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
@@ -1234,12 +1255,14 @@ tmp %>%
 
 # --------------------------------------------------------------
 p1 / p4 / p5 + 
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+  plot_annotation(tag_levels = 'a', tag_suffix = ".",
+                  title="Population size: 40", 
+                  theme=theme(plot.title = element_text(size = 11, face = "bold")))
 ggsave("figures/control.pdf", dpi=600)
 ```
 
 ## Constant modulation
-```{r, fig.width=0.9, fig.height=1.6, echo=FALSE, warning=TRUE, message=FALSE}
+```{r, fig.width=2.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
 # --------------------------------------------------------------
 load.data14 <- function(path, type, stim_rates, qs, num_pops){
   df <- NULL
@@ -1302,11 +1325,11 @@ dmi <- full_join(dmi_exp8b, dmi_exp14)
 # Join 8 and14
 dmi %>% 
   gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p")) -> 
+  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I")) 
-tmp$model <- factor(tmp$model, levels=c("EI", "E", "I"))
+tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
+tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 tmp$exp <- factor(tmp$exp, levels=c("Osc.", "Tonic"))
 
 # --------------------------------------------------------------
@@ -1316,28 +1339,32 @@ tmp %>%
   summarise(m=mean(mi)) ->
   tmp
 
-tmp %>% 
+tmp %>%
   ggplot(aes(x=exp, y=m, group=interaction(stim_rate,g))) +
   geom_line(size=0.2, alpha=0.3) +
   geom_point(size=0.3, alpha=0.3) +
-  stat_summary(aes(group=exp), fun=mean, 
+  stat_summary(aes(group=exp), fun=mean,
                geom="point", colour="black", alpha=1, size=6, shape="_") +
-  geom_hline(yintercept=0, size=0.4, color="dark grey") + 
+  geom_hline(yintercept=0, size=0.4, color="dark grey") +
   labs(y=expression(paste(Delta, "MI")), x="") +
+  lims(y=c(-0.4, 0.4)) +
   facet_grid(model~., scale = "free_y") +
   theme_classic2() +
+  theme(panel.spacing = unit(1, "lines")) +
   theme(strip.background = element_blank()) +
   theme(legend.position = "none") +
   theme(legend.background = element_rect(colour ="black")) +
   theme(legend.key.size = unit(.3, "cm")) +
-  theme(strip.text.x = element_blank()) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(strip.text.y = element_text(angle = 0, face = "bold")) +
-  facet_grid(model~., scale = "free_y") ->
+  # theme(strip.text.x = element_blank()) +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 1)) +
+  theme(strip.text.x = element_text(angle = 0, face = "bold")) +
+  facet_grid(.~model, scale = "free_y") ->
   p1
 
-p1
-ggsave("figures/constant.pdf", dpi=600)
+# --------------------------------------------
+p1 + plot_annotation(title="Population size: 40",
+                     theme=theme(plot.title = element_text(size = 11, face = "bold")))
+ggsave("figures/constant.pdf", dpi=600) 
 ```
 
 # Testing  - pop

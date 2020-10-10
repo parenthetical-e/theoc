@@ -270,8 +270,9 @@ print(r3)
 # joint plot
 ```{r, fig.width=4.2, fig.height=3.8, echo=FALSE, warning=FALSE, message=FALSE}
 ## Build Figure
-# ((p1 / p3 / p5) | (p2 / p4 / p6)) + 
 r1 / r2 / r3 +
-  plot_annotation(tag_levels = 'a', tag_suffix = ".")
+  plot_annotation(tag_levels = 'a', tag_suffix = ".",
+                  plot_annotation(title="Population size: 40",
+                  theme=theme(plot.title = element_text(size = 11, face = "bold"))))
 ggsave("figures/extrema1.pdf", dpi=600)
 ```
