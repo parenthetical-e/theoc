@@ -233,7 +233,7 @@ exp14:
 exp15a:
 	-mkdir data/exp15
 	-rm data/exp15/*
-	parallel -j 4 -v \
+	parallel -j 30 -v \
 			--joblog 'data/exp15.log' \
 			--nice 19 --colsep ',' \
 			--progress \
