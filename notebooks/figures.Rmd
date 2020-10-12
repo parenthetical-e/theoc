@@ -199,7 +199,7 @@ pow_exp18 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, 
 stim_rates <- c(10)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(10240)
-osc_rates <- c(2, 5, 10, 12, 15, 20)
+osc_rates <- c(2, 4, 6, 8, 10, 12, 14, 16, 18)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp19/", sep="")
 mi_exp19 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
@@ -209,10 +209,10 @@ pac_exp19 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs
 pow_exp19 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
 
 # stim_rate / osc_rate
-stim_rates <- c(5, 10, 12, 15)
+stim_rates <- c(5, 10, 15)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(10240)
-osc_rates <- c(2, 5, 10, 12)
+osc_rates <- c(2, 4, 6, 8)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp20/", sep="")
 mi_exp20 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
@@ -239,7 +239,7 @@ pow_exp21 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, 
 stim_rates <- c(10)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(40)
-osc_rates <- c(2, 5, 10, 12, 15, 20)
+osc_rates <- c(2, 4, 6, 8, 10, 12, 14, 16, 18)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp22/", sep="")
 mi_exp22 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
@@ -249,10 +249,10 @@ pac_exp22 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs
 pow_exp22 <- load.data7(exp_path, "power", stim_rates, qs, num_pops, osc_rates, qs)
 
 # stim_rate / osc_rate
-stim_rates <- c(5, 10, 12, 15)
+stim_rates <- c(5, 10, 15)
 gs <- c(1, 2, 3, 4, 5, 6, 7, 8)
 num_pops <- c(40)
-osc_rates <- c(2, 5, 10, 12)
+osc_rates <- c(2, 4, 6, 8)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp23/", sep="")
 mi_exp23 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
