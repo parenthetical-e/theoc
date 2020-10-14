@@ -108,7 +108,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="Average case") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="Average case") +
   theme_classic() + 
   theme(plot.title = element_text(size = 10, face = "bold")) -> 
   p1
@@ -141,7 +141,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
-  labs(y=expression(paste(Delta, "MI")), x="Population size") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Population size") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -186,7 +186,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=min, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="Worst case") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="Worst case") +
   theme_classic() + 
   theme(plot.title = element_text(size = 10, face = "bold")) -> 
   p3
@@ -219,7 +219,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
-  labs(y=expression(paste(Delta, "MI")), x="Population size") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Population size") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -264,7 +264,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=max, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="Best case") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="Best case") +
   theme_classic() + 
   theme(plot.title = element_text(size = 10, face = "bold")) -> 
   p5
@@ -297,7 +297,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
-  labs(y=expression(paste(Delta, "MI")), x="Population size") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Population size") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +

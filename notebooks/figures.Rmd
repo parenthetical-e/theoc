@@ -175,7 +175,7 @@ num_pops <- c(10, 20, 40, 80, 160, 320, 640, 1280, 2560, 5120, 10240, 20480, 409
 qs <- c("0.5")
 
 exp_path <- paste(path, "/exp15/", sep="")
-mi_exp15 <- load.data1(exp_path, "MI", stim_rates, qs, num_pops, qs)
+mi_exp15 <- load.data1(exp_path, "MI (bits)", stim_rates, qs, num_pops, qs)
 dmi_exp15 <- load.data1(exp_path, "dMI", stim_rates, qs, num_pops, qs)
 h_exp15 <- load.data1(exp_path, "H", stim_rates, qs, num_pops, qs)
 pac_exp15 <- load.data1(exp_path, "PAC", stim_rates, qs, num_pops, qs)
@@ -189,7 +189,7 @@ num_pops <- c(10240)
 osc_rates <- c(2)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp18/", sep="")
-mi_exp18 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+mi_exp18 <- load.data7(exp_path, "MI (bits)", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp18 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp18 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp18 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
@@ -202,7 +202,7 @@ num_pops <- c(10240)
 osc_rates <- c(2, 4, 6, 8, 10, 12, 14, 16, 18)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp19/", sep="")
-mi_exp19 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+mi_exp19 <- load.data7(exp_path, "MI (bits)", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp19 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp19 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp19 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
@@ -215,7 +215,7 @@ num_pops <- c(10240)
 osc_rates <- c(2, 4, 6, 8)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp20/", sep="")
-mi_exp20 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+mi_exp20 <- load.data7(exp_path, "MI (bits)", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp20 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp20 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp20 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
@@ -229,7 +229,7 @@ num_pops <- c(40)
 osc_rates <- c(2)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp21/", sep="")
-mi_exp21 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+mi_exp21 <- load.data7(exp_path, "MI (bits)", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp21 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp21 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp21 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
@@ -242,7 +242,7 @@ num_pops <- c(40)
 osc_rates <- c(2, 4, 6, 8, 10, 12, 14, 16, 18)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp22/", sep="")
-mi_exp22 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+mi_exp22 <- load.data7(exp_path, "MI (bits)", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp22 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp22 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp22 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
@@ -255,7 +255,7 @@ num_pops <- c(40)
 osc_rates <- c(2, 4, 6, 8)
 qs <- c("0.05", "0.25", "0.5", "0.75", "1.0")
 exp_path <- paste(path, "/exp23/", sep="")
-mi_exp23 <- load.data7(exp_path, "MI", stim_rates, qs, num_pops, osc_rates, qs)
+mi_exp23 <- load.data7(exp_path, "MI (bits)", stim_rates, qs, num_pops, osc_rates, qs)
 dmi_exp23 <- load.data7(exp_path, "dMI", stim_rates, qs, num_pops, osc_rates, qs)
 h_exp23 <- load.data7(exp_path, "H", stim_rates, qs, num_pops, osc_rates, qs)
 pac_exp23 <- load.data7(exp_path, "PAC", stim_rates, qs, num_pops, osc_rates, qs)
@@ -269,35 +269,35 @@ path <- "~/Code/theoc/data/"
 # exp9
 fs <- c(4, 6, 8, 12, 20, 30)
 exp_path <- paste(path, "/exp9/", sep="")
-mi_exp9 <- load.data2(exp_path, "MI", fs)
+mi_exp9 <- load.data2(exp_path, "MI (bits)", fs)
 dmi_exp9 <- load.data2(exp_path, "dMI", fs)
 h_exp9 <- load.data2(exp_path, "H", fs)
 
 # exp10
 osc_rates <- c(2, 3, 4, 6, 8)
 exp_path <- paste(path, "/exp10/", sep="")
-mi_exp10 <- load.data3(exp_path, "MI", osc_rates)
+mi_exp10 <- load.data3(exp_path, "MI (bits)", osc_rates)
 dmi_exp10 <- load.data3(exp_path, "dMI", osc_rates)
 h_exp10 <- load.data3(exp_path, "H", osc_rates)
 
 # exp11
 ms <- c(5, 10, 20)
 exp_path <- paste(path, "/exp11/", sep="")
-mi_exp11 <- load.data4(exp_path, "MI", ms)
+mi_exp11 <- load.data4(exp_path, "MI (bits)", ms)
 dmi_exp11 <- load.data4(exp_path, "dMI", ms)
 h_exp11 <- load.data4(exp_path, "H", ms)
 
 # exp12
 num_backgrounds <- c(5, 10, 15, 20, 25)
 exp_path <- paste(path, "/exp12/", sep="")
-mi_exp12 <- load.data5(exp_path, "MI", num_backgrounds)
+mi_exp12 <- load.data5(exp_path, "MI (bits)", num_backgrounds)
 dmi_exp12 <- load.data5(exp_path, "dMI", num_backgrounds)
 h_exp12 <- load.data5(exp_path, "H", num_backgrounds)
 
 # exp6
 num_pops <- c(10, 20, 40, 80, 160, 320, 640, 1280)
 exp_path <- paste(path, "/exp6/", sep="")
-mi_exp6 <- load.data6(exp_path, "MI", num_pops)
+mi_exp6 <- load.data6(exp_path, "MI (bits)", num_pops)
 dmi_exp6 <- load.data6(exp_path, "dMI", num_pops)
 h_exp6 <- load.data6(exp_path, "H", num_pops)
 ```
@@ -381,7 +381,7 @@ examples %>%
   geom_line(size=1.2) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="Norm. rate", tag="b.", title="Pacemaker (O)") +
+  labs(x="", y="Norm. rate", tag="c.", title="Pacemaker (O)") +
   theme(plot.title = element_text(size = 9, face = "bold")) ->
 p5
 
@@ -393,7 +393,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8) +
-  labs(x="", y="Power", tag="i.") +
+  labs(x="", y="Power", tag="j.") +
   lims(y=c(-3,2.1)) +
   theme_classic2() -> s5
 
@@ -405,7 +405,7 @@ examples %>%
   # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.1) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="Norm. rate", tag="c.",  title="Unmodulated (S)") +
+  labs(x="", y="Norm. rate", tag="b.",  title="Unmodulated (S)") +
   theme(plot.title = element_text(size = 9, face = "bold")) ->
 p9
 
@@ -417,7 +417,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="", y="Power", tag="j.") +
+  labs(x="", y="Power", tag="i.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s9
 
@@ -475,7 +475,7 @@ examples %>%
   # geom_line(aes(x=times, y=stim_ref), color="darkgrey", size=1.2) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="Time", y="Norm. rate", tag="f.", title="Subtractive (I)") +
+  labs(x="", y="Norm. rate", tag="f.", title="Subtractive (I)") +
   theme(plot.title = element_text(size = 9, face = "bold")) ->
 p8
 
@@ -487,7 +487,7 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="Frequency.", y="Power", tag="m.") +
+  labs(x="", y="Power", tag="m.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s8
 
@@ -496,7 +496,7 @@ examples %>%
   ggplot(aes(x=times, y=div_sub_p)) +
   geom_line() +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
-  labs(x="Time", y="Norm. rate", tag="g.", title="Subtractive/divisive (II)") +
+  labs(x="Time (s)", y="Norm. rate", tag="g.", title="Subtractive/divisive (II)") +
   theme_classic2() + 
   theme(plot.title = element_text(size = 9, face = "bold")) ->
 p10
@@ -509,12 +509,12 @@ spec %>%
   filter(frequency < 25) %>% 
 ggplot(aes(x=frequency, y=log10(power))) +
   geom_line(size=0.8, color="black") +
-  labs(x="Frequency.", y="Power", tag="n.") +
+  labs(x="Frequency (Hz)", y="Power", tag="n.") +
   lims(y=c(-3,2)) +
   theme_classic2() -> s10
 
 # --------------------------------------------------------------------  
-((p4 / p5 / p9 / p7 / p6 / p8 / p10) | (s4 / s5 / s9 / s7 / s6 / s8 / s10)) +
+((p4 / p9 / p5 / p7 / p6 / p8 / p10) | (s4 / s9 / s5 / s7 / s6 / s8 / s10)) +
   plot_layout(width = c(0.75, 0.25)) +
   # plot_annotation(tag_levels = 'a', tag_suffix = ".")
 ggsave("figures/example.pdf", dpi=300, width=2*3, height=2*5.4)
@@ -561,7 +561,7 @@ examples %>%
   geom_hline(yintercept=0.2, color="grey", size=0.2) +
   geom_hline(yintercept=0.1, color="grey", size=0.2) +
   annotate("text", y=1.1, x=5, label="m") +
-  labs(x="Time", y="Norm. rate", tag="a.", title="Discretize into m bins") +
+  labs(x="Time (s)", y="Norm. rate", tag="a.", title="Discretize into m bins") +
   theme_classic2() + 
   # theme(axis.title.y=element_text(angle = 0, vjust = 0.5)) +
   theme(plot.title = element_text(size = 9, face = "bold")) ->
@@ -689,7 +689,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
@@ -735,7 +735,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
-  labs(y=expression(paste(Delta, "MI")), x="Population size") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Population size") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -774,7 +774,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p1
@@ -799,7 +799,7 @@ tmp %>%
   geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_continuous(breaks=c(5,10,15,20,15,20,25,30)) +
-  labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Stimulus firing rate (spks/s)") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -848,7 +848,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p3
@@ -873,7 +873,7 @@ tmp %>%
   geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_continuous(breaks=c(2,6,10,14,18)) +
-  labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Pacemaker firing rate (spks/s)") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -942,7 +942,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="") +
   lims(y=c(-0.75, 0.25)) +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
@@ -969,7 +969,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_continuous(breaks=c(5,10,15,20,15,20,25,30)) +
   lims(y=c(-0.75, 0.25)) +
-  labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Stimulus firing rate (spks/s)") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1018,7 +1018,7 @@ tmp %>%
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + xlab("") +
   lims(y=c(-0.75, 0.25)) +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="") +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
   p3
@@ -1044,7 +1044,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_continuous(breaks=c(2,6,10,14,18)) +
   lims(y=c(-0.75, 0.25)) +
-  labs(y=expression(paste(Delta, "MI")), x="Pacemaker firing rate") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Pacemaker firing rate (spks/s)") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1102,7 +1102,7 @@ tmp %>%
   stat_summary(aes(group=model), fun.y=mean, 
                geom="point", colour="black", alpha=1, size=10, shape="_") +
   geom_hline(yintercept=0, color="dark grey", size=0.5) +
-  labs(y=expression(paste(Delta, "MI")), x="Model", title="") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Model", title="") +
   lims(y=c(-0.4, 0)) +
   theme_classic() + 
   theme(plot.title = element_text(size = 7, hjust=3, face = "bold")) -> 
@@ -1127,7 +1127,7 @@ tmp %>%
   scale_x_continuous(breaks=c(5,10,15,20,15,20,25,30)) +
   lims(y=c(-0.4, 0)) +
   geom_hline(yintercept=0, color="dark grey") +
-  labs(y=expression(paste(Delta, "MI")), x="Stimulus firing rate", title = "Division fraction") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Stimulus firing rate (spks/s)", title = "Division fraction") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1192,7 +1192,7 @@ tmp %>%
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   lims(x=c(1, 30), y=c(-0.3, 0.5)) + 
-  labs(y=expression(paste(Delta, "MI")), x="Pacemaker frequency") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Pacemaker frequency (Hz)") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(strip.text.x = element_text(face = "bold")) +
@@ -1217,7 +1217,7 @@ tmp %>%
   stat_summary(aes(group=num_background), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   lims(y=c(-0.3, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="Background size") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Background size") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(strip.text.x = element_text(face = "bold")) +
@@ -1244,7 +1244,7 @@ tmp %>%
   stat_summary(aes(group=m), fun=mean, 
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   lims(y=c(-0.3, 0.5)) +
-  labs(y=expression(paste(Delta, "MI")), x="Dist. bin size (m)") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Dist. bin size (m)") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(strip.text.x = element_text(face = "bold")) +
@@ -1286,7 +1286,7 @@ tmp %>%
   stat_smooth(method="lm", se = TRUE, alpha=1, size=0.6, color="black") +
   lims(y=c(-0.5, 0.5)) +
   scale_x_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1.25)) +
-  labs(y=expression(paste(Delta, "MI")), x="Power", title="Population size: 40") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Power", title="Population size: 40") +
   theme_classic() + 
   geom_hline(yintercept=0, color="dark grey", size=0.5) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -1316,7 +1316,7 @@ tmp %>%
   ggplot(aes(x=pow, y=mi)) + 
   geom_point(size=.02, alpha=0.05) +
   stat_smooth(method="lm", se = TRUE, alpha=1, size=0.6, color="black") +
-  labs(y=expression(paste(Delta, "MI")), x="Power", title="Population size: 10240") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Power", title="Population size: 10240") +
   theme_classic() + 
   lims(y=c(-0.5, 0.5)) +
   scale_x_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1.25)) +
@@ -1355,7 +1355,7 @@ tmp %>%
   geom_point(size=.3, alpha=0.1) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
-  labs(y=expression(paste(Delta, "MI")), x="Power", title="E") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Power", title="E") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1382,7 +1382,7 @@ tmp %>%
   geom_point(size=.3, alpha=0.1) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
-  labs(y=expression(paste(Delta, "MI")), x="Power", title="EI") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Power", title="EI") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1410,7 +1410,7 @@ tmp %>%
   geom_point(size=.1, alpha=0.3) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
-  labs(y=expression(paste(Delta, "MI")), x="Power", title="I") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Power", title="I") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1439,7 +1439,7 @@ tmp %>%
   geom_point(size=.1, alpha=0.3) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
-  labs(y=expression(paste(Delta, "MI")), x="Power", title="II") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Power", title="II") +
   scale_x_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1.25)) +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
