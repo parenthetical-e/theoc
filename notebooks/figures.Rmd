@@ -344,7 +344,8 @@ fi %>%
   p1
 
 p1
-ggsave("figures/arithmetic.pdf", dpi=600)
+ggsave("figures/arithmetic.pdf", dpi=300)
+ggsave("figures/arithmetic.png", dpi=300)
 ```
 # Figure - Examples
 ```{r, fig.width=3, fig.height=5.4, echo=FALSE, warning=FALSE, message=FALSE}
@@ -516,7 +517,8 @@ ggplot(aes(x=frequency, y=log10(power))) +
 ((p4 / p5 / p9 / p7 / p6 / p8 / p10) | (s4 / s5 / s9 / s7 / s6 / s8 / s10)) +
   plot_layout(width = c(0.75, 0.25)) +
   # plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/example.pdf", dpi=600, width=2*3, height=2*5.4)
+ggsave("figures/example.pdf", dpi=300, width=2*3, height=2*5.4)
+ggsave("figures/example.png", dpi=300, width=2*3, height=2*5.4)
 ```
 
 # Figure - Entropy and probability
@@ -591,7 +593,8 @@ example_dists %>%
 # ----------------------------------------------------
 ## Build
 p1 + a1 + p2 + plot_layout(widths = c(0.65, 0.1, 0.25))
-ggsave("figures/entropy.pdf", dpi=600)
+ggsave("figures/entropy.pdf", dpi=300)
+ggsave("figures/entropy.png", dpi=300)
 ```
 
 # Figure - Dists
@@ -661,7 +664,8 @@ b4 <- p4 + p4_label + plot_layout(widths = c(0.8, 0.2))
 
 b <- (b0 / b2 / b1 / b3 / b4) 
 y_label + b + plot_layout(widths = c(0.1, 0.9))
-ggsave("figures/dist.pdf", dpi=600)
+ggsave("figures/dist.pdf", dpi=300)
+ggsave("figures/dist.png", dpi=300)
 ```
 
 # Figure - Overall 1 - num_pop
@@ -693,53 +697,45 @@ tmp %>%
 # --------------------------------------------------------------
 # Timecourse
 # --------------------------------------------------------------
+# dmi_exp15 %>%
+#   gather(model, mi, back_p:div_sub_p) %>% 
+#   group_by(model, stim_rate, g, num_pop) %>%
+#   summarise(m=mean(mi), sd=sd(mi)) %>%
+#   ungroup() %>% 
+#   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
+#   tmp
+# 
+# # Set by hand. 
+
+
 dmi_exp15 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  group_by(model, stim_rate, g, num_pop) %>%
+  filter(stim_rate == 10) %>% 
+  group_by(num_pop, g) %>%
+  summarise(add_p=mean(add_p),
+            back_p=mean(back_p),
+            div_sub_p=mean(div_sub_p),
+            mult_p=mean(mult_p),
+            osc_p=mean(osc_p),
+            stim_p=mean(stim_p),
+            sub_p=mean(sub_p)) %>% 
+  gather(model, mi, add_p:sub_p) %>% 
+  group_by(model, num_pop) %>%
   summarise(m=mean(mi), sd=sd(mi)) %>%
-  ungroup() %>% 
   filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
   tmp
 
-# Set by hand. 
 tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
 tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
-dmi_exp15 %>%
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p","mult_p", "sub_p", "div_sub_p")) -> 
-  p_tmp
-p_tmp$model <- revalue(p_tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-p_tmp$model <- factor(p_tmp$model, levels=c("E", "EI", "I", "II"))
-
 tmp %>% 
-  ggplot(aes(x=num_pop,  y=m, color=factor(g), group=factor(g))) +
+  # ggplot(aes(x=num_pop,  y=m, color=factor(g), group=factor(g))) +
+  ggplot(aes(x=num_pop,  y=m)) +
   geom_line(size=0.7, alpha=1) +
-  geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
+  geom_ribbon(aes(ymin=m-sd, ymax=m+sd), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
   annotation_logticks(sides="b") + 
   labs(y=expression(paste(Delta, "MI")), x="Population size") +
-  scale_color_manual("g", values = c(
-    "lightsteelblue3",
-    "lightskyblue3",
-    "steelblue3",
-    "steelblue4",
-    "slateblue2", 
-    "slateblue3",
-    "slateblue4",
-    "mediumpurple4"
-    )) +
-  scale_fill_manual("g", values = c(
-    "lightsteelblue3",
-    "lightskyblue3",
-    "steelblue3",
-    "steelblue4",
-    "slateblue2", 
-    "slateblue3",
-    "slateblue4",
-    "mediumpurple4"
-    )) +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(legend.background = element_rect(colour ="black")) +
@@ -754,7 +750,8 @@ tmp %>%
 # --------------------------------------------------------------
 p1 + p2 + plot_layout(widths = c(0.15, 0.85)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/overall1.pdf", dpi=600)
+ggsave("figures/overall1.pdf", dpi=300)
+ggsave("figures/overall1.png", dpi=300)
 ```
 
 # Figure - Overall 2 - small num_pop
@@ -915,13 +912,14 @@ tmp %>%
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
                   title="Population size: 40", 
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/overall2.pdf", dpi=600)
+ggsave("figures/overall2.pdf", dpi=300)
+ggsave("figures/overall2.png", dpi=300)
 ```
 
 ### Sig test results 
 - For the paper.
 ```{r}
-
+# compare_means(mi~model, tmp,  p.adjust.method = "bonf")
 ```
 
 # Figure - Overall 3 - large num_pop
@@ -1084,7 +1082,8 @@ tmp %>%
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
                   title="Population size: 10240",
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/overall3.pdf", dpi=600)
+ggsave("figures/overall3.pdf", dpi=300)
+ggsave("figures/overall3.png", dpi=300)
 ```
 
 # Figure - Overall 4 - Div/sub (stim) small
@@ -1165,12 +1164,13 @@ p1 + p2 + plot_layout(widths = c(0.07, 0.9)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
                   title="Population size: 40",
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/overall4.pdf", dpi=600)
+ggsave("figures/overall4.pdf", dpi=300)
+ggsave("figures/overall4.png", dpi=300)
 ```
 
 ### Sig test results 
 ```{r}
-compare_means(mi~model, tmp,  p.adjust.method = "bonf")
+# compare_means(mi~model, tmp,  p.adjust.method = "bonf")
 ```
 
 # Figure - Control
@@ -1256,7 +1256,8 @@ p1 / p4 / p5 +
   plot_annotation(tag_levels = 'a', tag_suffix = ".",
                   title="Population size: 40", 
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/control.pdf", dpi=600)
+ggsave("figures/control1.pdf", dpi=300)
+ggsave("figures/control1.png", dpi=300)
 ```
 
 
@@ -1330,7 +1331,8 @@ tmp %>%
 
 p1 / p2 + 
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/power1.pdf", dpi=600)
+ggsave("figures/power1.pdf", dpi=300)
+ggsave("figures/power1.png", dpi=300)
 ```
 
 # Supp. Figure - Power, facet by params
@@ -1350,7 +1352,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 tmp %>% 
   filter(model == "E") %>%
   ggplot(aes(x=pow, y=mi, color=factor(g))) +
-  geom_point(size=.1, alpha=0.1) +
+  geom_point(size=.3, alpha=0.1) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
   labs(y=expression(paste(Delta, "MI")), x="Power", title="E") +
@@ -1377,7 +1379,7 @@ tmp %>%
 tmp %>% 
   filter(model == "EI") %>%
   ggplot(aes(x=pow, y=mi, color=factor(g))) +
-  geom_point(size=.1, alpha=0.1) +
+  geom_point(size=.3, alpha=0.1) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
   labs(y=expression(paste(Delta, "MI")), x="Power", title="EI") +
@@ -1405,7 +1407,7 @@ tmp %>%
 tmp %>% 
   filter(model == "I") %>%
   ggplot(aes(x=pow, y=mi, color=factor(g))) +
-  geom_point(size=.1, alpha=0.1) +
+  geom_point(size=.1, alpha=0.3) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
   labs(y=expression(paste(Delta, "MI")), x="Power", title="I") +
@@ -1434,7 +1436,7 @@ tmp %>%
 tmp %>% 
   filter(model == "II") %>%
   ggplot(aes(x=pow, y=mi, color=factor(g))) +
-  geom_point(size=.1, alpha=0.1) +
+  geom_point(size=.1, alpha=0.3) +
   stat_smooth(method="lm", se = FALSE, alpha=1) +
   geom_hline(yintercept=0, color="dark grey", size=0.5) + 
   labs(y=expression(paste(Delta, "MI")), x="Power", title="II") +
@@ -1460,112 +1462,11 @@ tmp %>%
   p4
 
 
-(p1 + p2) / (p3 + p4) + plot_layout(guides = "collect")
-ggsave("figures/power2.pdf", dpi=600)
+(p1 + p2) / (p3 + p4) + 
+  plot_layout(guides = "collect") +
+  plot_annotation(title="Population size: 40", 
+                  theme=theme(plot.title = element_text(size = 13, face = "bold")))
+ggsave("figures/power2.pdf", dpi=300)
+ggsave("figures/power2.png", dpi=300)
 ```
 
-# Supp. Figure - Constant modulation
-```{r, fig.width=2.4, fig.height=1.2, echo=FALSE, warning=FALSE, message=FALSE}
-# --------------------------------------------------------------
-load.data14 <- function(path, type, stim_rates, qs, num_pops){
-  df <- NULL
-  for(r_s in stim_rates){
-    for(g in gs){
-      for(n in num_pops){
-        for(q in qs){
-          try({
-            name <- paste("stim_rate", as.character(r_s), 
-                          "_g", as.character(g),
-                          "_num_pop", as.character(n),
-                          "_q", as.character(q),
-                          "_", as.character(type), 
-                          ".csv", sep="")
-            di <- read.csv(paste(path, name, sep=""))
-            di["stim_rate"] <- rep(r_s, nrow(di))
-            di["g"] <- rep(g, nrow(di))
-            di["num_pop"] <- rep(n, nrow(di))
-            di["q"] <- rep(q, nrow(di))
-            di["trial"] <- 1:nrow(di)
-            df <- rbind(df, di)  
-          })  
-        }
-      }
-    }
-  }
-  df
-}
-
-# --------------------------------------------------------------
-# Reload the exp8 data and loaf 14, but I need custom function for that.
-# Note the exp8 reload gets labelled as exp8b to
-path <- "~/Code/theoc/data/"
-
-# Params
-stim_rates <- c(5, 10, 15, 20, 25, 30)
-gs <- c(1, 2, 3, 4, 5, 7, 8)
-num_pops <- c(50)
-qs <- c("0.5")
-
-# Exp8 is the osc standard
-exp_path <- paste(path, "/exp8/", sep="")
-mi_exp8b <- load.data14(exp_path, "MI", stim_rates, qs, num_pops)
-dmi_exp8b <- load.data14(exp_path, "dMI", stim_rates, qs, num_pops)
-
-# Exp14 is what I'm interested in
-exp_path <- paste(path, "/exp14/", sep="")
-mi_exp14 <- load.data14(exp_path, "MI", stim_rates, qs, num_pops)
-dmi_exp14 <- load.data14(exp_path, "dMI", stim_rates, qs, num_pops)
-
-# Add labels, and full_join
-mi_exp8b$exp <- "Osc."
-mi_exp14$exp <- "Tonic"
-dmi_exp8b$exp <- "Osc."
-dmi_exp14$exp <- "Tonic"
-mi <- full_join(mi_exp8b, mi_exp14)
-dmi <- full_join(dmi_exp8b, dmi_exp14)
-
-# --------------------------------------------------------------
-# Join 8 and14
-dmi %>% 
-  gather(model, mi, back_p:div_sub_p) %>% 
-  filter(model %in% c("add_p", "mult_p", "sub_p", "div_sub_p")) -> 
-  tmp
-
-tmp$model <- revalue(tmp$model, c("mult_p"="EI", "add_p"="E", "sub_p"="I", "div_sub_p"="II")) 
-tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
-tmp$exp <- factor(tmp$exp, levels=c("Osc.", "Tonic"))
-
-# --------------------------------------------------------------
-# Average by cond, and plot by exp
-tmp %>% 
-  group_by(stim_rate,g,exp,model) %>% 
-  summarise(m=mean(mi)) ->
-  tmp
-
-tmp %>%
-  ggplot(aes(x=exp, y=m, group=interaction(stim_rate,g))) +
-  geom_line(size=0.2, alpha=0.3) +
-  geom_point(size=0.3, alpha=0.3) +
-  stat_summary(aes(group=exp), fun=mean,
-               geom="point", colour="black", alpha=1, size=6, shape="_") +
-  geom_hline(yintercept=0, size=0.4, color="dark grey") +
-  labs(y=expression(paste(Delta, "MI")), x="") +
-  lims(y=c(-0.4, 0.4)) +
-  facet_grid(model~., scale = "free_y") +
-  theme_classic2() +
-  theme(panel.spacing = unit(1, "lines")) +
-  theme(strip.background = element_blank()) +
-  theme(legend.position = "none") +
-  theme(legend.background = element_rect(colour ="black")) +
-  theme(legend.key.size = unit(.3, "cm")) +
-  # theme(strip.text.x = element_blank()) +
-  # theme(axis.text.x = element_text(angle = 90, vjust = 1)) +
-  theme(strip.text.x = element_text(angle = 0, face = "bold")) +
-  facet_grid(.~model, scale = "free_y") ->
-  p1
-
-# --------------------------------------------
-p1 + plot_annotation(title="Population size: 40",
-                     theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/constant.pdf", dpi=600) 
-```

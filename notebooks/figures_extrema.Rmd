@@ -136,7 +136,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=num_pop,  y=m)) +
-  geom_line(size=0.7, alpha=1) +
+  geom_line(size=0.9, alpha=1) +
   # geom_ribbon(aes(ymean=m-sd, ymax=m+sd), alpha=0.2, color="grey") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
@@ -214,7 +214,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=num_pop,  y=m)) +
-  geom_line(size=0.7, alpha=1) +
+  geom_line(size=0.9, alpha=1) +
   # geom_ribbon(aes(ymin=m-sd, ymax=m+sd), alpha=0.2, color="grey") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
@@ -292,7 +292,7 @@ tmp$model <- factor(tmp$model, levels=c("E", "EI", "I", "II"))
 
 tmp %>% 
   ggplot(aes(x=num_pop,  y=m)) +
-  geom_line(size=0.7, alpha=1) +
+  geom_line(size=0.9, alpha=1) +
   # geom_ribbon(aes(ymax=m-sd, ymax=m+sd), alpha=0.2, color="grey") +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_log10() +
@@ -322,4 +322,5 @@ r1 / r2 / r3 +
                   title="Population size: 40",
                   theme=theme(plot.title = element_text(size = 13, face = "bold")))
 ggsave("figures/extrema1.pdf", dpi=600)
+ggsave("figures/extrema1.png", dpi=300)
 ```
