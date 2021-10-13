@@ -1,5 +1,9 @@
 # theoc
-A study of oscillatory coding.
+A study of oscillatory coding and its cost and benefits.
+
+This is the simulation code for,
+
+Peterson, E. J. & Voytek, B. Costs and benefits of using rhythmic rate codes. http://biorxiv.org/lookup/doi/10.1101/2021.04.24.441276 (2021) doi:10.1101/2021.04.24.441276.
 
 # Background
 There are two questions about neural oscillations whose answers are very much intertwined, and important. 
