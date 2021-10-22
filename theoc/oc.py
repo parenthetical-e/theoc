@@ -26,7 +26,7 @@ EPS = np.finfo(float).eps
 def save_result(name, result):
     if not name.endswith(".pkl"):
         name += ".pkl"
-    with open(name, "w") as f:
+    with open(name, "wb") as f:
         cloudpickle.dump(result, f)
 
 
