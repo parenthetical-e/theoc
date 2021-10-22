@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+`#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """Oscillatory coding, as LNP."""
 import sys
@@ -24,15 +24,15 @@ EPS = np.finfo(float).eps
 
 
 def save_result(name, result):
-    if not name.endswith(".cloudpickle"):
-        name += ".cloudpickle"
+    if not name.endswith(".pkl"):
+        name += ".pkl"
     with open(name, "w") as f:
         cloudpickle.dump(result, f)
 
 
 def load_result(name):
-    if not name.endswith(".cloudpickle"):
-        name += ".cloudpickle"
+    if not name.endswith(".pkl"):
+        name += ".pkl"
     with open(name, "r") as f:
         result = cloudpickle.load(f)
     return result
