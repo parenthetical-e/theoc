@@ -94,7 +94,7 @@ def d_prime(x_true, x):
 
 
 def normalize(x):
-    x = (x.astype(np.float) - np.min(x)) / (np.max(x) - np.min(x))
+    x = (x.astype(np.float) - np.nanmin(x)) / (np.nanmax(x) - np.nanmin(x))
     return x
 
 
@@ -110,7 +110,7 @@ def discrete_dist(x, m):
     m : int, optional
         Number of symbols possible
     '''
-    counts = np.histogram(x, bins=m)[0]
+    counts = np.histogram(x[np.isfinite(x)], bins=m)[0]
     dist = counts / counts.sum()
 
     return dist
