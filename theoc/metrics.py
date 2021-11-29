@@ -98,6 +98,21 @@ def normalize(x):
     return x
 
 
+def l2_error(y_ref, y):
+    """Returns the least squared error.
+    
+    Parameters
+    ==========
+
+    y_ref : array-like, shape (n_samples)
+        The reference data
+    y : array-like, shape (n_samples)
+        The test data
+    """
+    delta = y - y_ref
+    return np.sum(delta**2)
+
+
 def discrete_dist(x, m):
     '''Returns a discrete distribution on x, of size m.
 
