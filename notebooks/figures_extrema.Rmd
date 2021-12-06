@@ -319,8 +319,8 @@ print(r3)
 ## Build Figure
 r1 / r2 / r3 +
   plot_annotation(tag_levels = 'a', tag_suffix = ".",
-                  title="Population size: 40",
+                  # title="Population size: 40",
                   theme=theme(plot.title = element_text(size = 13, face = "bold")))
-ggsave("figures/extrema1.pdf", dpi=300)
-ggsave("figures/extrema1.png", dpi=300)
+ggsave("figures/lnp-extrema1.pdf", dpi=300)
+ggsave("figures/lnp-extrema1.png", dpi=300)
 ```

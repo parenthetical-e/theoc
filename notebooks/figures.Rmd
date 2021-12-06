@@ -165,7 +165,7 @@ load.data7 <- function(path, type, stim_rates, qs, num_pops, osc_rates, pns){
 
 # Load data
 ## Main
-```{r load1, message=FALSE, warning=FALSE, error=FALSE}
+```{r load1, message=FALSE, warning=FALSE, error=FALSE, echo=TRUE}
 path <- "~/Code/theoc/data/"
 
 # -- num_pop search-----------------------------------------------------------  
@@ -381,7 +381,7 @@ examples %>%
   geom_line(size=1.2) +
   scale_y_continuous(breaks=c(0, 0.5, 1), limits=c(0, 1)) +
   theme_classic2() + 
-  labs(x="", y="Norm. rate", tag="c.", title="Pacemaker (O)") +
+  labs(x="", y="Norm. rate", tag="c.", title="Oscillation (O)") +
   theme(plot.title = element_text(size = 9, face = "bold")) ->
 p5
 
@@ -517,8 +517,8 @@ ggplot(aes(x=frequency, y=log10(power))) +
 ((p4 / p9 / p5 / p7 / p6 / p8 / p10) | (s4 / s9 / s5 / s7 / s6 / s8 / s10)) +
   plot_layout(width = c(0.75, 0.25)) +
   # plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/example.pdf", dpi=300, width=2*3, height=2*5.4)
-ggsave("figures/example.png", dpi=300, width=2*3, height=2*5.4)
+ggsave("figures/lnp-example.pdf", dpi=300, width=2*3, height=2*5.4)
+ggsave("figures/lnp-example.png", dpi=300, width=2*3, height=2*5.4)
 ```
 
 # Figure - Entropy and probability
@@ -598,55 +598,67 @@ ggsave("figures/entropy.png", dpi=300)
 ```
 
 # Figure - Dists
-```{r, fig.width=1.4, fig.height=4.2, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, fig.width=2.4, fig.height=4.2, echo=FALSE, warning=FALSE, message=FALSE}
 example_dists <- read_csv("../data/example_dists.csv")
 
+colors <- colors <- c("Stimulus" = "darkgrey", "Modulated" = "black")
+
 example_dists %>% 
-  ggplot(aes(x=m, y=stim_p)) +
+  ggplot(aes(x=m, y=stim_p, fill="Modulated")) +
   geom_bar(stat="identity", alpha=1) +
-  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  geom_bar(aes(x=m, y=stim_ref, fill="Stimulus"), alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="", tag="a.", title="Estimating mutual\ninformation") +
   lims(y=c(0,1)) +
+  scale_fill_manual("", values = colors) +
   theme_classic2() + 
+  theme(legend.position = "none") +
   theme(plot.title = element_text(size = 9, face = "bold")) -> p0
 
 example_dists %>% 
-  ggplot(aes(x=m, y=mult_p)) +
+  ggplot(aes(x=m, y=mult_p, fill="Modulated")) +
   geom_bar(stat="identity", alpha=1) +
-  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  geom_bar(aes(x=m, y=stim_ref, fill="Stimulus"),  alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="", tag="b.") +
   lims(y=c(0,1)) +
+  scale_fill_manual("", values = colors) +
   theme_classic2() + 
+  theme(legend.position = "none") +
   theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p1
 
 example_dists %>% 
-  ggplot(aes(x=m, y=add_p)) +
+  ggplot(aes(x=m, y=add_p, fill="Modulated")) +
   geom_bar(stat="identity", alpha=1) +
-  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  geom_bar(aes(x=m, y=stim_ref, fill="Stimulus"), alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="", tag="c.") +
   lims(y=c(0,1)) +
-  theme_classic2() -> p2
+  scale_fill_manual("", values = colors) +
+  theme_classic2() + 
+  theme(legend.position = "none") -> p2
 
 example_dists %>% 
-  ggplot(aes(x=m, y=sub_p)) +
-  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  ggplot(aes(x=m, y=sub_p, fill="Modulated")) +
+  geom_bar(aes(x=m, y=stim_ref, fill="Stimulus"), alpha=0.6, stat="identity") +
   geom_bar(stat="identity", alpha=1) +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="", tag="d.") +
   lims(y=c(0,1)) +
+  scale_fill_manual("", values = colors) +
+  theme(legend.position = "none") +
   theme_classic2() -> p3
 
 example_dists %>% 
-  ggplot(aes(x=m, y=div_sub_p)) +
+  ggplot(aes(x=m, y=div_sub_p, fill="Modulated")) +
   geom_bar(stat="identity", alpha=1) +
-  geom_bar(aes(x=m, y=stim_ref), fill="darkgrey", alpha=0.6, stat="identity") +
+  geom_bar(aes(x=m, y=stim_ref, fill="Stimulus"), alpha=0.6, stat="identity") +
   scale_x_continuous(breaks=0:9, labels=1:10) +
   labs(y="", x="m", tag="e.") +
   lims(y=c(0,1)) +
+  scale_fill_manual("", values = colors) +
   theme_classic2() + 
+  theme(legend.position = "none") +
   theme(plot.title = element_text(size = 7, hjust=1, face = "bold")) -> p4
 
 y_label <- as_ggplot(text_grob("Probability", hjust=0, rot = 90))
@@ -663,7 +675,7 @@ b3 <- p3 + p3_label + plot_layout(widths = c(0.8, 0.2))
 b4 <- p4 + p4_label + plot_layout(widths = c(0.8, 0.2))
 
 b <- (b0 / b2 / b1 / b3 / b4) 
-y_label + b + plot_layout(widths = c(0.1, 0.9))
+y_label + b + plot_layout(widths = c(0.1, 0.9), guides = "collect") +
 ggsave("figures/dist.pdf", dpi=300)
 ggsave("figures/dist.png", dpi=300)
 ```
@@ -750,8 +762,8 @@ tmp %>%
 # --------------------------------------------------------------
 p1 + p2 + plot_layout(widths = c(0.15, 0.85)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/overall1.pdf", dpi=300)
-ggsave("figures/overall1.png", dpi=300)
+ggsave("figures/lnp1.pdf", dpi=300)
+ggsave("figures/lnp1.png", dpi=300)
 ```
 
 # Figure - Overall 2 - small num_pop
@@ -873,7 +885,7 @@ tmp %>%
   geom_ribbon(aes(ymin=m-sd, ymax=m+sd, fill=factor(g)), alpha=0.2, color=NA) +
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_continuous(breaks=c(2,6,10,14,18)) +
-  labs(y=expression(paste(Delta, "MI (bits)")), x="Pacemaker firing rate (spks/s)") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Oscillation firing rate (spks/s)") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -912,8 +924,8 @@ tmp %>%
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
                   title="Population size: 40", 
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/overall2.pdf", dpi=300)
-ggsave("figures/overall2.png", dpi=300)
+ggsave("figures/lnp2.pdf", dpi=300)
+ggsave("figures/lnp2.png", dpi=300)
 ```
 
 ### Sig test results 
@@ -1044,7 +1056,7 @@ tmp %>%
   geom_hline(yintercept=0, color="dark grey") + xlab("") +
   scale_x_continuous(breaks=c(2,6,10,14,18)) +
   lims(y=c(-0.75, 0.25)) +
-  labs(y=expression(paste(Delta, "MI (bits)")), x="Pacemaker firing rate (spks/s)") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Oscillation firing rate (spks/s)") +
   scale_color_manual("g", values = c(
     "lightsteelblue3",
     "lightskyblue3",
@@ -1082,8 +1094,8 @@ tmp %>%
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
                   title="Population size: 10240",
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/overall3.pdf", dpi=300)
-ggsave("figures/overall3.png", dpi=300)
+ggsave("figures/lnp3.pdf", dpi=300)
+ggsave("figures/lnp3.png", dpi=300)
 ```
 
 # Figure - Overall 4 - Div/sub (stim) small
@@ -1164,8 +1176,8 @@ p1 + p2 + plot_layout(widths = c(0.07, 0.9)) +
   plot_annotation(tag_levels = 'a', tag_suffix = ".", 
                   title="Population size: 40",
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/overall4.pdf", dpi=300)
-ggsave("figures/overall4.png", dpi=300)
+ggsave("figures/lnp4.pdf", dpi=300)
+ggsave("figures/lnp4.png", dpi=300)
 ```
 
 ### Sig test results 
@@ -1192,7 +1204,7 @@ tmp %>%
                geom="point", colour="black", alpha=1, size=6, shape="_") +
   geom_hline(yintercept=0, color="grey") + xlab("") +
   lims(x=c(1, 30), y=c(-0.3, 0.5)) + 
-  labs(y=expression(paste(Delta, "MI (bits)")), x="Pacemaker frequency (Hz)") +
+  labs(y=expression(paste(Delta, "MI (bits)")), x="Oscillation frequency (Hz)") +
   theme_classic() +
   theme(strip.background = element_blank()) +
   theme(strip.text.x = element_text(face = "bold")) +
@@ -1256,8 +1268,8 @@ p1 / p4 / p5 +
   plot_annotation(tag_levels = 'a', tag_suffix = ".",
                   title="Population size: 40", 
                   theme=theme(plot.title = element_text(size = 11, face = "bold")))
-ggsave("figures/control1.pdf", dpi=300)
-ggsave("figures/control1.png", dpi=300)
+ggsave("figures/lnp-control1.pdf", dpi=300)
+ggsave("figures/lnp-control1.png", dpi=300)
 ```
 
 
@@ -1331,8 +1343,8 @@ tmp %>%
 
 p1 / p2 + 
   plot_annotation(tag_levels = 'a', tag_suffix = ".")
-ggsave("figures/power1.pdf", dpi=300)
-ggsave("figures/power1.png", dpi=300)
+ggsave("figures/lnp-power1.pdf", dpi=300)
+ggsave("figures/lnp-power1.png", dpi=300)
 ```
 
 # Supp. Figure - Power, facet by params
@@ -1466,7 +1478,7 @@ tmp %>%
   plot_layout(guides = "collect") +
   plot_annotation(title="Population size: 40", 
                   theme=theme(plot.title = element_text(size = 13, face = "bold")))
-ggsave("figures/power2.pdf", dpi=300)
-ggsave("figures/power2.png", dpi=300)
+ggsave("figures/lnp-power2.pdf", dpi=300)
+ggsave("figures/lnp-power2.png", dpi=300)
 ```
 
